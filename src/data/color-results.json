@@ -1,0 +1,552 @@
+[
+  {
+    "id": "marquis-purple-violet",
+    "test_id": "marquis-test",
+    "color_result": "Purple to violet",
+    "color_result_ar": "بنفسجي إلى بنفسجي داكن",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Opium, Morphine, Heroin",
+    "possible_substance_ar": "الأفيون، المورفين، الهيروين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "marquis-brownish-purple",
+    "test_id": "marquis-test",
+    "color_result": "Brownish purple",
+    "color_result_ar": "بنفسجي بني",
+    "color_hex": "#8B4513",
+    "possible_substance": "Amphetamine, Methamphetamine",
+    "possible_substance_ar": "الأمفيتامين، الميثامفيتامين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "marquis-orange-brown",
+    "test_id": "marquis-test",
+    "color_result": "Orange to brown",
+    "color_result_ar": "برتقالي إلى بني",
+    "color_hex": "#FF8C00",
+    "possible_substance": "MDMA, Ecstasy",
+    "possible_substance_ar": "إم دي إم إيه، الإكستاسي",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "marquis-no-change",
+    "test_id": "marquis-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "mecke-blue-green",
+    "test_id": "mecke-test",
+    "color_result": "Blue to green",
+    "color_result_ar": "أزرق إلى أخضر",
+    "color_hex": "#0080FF",
+    "possible_substance": "Morphine, Codeine",
+    "possible_substance_ar": "المورفين، الكودايين",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "mecke-yellow-brown",
+    "test_id": "mecke-test",
+    "color_result": "Yellow to brown",
+    "color_result_ar": "أصفر إلى بني",
+    "color_hex": "#DAA520",
+    "possible_substance": "Heroin",
+    "possible_substance_ar": "الهيروين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "mecke-orange",
+    "test_id": "mecke-test",
+    "color_result": "Orange",
+    "color_result_ar": "برتقالي",
+    "color_hex": "#FFA500",
+    "possible_substance": "MDMA",
+    "possible_substance_ar": "إم دي إم إيه",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "mecke-no-change",
+    "test_id": "mecke-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "ferric-blue",
+    "test_id": "ferric-sulfate-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "Cocaine HCl",
+    "possible_substance_ar": "كوكايين هيدروكلوريد",
+    "confidence_level": "high"
+  },
+  {
+    "id": "ferric-green",
+    "test_id": "ferric-sulfate-test",
+    "color_result": "Green",
+    "color_result_ar": "أخضر",
+    "color_hex": "#00FF00",
+    "possible_substance": "Cannabis compounds",
+    "possible_substance_ar": "مركبات القنب",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "ferric-red-brown",
+    "test_id": "ferric-sulfate-test",
+    "color_result": "Red to brown",
+    "color_result_ar": "أحمر إلى بني",
+    "color_hex": "#CD5C5C",
+    "possible_substance": "Phenothiazines",
+    "possible_substance_ar": "الفينوثيازين",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "ferric-no-change",
+    "test_id": "ferric-sulfate-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "nitric-yellow",
+    "test_id": "nitric-acid-test",
+    "color_result": "Yellow",
+    "color_result_ar": "أصفر",
+    "color_hex": "#FFFF00",
+    "possible_substance": "Heroin",
+    "possible_substance_ar": "الهيروين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "nitric-orange",
+    "test_id": "nitric-acid-test",
+    "color_result": "Orange",
+    "color_result_ar": "برتقالي",
+    "color_hex": "#FFA500",
+    "possible_substance": "Morphine",
+    "possible_substance_ar": "المورفين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "nitric-red",
+    "test_id": "nitric-acid-test",
+    "color_result": "Red",
+    "color_result_ar": "أحمر",
+    "color_hex": "#FF0000",
+    "possible_substance": "Salicylates",
+    "possible_substance_ar": "الساليسيلات",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "nitric-no-change",
+    "test_id": "nitric-acid-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "fast-blue-dark-green",
+    "test_id": "fast-blue-b-test",
+    "color_result": "Dark green",
+    "color_result_ar": "أخضر داكن",
+    "color_hex": "#006400",
+    "possible_substance": "THC, Cannabis",
+    "possible_substance_ar": "تي إتش سي، القنب",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "fast-blue-light-blue",
+    "test_id": "fast-blue-b-test",
+    "color_result": "Light blue",
+    "color_result_ar": "أزرق فاتح",
+    "color_hex": "#ADD8E6",
+    "possible_substance": "Cannabis derivatives",
+    "possible_substance_ar": "مشتقات القنب",
+    "confidence_level": "high"
+  },
+  {
+    "id": "fast-blue-purple",
+    "test_id": "fast-blue-b-test",
+    "color_result": "Purple",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Other cannabinoids",
+    "possible_substance_ar": "كانابينويدات أخرى",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "fast-blue-no-change",
+    "test_id": "fast-blue-b-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "duquenois-purple",
+    "test_id": "duquenois-levine-test",
+    "color_result": "Purple",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Cannabis, THC",
+    "possible_substance_ar": "القنب، تي إتش سي",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "duquenois-blue",
+    "test_id": "duquenois-levine-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "Cannabis derivatives",
+    "possible_substance_ar": "مشتقات القنب",
+    "confidence_level": "high"
+  },
+  {
+    "id": "duquenois-green",
+    "test_id": "duquenois-levine-test",
+    "color_result": "Green",
+    "color_result_ar": "أخضر",
+    "color_hex": "#00FF00",
+    "possible_substance": "Hemp compounds",
+    "possible_substance_ar": "مركبات القنب الصناعي",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "duquenois-no-change",
+    "test_id": "duquenois-levine-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "cobalt-blue",
+    "test_id": "cobalt-thiocyanate-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "Cocaine",
+    "possible_substance_ar": "الكوكايين",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "cobalt-light-blue",
+    "test_id": "cobalt-thiocyanate-test",
+    "color_result": "Light blue",
+    "color_result_ar": "أزرق فاتح",
+    "color_hex": "#ADD8E6",
+    "possible_substance": "Lidocaine",
+    "possible_substance_ar": "الليدوكايين",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "cobalt-green",
+    "test_id": "cobalt-thiocyanate-test",
+    "color_result": "Green",
+    "color_result_ar": "أخضر",
+    "color_hex": "#00FF00",
+    "possible_substance": "Other local anesthetics",
+    "possible_substance_ar": "مخدرات موضعية أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "cobalt-no-change",
+    "test_id": "cobalt-thiocyanate-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "scott-blue",
+    "test_id": "scott-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "Cocaine",
+    "possible_substance_ar": "الكوكايين",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "scott-pink",
+    "test_id": "scott-test",
+    "color_result": "Pink",
+    "color_result_ar": "وردي",
+    "color_hex": "#FFC0CB",
+    "possible_substance": "Lidocaine",
+    "possible_substance_ar": "الليدوكايين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "scott-purple",
+    "test_id": "scott-test",
+    "color_result": "Purple",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Procaine",
+    "possible_substance_ar": "البروكايين",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "scott-no-change",
+    "test_id": "scott-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "wagner-orange-brown",
+    "test_id": "wagner-test",
+    "color_result": "Orange-brown",
+    "color_result_ar": "برتقالي بني",
+    "color_hex": "#D2691E",
+    "possible_substance": "Alkaloids",
+    "possible_substance_ar": "القلويدات",
+    "confidence_level": "high"
+  },
+  {
+    "id": "wagner-yellow-brown",
+    "test_id": "wagner-test",
+    "color_result": "Yellow-brown",
+    "color_result_ar": "أصفر بني",
+    "color_hex": "#DAA520",
+    "possible_substance": "Morphine alkaloids",
+    "possible_substance_ar": "قلويدات المورفين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "wagner-brown",
+    "test_id": "wagner-test",
+    "color_result": "Brown",
+    "color_result_ar": "بني",
+    "color_hex": "#8B4513",
+    "possible_substance": "Plant alkaloids",
+    "possible_substance_ar": "قلويدات نباتية",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "wagner-no-change",
+    "test_id": "wagner-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "simon-blue",
+    "test_id": "simon-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "MDMA, Ecstasy",
+    "possible_substance_ar": "إم دي إم إيه، الإكستاسي",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "simon-green",
+    "test_id": "simon-test",
+    "color_result": "Green",
+    "color_result_ar": "أخضر",
+    "color_hex": "#00FF00",
+    "possible_substance": "Methamphetamine",
+    "possible_substance_ar": "الميثامفيتامين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "simon-purple",
+    "test_id": "simon-test",
+    "color_result": "Purple",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Amphetamine",
+    "possible_substance_ar": "الأمفيتامين",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "simon-no-change",
+    "test_id": "simon-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "ehrlich-purple",
+    "test_id": "ehrlich-test",
+    "color_result": "Purple",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "LSD",
+    "possible_substance_ar": "إل إس دي",
+    "confidence_level": "very_high"
+  },
+  {
+    "id": "ehrlich-blue",
+    "test_id": "ehrlich-test",
+    "color_result": "Blue",
+    "color_result_ar": "أزرق",
+    "color_hex": "#0066FF",
+    "possible_substance": "Psilocybin",
+    "possible_substance_ar": "السيلوسيبين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "ehrlich-pink",
+    "test_id": "ehrlich-test",
+    "color_result": "Pink",
+    "color_result_ar": "وردي",
+    "color_hex": "#FFC0CB",
+    "possible_substance": "DMT",
+    "possible_substance_ar": "دي إم تي",
+    "confidence_level": "high"
+  },
+  {
+    "id": "ehrlich-no-change",
+    "test_id": "ehrlich-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "liebermann-orange",
+    "test_id": "liebermann-test",
+    "color_result": "Orange",
+    "color_result_ar": "برتقالي",
+    "color_hex": "#FFA500",
+    "possible_substance": "Amphetamine",
+    "possible_substance_ar": "الأمفيتامين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "liebermann-yellow-green",
+    "test_id": "liebermann-test",
+    "color_result": "Yellow to light green",
+    "color_result_ar": "أصفر إلى أخضر فاتح",
+    "color_hex": "#ADFF2F",
+    "possible_substance": "Methamphetamine",
+    "possible_substance_ar": "الميثامفيتامين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "liebermann-red",
+    "test_id": "liebermann-test",
+    "color_result": "Red",
+    "color_result_ar": "أحمر",
+    "color_hex": "#FF0000",
+    "possible_substance": "Barbiturates",
+    "possible_substance_ar": "الباربيتورات",
+    "confidence_level": "medium"
+  },
+  {
+    "id": "liebermann-no-change",
+    "test_id": "liebermann-test",
+    "color_result": "No color change",
+    "color_result_ar": "لا يوجد تغيير في اللون",
+    "color_hex": "#FFFFFF",
+    "possible_substance": "Other substances",
+    "possible_substance_ar": "مواد أخرى",
+    "confidence_level": "low"
+  },
+  {
+    "id": "potassium-dichromate-positive",
+    "test_id": "potassium-dichromate-test",
+    "color_result": "Orange to Green color change",
+    "color_result_ar": "تغيير من البرتقالي إلى الأخضر",
+    "color_hex": "#228B22",
+    "possible_substance": "Ethanol, Alcohol",
+    "possible_substance_ar": "الكحول الإيثيلي",
+    "confidence_level": "high"
+  },
+  {
+    "id": "potassium-dichromate-negative",
+    "test_id": "potassium-dichromate-test",
+    "color_result": "Remains orange",
+    "color_result_ar": "يبقى برتقالي اللون",
+    "color_hex": "#FF8C00",
+    "possible_substance": "No alcohol detected",
+    "possible_substance_ar": "لا يوجد كحول",
+    "confidence_level": "high"
+  },
+  {
+    "id": "marquis-pink-violet-methadone",
+    "test_id": "marquis-test",
+    "color_result": "Pink to violet",
+    "color_result_ar": "وردي إلى بنفسجي",
+    "color_hex": "#DA70D6",
+    "possible_substance": "Methadone",
+    "possible_substance_ar": "الميثادون",
+    "confidence_level": "high"
+  },
+  {
+    "id": "nitric-sulfuric-orange-red",
+    "test_id": "nitric-sulfuric-test",
+    "color_result": "Orange to red",
+    "color_result_ar": "برتقالي إلى أحمر",
+    "color_hex": "#FF4500",
+    "possible_substance": "Methadone",
+    "possible_substance_ar": "الميثادون",
+    "confidence_level": "high"
+  },
+  {
+    "id": "marquis-orange-pethidine",
+    "test_id": "marquis-test",
+    "color_result": "Orange",
+    "color_result_ar": "برتقالي",
+    "color_hex": "#FFA500",
+    "possible_substance": "Pethidine",
+    "possible_substance_ar": "البيثيدين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "liebermann-red-orange-pethidine",
+    "test_id": "liebermann-test",
+    "color_result": "Red-orange",
+    "color_result_ar": "أحمر برتقالي",
+    "color_hex": "#FF6347",
+    "possible_substance": "Pethidine",
+    "possible_substance_ar": "البيثيدين",
+    "confidence_level": "high"
+  },
+  {
+    "id": "chen-kao-violet",
+    "test_id": "chen-kao-test",
+    "color_result": "Violet",
+    "color_result_ar": "بنفسجي",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Cathine, Ephedrine, Pseudoephedrine",
+    "possible_substance_ar": "الكاثين، الإيفيدرين، السودوإيفيدرين",
+    "confidence_level": "very_high"
+  }
+]

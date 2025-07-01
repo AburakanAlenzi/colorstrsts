@@ -1,0 +1,330 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for themes */
+:root {
+  --color-primary: 14 165 233;
+  --color-secondary: 212 70 239;
+  --color-success: 34 197 94;
+  --color-warning: 245 158 11;
+  --color-danger: 239 68 68;
+  --color-background: 255 255 255;
+  --color-foreground: 15 23 42;
+  --color-muted: 248 250 252;
+  --color-muted-foreground: 100 116 139;
+  --color-border: 226 232 240;
+  --color-input: 255 255 255;
+  --color-ring: 14 165 233;
+
+  /* Semantic color variables for Tailwind */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 98%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+}
+
+.dark {
+  --color-background: 2 6 23;
+  --color-foreground: 248 250 252;
+  --color-muted: 15 23 42;
+  --color-muted-foreground: 148 163 184;
+  --color-border: 30 41 59;
+  --color-input: 15 23 42;
+  --color-ring: 14 165 233;
+
+  /* Dark mode semantic colors */
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+/* Base styles */
+* {
+  border-color: rgb(var(--color-border));
+}
+
+body {
+  color: rgb(var(--color-foreground));
+  background: rgb(var(--color-background));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-muted-foreground));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-foreground) / 0.8);
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+}
+
+/* Button variants */
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus-ring disabled:pointer-events-none disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+}
+
+.btn-secondary {
+  @apply bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800;
+}
+
+.btn-success {
+  @apply bg-success-600 text-white hover:bg-success-700 active:bg-success-800;
+}
+
+.btn-warning {
+  @apply bg-warning-600 text-white hover:bg-warning-700 active:bg-warning-800;
+}
+
+.btn-danger {
+  @apply bg-danger-600 text-white hover:bg-danger-700 active:bg-danger-800;
+}
+
+.btn-outline {
+  @apply border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700;
+}
+
+.btn-ghost {
+  @apply text-gray-900 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-700;
+}
+
+/* Card styles */
+.card {
+  @apply rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800;
+}
+
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:scale-[1.02];
+}
+
+/* Input styles */
+.input {
+  @apply flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-offset-white dark:focus:ring-offset-slate-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-ring disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400;
+}
+
+/* Text styles */
+.text-gradient {
+  @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.5s ease-out;
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.5s ease-out;
+}
+
+.animate-slide-right {
+  animation: slideRight 0.5s ease-out;
+}
+
+/* Glass effect */
+.glass-effect {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20;
+}
+
+.glass-effect-dark {
+  @apply bg-black/10 backdrop-blur-lg border border-white/10;
+}
+
+/* RTL/LTR specific styles */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Arabic font optimization */
+.font-arabic {
+  font-family: var(--font-noto-sans-arabic), system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+.font-english {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* Color swatch styles */
+.color-swatch {
+  @apply w-12 h-12 rounded-lg border-2 border-white shadow-lg;
+}
+
+.color-option {
+  @apply flex flex-col items-center p-4 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 transition-all duration-200 cursor-pointer dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700;
+}
+
+.color-option:hover {
+  @apply shadow-md scale-105;
+}
+
+.color-option.selected {
+  @apply border-primary-500 bg-primary-50 dark:bg-primary-950;
+}
+
+/* Test card styles */
+.test-card {
+  @apply card card-hover cursor-pointer border-2 border-transparent hover:border-primary-200 dark:hover:border-primary-800;
+}
+
+.test-card.selected {
+  @apply border-primary-500 bg-primary-50 dark:bg-primary-950;
+}
+
+/* Safety level indicators */
+.safety-low {
+  @apply bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200;
+}
+
+.safety-medium {
+  @apply bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
+}
+
+.safety-high {
+  @apply bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
+}
+
+.safety-extreme {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-gray-200 border-t-primary-600;
+}
+
+/* Progress bar */
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-primary-600 h-2 rounded-full transition-all duration-300;
+}
+
+/* Notification styles */
+.notification {
+  @apply fixed top-4 right-4 z-50 max-w-sm rounded-lg border border-gray-300 bg-white p-4 shadow-lg dark:border-gray-600 dark:bg-gray-800;
+}
+
+.notification.success {
+  @apply border-success-200 bg-success-50 text-success-800 dark:border-success-800 dark:bg-success-950 dark:text-success-200;
+}
+
+.notification.error {
+  @apply border-danger-200 bg-danger-50 text-danger-800 dark:border-danger-800 dark:bg-danger-950 dark:text-danger-200;
+}
+
+.notification.warning {
+  @apply border-warning-200 bg-warning-50 text-warning-800 dark:border-warning-800 dark:bg-warning-950 dark:text-warning-200;
+}
+
+.notification.info {
+  @apply border-primary-200 bg-primary-50 text-primary-800 dark:border-primary-800 dark:bg-primary-950 dark:text-primary-200;
+}
+
+/* Modal styles */
+.modal-overlay {
+  @apply fixed inset-0 z-50 bg-black/50 backdrop-blur-sm;
+}
+
+.modal-content {
+  @apply fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-300 bg-white p-6 shadow-lg dark:border-gray-600 dark:bg-gray-800;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    font-size: 10pt;
+    line-height: 1.4;
+    color: black;
+    background: white;
+  }
+  
+  .card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-full {
+    width: 100%;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    @apply border-2 border-gray-900 dark:border-gray-100;
+  }
+
+  .btn {
+    @apply border-2 border-gray-900 dark:border-gray-100;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

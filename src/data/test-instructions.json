@@ -1,0 +1,272 @@
+[
+  {
+    "id": "marquis-step-1",
+    "test_id": "marquis-test",
+    "step_number": 1,
+    "instruction": "Wear chemical-resistant gloves and protective safety goggles",
+    "instruction_ar": "ارتدِ القفازات المقاومة للمواد الكيميائية ونظارات الأمان الواقية",
+    "safety_warning": "DANGER: Marquis reagent contains concentrated sulfuric acid - may cause severe chemical burns",
+    "safety_warning_ar": "خطر: كاشف ماركيز يحتوي على حمض الكبريتيك المركز - قد يسبب حروق كيميائية شديدة",
+    "icon": "ShieldCheckIcon"
+  },
+  {
+    "id": "marquis-step-2",
+    "test_id": "marquis-test",
+    "step_number": 2,
+    "instruction": "Ensure excellent ventilation and remove flammable materials from area",
+    "instruction_ar": "تأكد من وجود تهوية ممتازة وأبعد المواد القابلة للاشتعال من المنطقة",
+    "safety_warning": "Work in fume hood if available - never work in closed spaces",
+    "safety_warning_ar": "اعمل في خزانة الأبخرة إن أمكن - لا تعمل أبداً في أماكن مغلقة",
+    "icon": "ExclamationTriangleIcon"
+  },
+  {
+    "id": "marquis-step-3",
+    "test_id": "marquis-test",
+    "step_number": 3,
+    "instruction": "Place rice grain-sized sample on clean white ceramic plate using tweezers",
+    "instruction_ar": "ضع عينة بحجم حبة الأرز على طبق خزفي أبيض نظيف باستخدام ملقط",
+    "safety_warning": "NEVER use plastic surfaces - they may react with reagents",
+    "safety_warning_ar": "لا تستخدم الأسطح البلاستيكية أبداً - قد تتفاعل مع الكواشف",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "marquis-step-4",
+    "test_id": "marquis-test",
+    "step_number": 4,
+    "instruction": "Add exactly ONE drop of Marquis reagent using clean glass dropper at 45-degree angle",
+    "instruction_ar": "أضف قطرة واحدة بالضبط من كاشف ماركيز باستخدام قطارة زجاجية نظيفة بزاوية 45 درجة",
+    "safety_warning": "MORE than one drop will affect accuracy - hold dropper steady",
+    "safety_warning_ar": "أكثر من قطرة واحدة سيؤثر على الدقة - أمسك القطارة بثبات",
+    "icon": "EyeDropperIcon"
+  },
+  {
+    "id": "marquis-step-5",
+    "test_id": "marquis-test",
+    "step_number": 5,
+    "instruction": "Record INITIAL color change within first 15-30 seconds - do not wait longer",
+    "instruction_ar": "سجل تغيير اللون الأولي خلال أول 15-30 ثانية - لا تنتظر أكثر",
+    "safety_warning": "IMPORTANT: Initial color is most accurate - later changes may be misleading",
+    "safety_warning_ar": "مهم: اللون الأولي هو الأكثر دقة - التغيرات اللاحقة قد تكون مضللة",
+    "icon": "EyeIcon"
+  },
+  {
+    "id": "mecke-step-1",
+    "test_id": "mecke-test",
+    "step_number": 1,
+    "instruction": "Wear protective equipment including gloves and goggles",
+    "instruction_ar": "ارتدِ المعدات الواقية بما في ذلك القفازات والنظارات",
+    "safety_warning": "Mecke reagent is corrosive",
+    "safety_warning_ar": "كاشف ميكي مادة أكالة",
+    "icon": "ShieldCheckIcon"
+  },
+  {
+    "id": "mecke-step-2",
+    "test_id": "mecke-test",
+    "step_number": 2,
+    "instruction": "Ensure adequate ventilation",
+    "instruction_ar": "تأكد من التهوية الكافية",
+    "safety_warning": "Work in fume hood if available",
+    "safety_warning_ar": "اعمل في خزانة الأبخرة إن أمكن",
+    "icon": "ExclamationTriangleIcon"
+  },
+  {
+    "id": "mecke-step-3",
+    "test_id": "mecke-test",
+    "step_number": 3,
+    "instruction": "Place sample on clean white surface",
+    "instruction_ar": "ضع العينة على سطح أبيض نظيف",
+    "safety_warning": "Use minimal sample amount",
+    "safety_warning_ar": "استخدم أقل كمية من العينة",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "mecke-step-4",
+    "test_id": "mecke-test",
+    "step_number": 4,
+    "instruction": "Apply 1-2 drops of Mecke reagent",
+    "instruction_ar": "ضع 1-2 قطرة من كاشف ميكي",
+    "safety_warning": "Avoid skin contact",
+    "safety_warning_ar": "تجنب ملامسة الجلد",
+    "icon": "EyeDropperIcon"
+  },
+  {
+    "id": "mecke-step-5",
+    "test_id": "mecke-test",
+    "step_number": 5,
+    "instruction": "Record color change within 30 seconds",
+    "instruction_ar": "سجل تغيير اللون خلال 30 ثانية",
+    "safety_warning": "Color may continue to develop",
+    "safety_warning_ar": "قد يستمر اللون في التطور",
+    "icon": "ClockIcon"
+  },
+  {
+    "id": "ferric-step-1",
+    "test_id": "ferric-sulfate-test",
+    "step_number": 1,
+    "instruction": "Wear appropriate protective gear",
+    "instruction_ar": "ارتدِ المعدات الواقية المناسبة",
+    "safety_warning": "Ferric sulfate can cause staining",
+    "safety_warning_ar": "كبريتات الحديد قد تسبب تلطيخاً",
+    "icon": "ShieldCheckIcon"
+  },
+  {
+    "id": "ferric-step-2",
+    "test_id": "ferric-sulfate-test",
+    "step_number": 2,
+    "instruction": "Prepare clean testing surface",
+    "instruction_ar": "حضر سطح اختبار نظيف",
+    "safety_warning": "Use white ceramic or glass plate",
+    "safety_warning_ar": "استخدم طبق خزفي أو زجاجي أبيض",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "ferric-step-3",
+    "test_id": "ferric-sulfate-test",
+    "step_number": 3,
+    "instruction": "Place small amount of sample",
+    "instruction_ar": "ضع كمية صغيرة من العينة",
+    "safety_warning": "Sample size should be grain-sized",
+    "safety_warning_ar": "يجب أن يكون حجم العينة بحجم الحبة",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "ferric-step-4",
+    "test_id": "ferric-sulfate-test",
+    "step_number": 4,
+    "instruction": "Add ferric sulfate solution dropwise",
+    "instruction_ar": "أضف محلول كبريتات الحديد قطرة قطرة",
+    "safety_warning": "Use only 1-2 drops",
+    "safety_warning_ar": "استخدم 1-2 قطرة فقط",
+    "icon": "EyeDropperIcon"
+  },
+  {
+    "id": "ferric-step-5",
+    "test_id": "ferric-sulfate-test",
+    "step_number": 5,
+    "instruction": "Observe immediate color reaction",
+    "instruction_ar": "لاحظ التفاعل اللوني الفوري",
+    "safety_warning": "Reaction occurs quickly",
+    "safety_warning_ar": "يحدث التفاعل بسرعة",
+    "icon": "EyeIcon"
+  },
+  {
+    "id": "nitric-step-1",
+    "test_id": "nitric-acid-test",
+    "step_number": 1,
+    "instruction": "Use extreme caution - wear full protective equipment",
+    "instruction_ar": "توخ الحذر الشديد - ارتدِ المعدات الواقية الكاملة",
+    "safety_warning": "Nitric acid is extremely corrosive and dangerous",
+    "safety_warning_ar": "حمض النيتريك شديد التآكل والخطورة",
+    "icon": "ExclamationTriangleIcon"
+  },
+  {
+    "id": "nitric-step-2",
+    "test_id": "nitric-acid-test",
+    "step_number": 2,
+    "instruction": "Work only in a fume hood with proper ventilation",
+    "instruction_ar": "اعمل فقط في خزانة الأبخرة مع التهوية المناسبة",
+    "safety_warning": "Never work with nitric acid in open air",
+    "safety_warning_ar": "لا تعمل أبداً مع حمض النيتريك في الهواء الطلق",
+    "icon": "ExclamationTriangleIcon"
+  },
+  {
+    "id": "nitric-step-3",
+    "test_id": "nitric-acid-test",
+    "step_number": 3,
+    "instruction": "Place minimal sample on acid-resistant surface",
+    "instruction_ar": "ضع عينة قليلة على سطح مقاوم للأحماض",
+    "safety_warning": "Use glass or ceramic, never metal",
+    "safety_warning_ar": "استخدم الزجاج أو الخزف، لا تستخدم المعدن أبداً",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "nitric-step-4",
+    "test_id": "nitric-acid-test",
+    "step_number": 4,
+    "instruction": "Add one drop of diluted nitric acid using glass dropper",
+    "instruction_ar": "أضف قطرة واحدة من حمض النيتريك المخفف باستخدام قطارة زجاجية",
+    "safety_warning": "Use only diluted acid, never concentrated",
+    "safety_warning_ar": "استخدم الحمض المخفف فقط، لا تستخدم المركز أبداً",
+    "icon": "EyeDropperIcon"
+  },
+  {
+    "id": "nitric-step-5",
+    "test_id": "nitric-acid-test",
+    "step_number": 5,
+    "instruction": "Observe color change and dispose of materials safely",
+    "instruction_ar": "لاحظ تغيير اللون وتخلص من المواد بأمان",
+    "safety_warning": "Follow proper hazardous waste disposal procedures",
+    "safety_warning_ar": "اتبع إجراءات التخلص الآمن من النفايات الخطرة",
+    "icon": "EyeIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-1",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 1,
+    "instruction": "Wear full protective equipment: gloves, goggles, and lab coat",
+    "instruction_ar": "ارتدِ المعدات الواقية الكاملة: القفازات والنظارات ومعطف المختبر",
+    "safety_warning": "Concentrated sulfuric acid is extremely dangerous and corrosive",
+    "safety_warning_ar": "حمض الكبريتيك المركز خطير جداً ومسبب للتآكل",
+    "icon": "ShieldCheckIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-2",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 2,
+    "instruction": "Work in a well-ventilated area or fume hood",
+    "instruction_ar": "اعمل في منطقة جيدة التهوية أو خزانة الأبخرة",
+    "safety_warning": "Ensure proper ventilation to avoid inhaling vapors",
+    "safety_warning_ar": "تأكد من التهوية المناسبة لتجنب استنشاق الأبخرة",
+    "icon": "ExclamationTriangleIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-3",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 3,
+    "instruction": "Prepare reagent: Add 5g K₂Cr₂O₇ to distilled water, then add 50mL H₂SO₄",
+    "instruction_ar": "حضر الكاشف: أضف 5 جرام من ثنائي كرومات البوتاسيوم للماء المقطر، ثم أضف 50 مل من حمض الكبريتيك",
+    "safety_warning": "ALWAYS add acid to water, NEVER water to acid",
+    "safety_warning_ar": "أضف الحمض للماء دائماً، لا تضع الماء للحمض أبداً",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-4",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 4,
+    "instruction": "Place a small sample of suspected alcohol on a clean glass surface",
+    "instruction_ar": "ضع عينة صغيرة من الكحول المشتبه به على سطح زجاجي نظيف",
+    "safety_warning": "Use only a small amount of sample for testing",
+    "safety_warning_ar": "استخدم كمية صغيرة فقط من العينة للاختبار",
+    "icon": "BeakerIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-5",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 5,
+    "instruction": "Add 2-3 drops of potassium dichromate reagent to the sample",
+    "instruction_ar": "أضف 2-3 قطرات من كاشف ثنائي كرومات البوتاسيوم للعينة",
+    "safety_warning": "Use glass dropper and avoid direct contact with reagent",
+    "safety_warning_ar": "استخدم قطارة زجاجية وتجنب الاتصال المباشر مع الكاشف",
+    "icon": "EyeDropperIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-6",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 6,
+    "instruction": "Observe color change: Orange to Green indicates alcohol presence",
+    "instruction_ar": "لاحظ تغيير اللون: التغيير من البرتقالي إلى الأخضر يشير لوجود الكحول",
+    "safety_warning": "Color change occurs within 1-2 minutes",
+    "safety_warning_ar": "يحدث تغيير اللون خلال 1-2 دقيقة",
+    "icon": "EyeIcon"
+  },
+  {
+    "id": "potassium-dichromate-step-7",
+    "test_id": "potassium-dichromate-test",
+    "step_number": 7,
+    "instruction": "Dispose of all materials according to hazardous waste protocols",
+    "instruction_ar": "تخلص من جميع المواد وفقاً لبروتوكولات النفايات الخطرة",
+    "safety_warning": "Never pour reagents down the drain - use proper disposal methods",
+    "safety_warning_ar": "لا تسكب الكواشف في المجاري أبداً - استخدم طرق التخلص المناسبة",
+    "icon": "ExclamationTriangleIcon"
+  }
+]
