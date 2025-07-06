@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="testTubeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1E40AF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E3A8A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#DC2626;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#B91C1C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="liquidGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="4"/>
+  
+  <!-- Test Tube Rack Base -->
+  <rect x="120" y="380" width="272" height="40" rx="8" fill="#64748B" opacity="0.8"/>
+  
+  <!-- Test Tube 1 -->
+  <g transform="translate(180, 120)">
+    <!-- Tube -->
+    <rect x="0" y="0" width="24" height="200" rx="12" fill="url(#testTubeGradient)" stroke="#1E40AF" stroke-width="2"/>
+    <!-- Liquid -->
+    <rect x="4" y="120" width="16" height="76" rx="8" fill="url(#liquidGradient)" filter="url(#glow)"/>
+    <!-- Tube Top -->
+    <rect x="-4" y="-8" width="32" height="16" rx="4" fill="#374151"/>
+    <!-- Bubbles -->
+    <circle cx="8" cy="140" r="2" fill="#FBBF24" opacity="0.7"/>
+    <circle cx="16" cy="160" r="1.5" fill="#FBBF24" opacity="0.5"/>
+  </g>
+  
+  <!-- Test Tube 2 -->
+  <g transform="translate(244, 140)">
+    <!-- Tube -->
+    <rect x="0" y="0" width="24" height="180" rx="12" fill="url(#testTubeGradient)" stroke="#1E40AF" stroke-width="2"/>
+    <!-- Liquid -->
+    <rect x="4" y="100" width="16" height="76" rx="8" fill="url(#liquidGradient2)" filter="url(#glow)"/>
+    <!-- Tube Top -->
+    <rect x="-4" y="-8" width="32" height="16" rx="4" fill="#374151"/>
+    <!-- Bubbles -->
+    <circle cx="12" cy="120" r="2" fill="#FBBF24" opacity="0.7"/>
+    <circle cx="8" cy="140" r="1.5" fill="#FBBF24" opacity="0.5"/>
+  </g>
+  
+  <!-- Test Tube 3 -->
+  <g transform="translate(308, 130)">
+    <!-- Tube -->
+    <rect x="0" y="0" width="24" height="190" rx="12" fill="url(#testTubeGradient)" stroke="#1E40AF" stroke-width="2"/>
+    <!-- Liquid -->
+    <rect x="4" y="110" width="16" height="76" rx="8" fill="#8B5CF6" opacity="0.8" filter="url(#glow)"/>
+    <!-- Tube Top -->
+    <rect x="-4" y="-8" width="32" height="16" rx="4" fill="#374151"/>
+    <!-- Bubbles -->
+    <circle cx="10" cy="130" r="2" fill="#FBBF24" opacity="0.7"/>
+    <circle cx="14" cy="150" r="1.5" fill="#FBBF24" opacity="0.5"/>
+  </g>
+  
+  <!-- Chemical Formula -->
+  <text x="256" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1E40AF">C₁₂H₁₅NO₂</text>
+  
+  <!-- Magnifying Glass -->
+  <g transform="translate(350, 60)">
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#64748B" stroke-width="4"/>
+    <circle cx="0" cy="0" r="20" fill="#F1F5F9" opacity="0.8"/>
+    <line x1="18" y1="18" x2="35" y2="35" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

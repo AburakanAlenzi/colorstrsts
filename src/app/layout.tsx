@@ -97,16 +97,35 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* Favicon and Icons */}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+
+        {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0ea5e9" />
+
+        {/* Theme Colors */}
+        <meta name="theme-color" content="#3B82F6" />
+        <meta name="msapplication-TileColor" content="#3B82F6" />
+
+        {/* Apple Mobile Web App */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Color Testing" />
+        <meta name="apple-mobile-web-app-title" content="Color Testing | اختبارات الألوان" />
+
+        {/* Mobile Web App */}
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-TileColor" content="#0ea5e9" />
+        <meta name="application-name" content="Color Testing" />
+
+        {/* Microsoft Tiles */}
         <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-TileImage" content="/icon-512.svg" />
+
+        {/* Additional PWA Meta Tags */}
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
       </head>
       <body
         className={`${inter.variable} ${notoSansArabic.variable} font-arabic antialiased`}

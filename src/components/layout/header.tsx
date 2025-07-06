@@ -5,13 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { useAuth } from '@/components/providers';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/ui/language-switcher';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { GlobalImageAnalyzer } from '@/components/ui/global-image-analyzer';
 import {
-  BeakerIcon,
   Bars3Icon,
   XMarkIcon,
   UserIcon,
@@ -19,6 +18,7 @@ import {
   PowerIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
+import { TestTubeIcon } from '@/components/ui/icons/TestTubeIcon';
 
 interface HeaderProps {
   lang: Language;
@@ -28,7 +28,7 @@ export function Header({ lang }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [adminKeySequence, setAdminKeySequence] = useState('');
   const [showImageAnalyzer, setShowImageAnalyzer] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const t = getTranslationsSync(lang);
@@ -86,7 +86,7 @@ export function Header({ lang }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
       router.push(`/${lang}`);
     } catch (error) {
       console.error('Error signing out:', error);
@@ -110,7 +110,7 @@ export function Header({ lang }: HeaderProps) {
                 router.push(`/${lang}`);
               }}
             >
-              <BeakerIcon className="h-8 w-8 text-primary-600" />
+              <TestTubeIcon className="h-8 w-8 text-primary-600" />
               <span className="text-xl font-bold text-foreground">
                 {lang === 'ar' ? 'اختبارات الألوان' : 'Color Testing'}
               </span>
@@ -165,7 +165,7 @@ export function Header({ lang }: HeaderProps) {
                     <UserIcon className="h-3 w-3 text-primary-600 dark:text-primary-400" />
                   </div>
                   <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                    {user.full_name || user.email?.split('@')[0] || t('navigation.user')}
+                    {user.displayName || user.email?.split('@')[0] || t('navigation.user')}
                   </span>
                 </div>
 
@@ -290,7 +290,7 @@ export function Header({ lang }: HeaderProps) {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                            {user.full_name || user.email?.split('@')[0] || t('navigation.user')}
+                            {user.displayName || user.email?.split('@')[0] || t('navigation.user')}
                           </p>
                           <p className="text-xs text-primary-500 dark:text-primary-400">
                             {user.email}

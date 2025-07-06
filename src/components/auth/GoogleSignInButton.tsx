@@ -25,33 +25,47 @@ export function GoogleSignInButton({
     if (disabled || loading) return;
 
     setLoading(true);
-    
+
     try {
+      console.log('🔄 GoogleSignInButton: Starting Google Sign-In...');
+
       // التحقق من دعم المتصفح للنوافذ المنبثقة
       if (typeof window !== 'undefined') {
+        console.log('🔄 Testing popup support...');
         const testPopup = window.open('', '_blank', 'width=1,height=1');
         if (!testPopup || testPopup.closed) {
+          console.error('❌ Popup blocked');
           throw new Error('auth/popup-blocked');
         }
         testPopup.close();
+        console.log('✅ Popup support confirmed');
       }
 
+      console.log('🔄 Calling signInWithGoogle...');
       await signInWithGoogle();
-      
+      console.log('✅ Google Sign-In successful');
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
-      console.error('Google Sign-In Error:', error);
-      
+      console.error('❌ Google Sign-In Error:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+
       let errorMessage = 'خطأ في تسجيل الدخول بـ Google';
-      
+
       if (error.message) {
         errorMessage = error.message;
       } else if (error.code) {
         errorMessage = getErrorMessage(error.code);
       }
-      
+
+      console.log('📤 Sending error to parent:', errorMessage);
+
       if (onError) {
         onError(errorMessage);
       }

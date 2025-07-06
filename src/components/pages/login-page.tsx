@@ -8,6 +8,11 @@ import { getTranslationsSync } from '@/lib/translations';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import GoogleSignInButtonRedirect from '@/components/auth/GoogleSignInButtonRedirect';
+import { FirebaseDebug } from '@/components/debug/FirebaseDebug';
+import { AuthTest } from '@/components/debug/AuthTest';
+import { GoogleSignInTest } from '@/components/debug/GoogleSignInTest';
+import { GoogleSignInDiagnostic } from '@/components/debug/GoogleSignInDiagnostic';
 import {
   UserIcon,
   UserPlusIcon,
@@ -296,22 +301,41 @@ export function AuthPage({ lang }: AuthPageProps) {
             </div>
           </div>
 
+          {/* Google Sign-In with Popup */}
           <GoogleSignInButton
             onSuccess={() => {
               toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
               router.push(`/${lang}`);
             }}
             onError={(error) => {
-              toast.error(lang === 'ar' ? 'خطأ في تسجيل الدخول بـ Google' : 'Google sign in error');
+              toast.error(error);
               console.error('Google sign in error:', error);
             }}
             disabled={loading}
-            className="w-full border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 px-4 py-2"
+            className="w-full border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 px-4 py-2 mb-2"
           >
-            {lang === 'ar' ? 'تسجيل الدخول بـ Google' : 'Continue with Google'}
+            {lang === 'ar' ? 'تسجيل الدخول بـ Google (نافذة منبثقة)' : 'Continue with Google (Popup)'}
           </GoogleSignInButton>
+
+          {/* Google Sign-In with Redirect (Fallback) */}
+          <GoogleSignInButtonRedirect
+            onError={(error) => {
+              toast.error(error);
+              console.error('Google sign in redirect error:', error);
+            }}
+            disabled={loading}
+            className="w-full border border-gray-300 rounded-md shadow-sm bg-blue-50 text-sm font-medium text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 px-4 py-2"
+          >
+            {lang === 'ar' ? 'تسجيل الدخول بـ Google (إعادة توجيه)' : 'Continue with Google (Redirect)'}
+          </GoogleSignInButtonRedirect>
         </form>
       </div>
+
+      {/* Debug Components (Development Only) */}
+      <FirebaseDebug />
+      <AuthTest />
+      <GoogleSignInTest />
+      <GoogleSignInDiagnostic />
     </div>
   );
 }
