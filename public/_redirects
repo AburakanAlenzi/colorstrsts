@@ -16,4 +16,4 @@
 /api/* /api/:splat 200
 
 # Fallback for SPA routing
-/* /ar/index.html 200
+/* /ar/:splat 200

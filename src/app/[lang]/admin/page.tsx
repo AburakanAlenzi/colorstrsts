@@ -1,34 +1,35 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Metadata } from 'next';
 import { Language } from '@/types';
+import { AdminPage } from '@/components/pages/admin-page';
+import { getTranslations } from '@/lib/translations';
 
-interface AdminRedirectProps {
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
+interface AdminPageProps {
   params: Promise<{ lang: Language }>;
 }
 
-export default function AdminRedirect({ params }: AdminRedirectProps) {
-  const router = useRouter();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: Language }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const t = await getTranslations(lang);
 
-  useEffect(() => {
-    const redirect = async () => {
-      const { lang } = await params;
-      // إعادة توجيه إلى الرابط الجديد
-      router.replace(`/${lang}/yousef`);
-    };
+  return {
+    title: t('admin.title'),
+    description: t('admin.dashboard'),
+  };
+}
 
-    redirect();
-  }, [params, router]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-gray-500">
-          جاري إعادة التوجيه... | Redirecting...
-        </p>
-      </div>
-    </div>
-  );
+export default async function AdminPageRoute({ params }: AdminPageProps) {
+  const { lang } = await params;
+  return <AdminPage lang={lang} />;
 }
