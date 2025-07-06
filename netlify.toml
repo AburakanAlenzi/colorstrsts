@@ -1,5 +1,5 @@
 [build]
-  command = "node netlify-build-simple.js"
+  command = "npm run build"
   publish = "out"
 
 [build.environment]

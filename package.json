@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:static": "next dev",
-    "build": "node build-script.js",
+    "build": "next build",
     "build:next": "next build",
     "build:static": "cross-env NODE_ENV=production next build",
     "build:netlify": "next build",

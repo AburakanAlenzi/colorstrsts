@@ -28,52 +28,40 @@ try {
   console.log('\n📦 Step 1: Installing dependencies...');
   console.log('📦 الخطوة 1: تثبيت التبعيات...');
   
-  // Remove node_modules and package-lock.json for clean install
-  if (fs.existsSync('node_modules')) {
-    console.log('Removing existing node_modules...');
-    execSync('rm -rf node_modules', { stdio: 'inherit' });
-  }
+  // Skip removing node_modules on Netlify for faster builds
+  console.log('Installing dependencies...');
+  execSync('npm ci --legacy-peer-deps', { stdio: 'inherit' });
   
-  if (fs.existsSync('package-lock.json')) {
-    console.log('Removing existing package-lock.json...');
-    execSync('rm -f package-lock.json', { stdio: 'inherit' });
-  }
-  
-  // Fresh install
-  execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
-  
-  // Step 2: Install specific packages that might be missing
-  console.log('\n📦 Step 2: Installing specific packages...');
-  console.log('📦 الخطوة 2: تثبيت حزم محددة...');
-  
-  const specificPackages = [
-    '@radix-ui/react-dropdown-menu@latest',
-    '@radix-ui/react-dialog@latest',
-    '@radix-ui/react-select@latest',
-    '@radix-ui/react-label@latest',
-    '@radix-ui/react-slot@latest',
-    'class-variance-authority@latest'
-  ];
-  
-  for (const pkg of specificPackages) {
-    try {
-      console.log(`Installing ${pkg}...`);
-      execSync(`npm install ${pkg} --legacy-peer-deps`, { stdio: 'inherit' });
-    } catch (error) {
-      console.log(`⚠️ Failed to install ${pkg}, continuing...`);
+  // Step 2: Verify critical dependencies
+  console.log('\n📦 Step 2: Verifying dependencies...');
+  console.log('📦 الخطوة 2: التحقق من التبعيات...');
+
+  try {
+    // Check if critical packages exist
+    const criticalPackages = ['next', 'react', 'react-dom'];
+    for (const pkg of criticalPackages) {
+      require.resolve(pkg);
+      console.log(`✅ ${pkg} found`);
     }
+  } catch (error) {
+    console.log(`⚠️ Some dependencies missing, installing...`);
+    execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
   }
   
   // Step 3: Clear Next.js cache
   console.log('\n🧹 Step 3: Clearing caches...');
   console.log('🧹 الخطوة 3: مسح التخزين المؤقت...');
-  
-  if (fs.existsSync('.next')) {
-    execSync('rm -rf .next', { stdio: 'inherit' });
-  }
-  
-  if (fs.existsSync('out')) {
-    execSync('rm -rf out', { stdio: 'inherit' });
+
+  try {
+    if (fs.existsSync('.next')) {
+      execSync('rm -rf .next', { stdio: 'inherit' });
+    }
+
+    if (fs.existsSync('out')) {
+      execSync('rm -rf out', { stdio: 'inherit' });
+    }
+  } catch (error) {
+    console.log('⚠️ Cache clearing failed, continuing...');
   }
   
   // Step 4: Build the application
