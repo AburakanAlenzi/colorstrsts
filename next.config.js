@@ -17,8 +17,11 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   },
   // Note: redirects, rewrites, and headers don't work with static export
-  // These are enabled for development
+  // These are disabled for production builds
   async redirects() {
+    if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
+      return [];
+    }
     return [
       {
         source: '/',
@@ -28,6 +31,9 @@ const nextConfig = {
     ];
   },
   async rewrites() {
+    if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
+      return [];
+    }
     return [
       {
         source: '/admin',
@@ -39,10 +45,10 @@ const nextConfig = {
       },
     ];
   },
-  // Enable static exports for deployment (disabled for development)
-  // output: 'export',
-  // trailingSlash: true,
-  // distDir: 'out',
+  // Enable static exports for deployment
+  output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  trailingSlash: process.env.NETLIFY || process.env.NODE_ENV === 'production',
+  distDir: 'out',
 
   // إعدادات خاصة بـ Capacitor
   assetPrefix: '',

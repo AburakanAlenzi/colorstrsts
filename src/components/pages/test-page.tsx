@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Language } from '@/types';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { recordTestVisit } from '@/lib/firebase-user';
 
 import { DataService, ChemicalTest, ColorResult as DataServiceColorResult, TestInstruction, TestSession } from '@/lib/data-service';
 import { Button } from '@/components/ui/button';
@@ -84,8 +86,10 @@ export function TestPage({ lang, testId }: TestPageProps) {
   const [loading, setLoading] = useState(true);
   const [confidenceScore, setConfidenceScore] = useState(0.5);
   const [notes, setNotes] = useState('');
+  const [visitStartTime, setVisitStartTime] = useState<Date>(new Date());
 
   const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadTestData = async () => {
@@ -109,6 +113,24 @@ export function TestPage({ lang, testId }: TestPageProps) {
         const newSession = DataService.createTestSession(testId);
         setSession(newSession);
 
+        // Record test visit for authenticated users
+        if (user && testData) {
+          try {
+            await recordTestVisit(
+              user.uid,
+              testId,
+              testData.method_name,
+              testData.method_name_ar,
+              testData.test_type || 'F/L',
+              testData.possible_substance || '',
+              testData.possible_substance_ar || ''
+            );
+          } catch (error) {
+            console.error('Error recording test visit:', error);
+            // Don't show error to user as this is not critical
+          }
+        }
+
       } catch (error) {
         console.error('Error loading test data:', error);
         toast.error(lang === 'ar' ? 'خطأ في تحميل البيانات' : 'Error loading data');
@@ -118,7 +140,29 @@ export function TestPage({ lang, testId }: TestPageProps) {
     };
 
     loadTestData();
-  }, [testId, lang, router]);
+  }, [testId, lang, router, user]);
+
+  // Track visit duration when component unmounts
+  useEffect(() => {
+    return () => {
+      if (user && test) {
+        const visitDuration = Math.floor((new Date().getTime() - visitStartTime.getTime()) / 1000);
+        // Record visit duration (fire and forget)
+        recordTestVisit(
+          user.uid,
+          testId,
+          test.method_name,
+          test.method_name_ar,
+          test.test_type || 'F/L',
+          test.possible_substance || '',
+          test.possible_substance_ar || '',
+          visitDuration
+        ).catch(error => {
+          console.error('Error updating visit duration:', error);
+        });
+      }
+    };
+  }, [user, test, testId, visitStartTime]);
 
   const handleStepComplete = (step: TestStep) => {
     switch (step) {

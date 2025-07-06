@@ -426,5 +426,202 @@
     "try_another_image": "يرجى المحاولة بصورة أخرى أو النقر على الصورة لاختيار لون يدوياً",
     "image_load_failed": "فشل في تحميل الصورة. يرجى التأكد من صحة الملف.",
     "processing_failed": "فشل في معالجة الصورة. يرجى المحاولة بصورة أخرى."
+  },
+  "testsManagement": {
+    "title": "إدارة الاختبارات الكيميائية",
+    "subtitle": "إدارة شاملة لاختبارات الكشف عن المخدرات",
+    "addNew": "إضافة اختبار جديد",
+    "search": "البحث في الاختبارات...",
+    "filterByType": "فلترة حسب النوع",
+    "filterBySubstance": "فلترة حسب المادة",
+    "allTypes": "جميع الأنواع",
+    "allSubstances": "جميع المواد",
+    "export": "تصدير البيانات",
+    "import": "استيراد البيانات",
+    "statistics": "الإحصائيات",
+    "recentChanges": "التغييرات الأخيرة",
+    "table": {
+      "id": "المعرف",
+      "methodName": "اسم الاختبار",
+      "testType": "نوع الاختبار",
+      "substance": "المادة المحتملة",
+      "colorResult": "نتيجة اللون",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "noTests": "لا توجد اختبارات",
+      "loading": "جاري التحميل...",
+      "error": "خطأ في تحميل البيانات"
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "page": "صفحة",
+      "of": "من",
+      "showing": "عرض",
+      "to": "إلى",
+      "results": "نتيجة"
+    },
+    "form": {
+      "title": "بيانات الاختبار",
+      "addTitle": "إضافة اختبار جديد",
+      "editTitle": "تعديل الاختبار",
+      "methodName": "اسم الطريقة (إنجليزي)",
+      "methodNameAr": "اسم الطريقة (عربي)",
+      "colorResult": "نتيجة اللون (إنجليزي)",
+      "colorResultAr": "نتيجة اللون (عربي)",
+      "possibleSubstance": "المادة المحتملة (إنجليزي)",
+      "possibleSubstanceAr": "المادة المحتملة (عربي)",
+      "prepare": "خطوات التحضير (إنجليزي)",
+      "prepareAr": "خطوات التحضير (عربي)",
+      "testType": "نوع الاختبار",
+      "testNumber": "رقم الاختبار",
+      "reference": "المرجع (اختياري)",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "required": "مطلوب",
+      "validation": {
+        "methodNameRequired": "اسم الطريقة مطلوب",
+        "methodNameArRequired": "اسم الطريقة بالعربية مطلوب",
+        "colorResultRequired": "نتيجة اللون مطلوبة",
+        "colorResultArRequired": "نتيجة اللون بالعربية مطلوبة",
+        "substanceRequired": "المادة المحتملة مطلوبة",
+        "substanceArRequired": "المادة المحتملة بالعربية مطلوبة",
+        "prepareRequired": "خطوات التحضير مطلوبة",
+        "prepareArRequired": "خطوات التحضير بالعربية مطلوبة",
+        "testTypeRequired": "نوع الاختبار مطلوب",
+        "testNumberRequired": "رقم الاختبار مطلوب"
+      }
+    },
+    "details": {
+      "title": "تفاصيل الاختبار",
+      "basicInfo": "المعلومات الأساسية",
+      "preparations": "خطوات التحضير",
+      "metadata": "معلومات إضافية",
+      "createdBy": "أنشأه",
+      "updatedBy": "آخر تحديث بواسطة",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "تاريخ آخر تحديث"
+    },
+    "delete": {
+      "title": "تأكيد الحذف",
+      "message": "هل أنت متأكد من حذف هذا الاختبار؟",
+      "testName": "اسم الاختبار",
+      "warning": "هذا الإجراء لا يمكن التراجع عنه",
+      "confirm": "نعم، احذف",
+      "cancel": "إلغاء"
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء الاختبار بنجاح",
+      "updateSuccess": "تم تحديث الاختبار بنجاح",
+      "deleteSuccess": "تم حذف الاختبار بنجاح",
+      "createError": "خطأ في إنشاء الاختبار",
+      "updateError": "خطأ في تحديث الاختبار",
+      "deleteError": "خطأ في حذف الاختبار",
+      "loadError": "خطأ في تحميل البيانات",
+      "exportSuccess": "تم تصدير البيانات بنجاح",
+      "importSuccess": "تم استيراد البيانات بنجاح",
+      "importError": "خطأ في استيراد البيانات",
+      "duplicateTest": "اختبار بنفس الاسم والرقم موجود مسبقاً"
+    },
+    "stats": {
+      "totalTests": "إجمالي الاختبارات",
+      "testTypes": "أنواع الاختبارات",
+      "recentTests": "الاختبارات الأخيرة",
+      "byType": "حسب النوع"
+    },
+    "import": {
+      "title": "استيراد الاختبارات",
+      "description": "اختر ملف JSON لاستيراد اختبارات متعددة",
+      "selectFile": "اختر ملف",
+      "upload": "رفع",
+      "processing": "جاري المعالجة...",
+      "success": "تم الاستيراد بنجاح",
+      "error": "خطأ في الاستيراد",
+      "invalidFile": "ملف غير صالح",
+      "results": "نتائج الاستيراد",
+      "imported": "تم استيراد",
+      "skipped": "تم تجاهل",
+      "errors": "أخطاء"
+    }
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "subtitle": "إدارة معلوماتك الشخصية وإعداداتك",
+    "personalInfo": "المعلومات الشخصية",
+    "accountSettings": "إعدادات الحساب",
+    "testHistory": "سجل الاختبارات",
+    "preferences": "التفضيلات",
+    "form": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "displayName": "الاسم المعروض",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "dateOfBirth": "تاريخ الميلاد",
+      "country": "البلد",
+      "city": "المدينة",
+      "occupation": "المهنة",
+      "bio": "نبذة شخصية",
+      "language": "اللغة",
+      "theme": "المظهر",
+      "notifications": "الإشعارات",
+      "emailUpdates": "تحديثات البريد الإلكتروني",
+      "save": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "updating": "جاري التحديث...",
+      "validation": {
+        "firstNameRequired": "الاسم الأول مطلوب",
+        "lastNameRequired": "اسم العائلة مطلوب",
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "البريد الإلكتروني غير صحيح",
+        "phoneInvalid": "رقم الهاتف غير صحيح"
+      }
+    },
+    "stats": {
+      "totalTests": "إجمالي الاختبارات",
+      "totalVisits": "إجمالي الزيارات",
+      "lastVisit": "آخر زيارة",
+      "favoriteType": "النوع المفضل",
+      "mostVisited": "الأكثر زيارة"
+    },
+    "history": {
+      "title": "آخر الاختبارات المزارة",
+      "subtitle": "الاختبارات التي زرتها مؤخراً",
+      "empty": "لم تزر أي اختبارات بعد",
+      "emptyDescription": "ابدأ بزيارة بعض الاختبارات لرؤية سجلك هنا",
+      "visitCount": "مرة",
+      "visits": "زيارات",
+      "viewTest": "عرض الاختبار",
+      "clearHistory": "مسح السجل",
+      "confirmClear": "هل أنت متأكد من مسح سجل الاختبارات؟",
+      "historyCleared": "تم مسح سجل الاختبارات بنجاح",
+      "loadMore": "تحميل المزيد",
+      "noMore": "لا توجد اختبارات أخرى"
+    },
+    "messages": {
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "updateError": "خطأ في تحديث الملف الشخصي",
+      "loadError": "خطأ في تحميل البيانات",
+      "saveError": "خطأ في حفظ البيانات"
+    },
+    "account": {
+      "createdAt": "تاريخ إنشاء الحساب",
+      "lastLogin": "آخر تسجيل دخول",
+      "accountStatus": "حالة الحساب",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "emailVerified": "البريد الإلكتروني مؤكد",
+      "emailNotVerified": "البريد الإلكتروني غير مؤكد",
+      "verifyEmail": "تأكيد البريد الإلكتروني"
+    },
+    "navigation": {
+      "overview": "نظرة عامة",
+      "editProfile": "تعديل الملف الشخصي",
+      "testHistory": "سجل الاختبارات",
+      "settings": "الإعدادات"
+    }
   }
 }

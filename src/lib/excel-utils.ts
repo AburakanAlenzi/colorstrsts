@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 export interface ExcelData {
   headers: string[];
@@ -44,48 +44,60 @@ export const REQUIRED_HEADERS = [
 ];
 
 /**
- * Read and parse Excel file
+ * Read and parse Excel file using ExcelJS (secure alternative to XLSX)
  */
 export async function readExcelFile(file: File): Promise<ExcelData> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Get first worksheet
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        
-        // Convert to JSON
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as string[][];
-        
-        if (jsonData.length === 0) {
-          throw new Error('Empty file');
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(arrayBuffer);
+
+    // Get first worksheet
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      throw new Error('No worksheet found in file');
+    }
+
+    const jsonData: string[][] = [];
+
+    // Convert worksheet to array format
+    worksheet.eachRow((row, rowNumber) => {
+      const rowData: string[] = [];
+      row.eachCell((cell, colNumber) => {
+        // Convert cell value to string
+        const cellValue = cell.value;
+        if (cellValue === null || cellValue === undefined) {
+          rowData[colNumber - 1] = '';
+        } else if (typeof cellValue === 'object' && 'text' in cellValue) {
+          // Handle rich text
+          rowData[colNumber - 1] = cellValue.text || '';
+        } else {
+          rowData[colNumber - 1] = String(cellValue);
         }
-        
-        const headers = jsonData[0] || [];
-        const rows = jsonData.slice(1);
-        
-        const excelData: ExcelData = {
-          headers,
-          rows,
-          fileName: file.name,
-          fileSize: formatFileSize(file.size),
-          rowCount: rows.length
-        };
-        
-        resolve(excelData);
-      } catch (error) {
-        reject(error);
-      }
+      });
+      jsonData.push(rowData);
+    });
+
+    if (jsonData.length === 0) {
+      throw new Error('Empty file');
+    }
+
+    const headers = jsonData[0] || [];
+    const rows = jsonData.slice(1);
+
+    const excelData: ExcelData = {
+      headers,
+      rows,
+      fileName: file.name,
+      fileSize: formatFileSize(file.size),
+      rowCount: rows.length
     };
-    
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsArrayBuffer(file);
-  });
+
+    return excelData;
+  } catch (error) {
+    console.error('Error reading Excel file:', error);
+    throw new Error(`Failed to read Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 /**
@@ -174,23 +186,53 @@ export function validateExcelData(data: ExcelData, lang: 'ar' | 'en' = 'en'): Va
 }
 
 /**
- * Export data to Excel format
+ * Export data to Excel format using ExcelJS (secure alternative)
  */
-export function exportToExcel(data: any[], filename: string = 'export'): void {
+export async function exportToExcel(data: any[], filename: string = 'export'): Promise<void> {
   try {
-    // Create workbook
-    const workbook = XLSX.utils.book_new();
-    
-    // Create worksheet
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-    
+    // Create workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Data');
+
+    if (data.length === 0) {
+      throw new Error('No data to export');
+    }
+
+    // Get headers from first object
+    const headers = Object.keys(data[0]);
+
+    // Add headers
+    worksheet.addRow(headers);
+
+    // Style headers
+    const headerRow = worksheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF428BCA' }
+    };
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+
+    // Add data rows
+    data.forEach(item => {
+      const row = headers.map(header => item[header] || '');
+      worksheet.addRow(row);
+    });
+
+    // Auto-fit columns
+    worksheet.columns.forEach(column => {
+      if (column.header) {
+        column.width = Math.max(column.header.length + 2, 10);
+      }
+    });
+
     // Generate Excel file and download
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -327,7 +369,7 @@ export function getSampleExcelData(): any[] {
 /**
  * Download sample Excel template
  */
-export function downloadSampleTemplate(): void {
+export async function downloadSampleTemplate(): Promise<void> {
   const sampleData = getSampleExcelData();
-  exportToExcel(sampleData, 'chemical-tests-template');
+  await exportToExcel(sampleData, 'chemical-tests-template');
 }

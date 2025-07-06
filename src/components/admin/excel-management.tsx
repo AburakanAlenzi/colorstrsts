@@ -105,8 +105,8 @@ export function ExcelManagement({ lang }: ExcelManagementProps) {
       const existingData = JSON.parse(localStorage.getItem('chemical_tests') || '[]');
       const dataToExport = existingData.length > 0 ? existingData : getSampleExcelData();
 
-      // Export to Excel
-      exportToExcel(dataToExport, `chemical-tests-export-${new Date().toISOString().split('T')[0]}`);
+      // Export to Excel (now async)
+      await exportToExcel(dataToExport, `chemical-tests-export-${new Date().toISOString().split('T')[0]}`);
 
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -176,7 +176,7 @@ export function ExcelManagement({ lang }: ExcelManagementProps) {
                   {lang === 'ar' ? 'التنسيق المطلوب:' : 'Expected Format:'}
                 </h4>
                 <Button
-                  onClick={downloadSampleTemplate}
+                  onClick={() => downloadSampleTemplate().catch(console.error)}
                   size="sm"
                   variant="outline"
                   className="text-xs"

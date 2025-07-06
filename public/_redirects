@@ -1,0 +1,19 @@
+# Netlify redirects for Color Testing Drug Detection App
+# إعادة توجيه Netlify لتطبيق اختبار الألوان
+
+# Main redirect from root to Arabic
+/ /ar 302
+
+# Admin redirects
+/admin /ar/admin 302
+/en/admin /en/admin 200
+
+# Language specific routes
+/ar/* /ar/:splat 200
+/en/* /en/:splat 200
+
+# API routes (if any)
+/api/* /api/:splat 200
+
+# Fallback for SPA routing
+/* /ar/index.html 200

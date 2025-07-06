@@ -9,6 +9,7 @@ import { ReportsSystem } from './reports-system';
 import { DatabaseManagement } from './database-management';
 import { ExcelManagement } from './excel-management';
 import { TestsManagement } from './tests-management';
+import TestsManagementNew from './TestsManagementNew';
 import { ColorResultsManagement } from './color-results-management';
 import {
   ChartBarIcon,
@@ -169,7 +170,7 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'tests':
-        return <TestsManagement lang={lang} />;
+        return <TestsManagementNew translations={getTranslationsSync(lang).testsManagement} isRTL={lang === 'ar'} />;
       case 'colors':
         return <ColorResultsManagement lang={lang} />;
       case 'reports':

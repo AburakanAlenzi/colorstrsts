@@ -35,8 +35,46 @@ service cloud.firestore {
     // قراءة للمستخدمين المصادق عليهم، كتابة للمديرين فقط
     match /chemical_tests/{testId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        request.auth.token.admin == true;
+      allow write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+    }
+
+    // User test history - سجل اختبارات المستخدم
+    // Users can only access their own test history
+    // يمكن للمستخدمين الوصول لسجل اختباراتهم فقط
+    match /user_test_history/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Allow access to subcollections within user's history
+      match /tests/{testId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // User profiles collection - ملفات المستخدمين الشخصية
+    // Users can only access their own profile
+    // يمكن للمستخدمين الوصول لملفهم الشخصي فقط
+    match /user_profiles/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Test changes log - سجل تغييرات الاختبارات
+    // Admin only access
+    // وصول المديرين فقط
+    match /test_changes/{document} {
+      allow read, write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
     }
     
     // Test results collection - نتائج الاختبارات
