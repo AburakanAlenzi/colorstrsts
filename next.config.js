@@ -20,7 +20,18 @@ const nextConfig = {
   // These are disabled for production builds
   async redirects() {
     if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
-      return [];
+      return [
+        {
+          source: '/ar/yousef/:path*',
+          destination: '/ar/admin',
+          permanent: true,
+        },
+        {
+          source: '/en/yousef/:path*',
+          destination: '/en/admin',
+          permanent: true,
+        },
+      ];
     }
     return [
       {
