@@ -53,8 +53,8 @@ export function HomePage({ lang }: HomePageProps) {
   ];
 
   const stats = [
-    { number: '12', label: lang === 'ar' ? 'نوع اختبار' : 'Test Types' },
-    { number: '46', label: lang === 'ar' ? 'نتيجة لونية' : 'Color Results' },
+    { number: '15', label: lang === 'ar' ? 'نوع اختبار' : 'Test Types' },
+    { number: '55', label: lang === 'ar' ? 'نتيجة لونية' : 'Color Results' },
     { number: '2', label: lang === 'ar' ? 'لغة مدعومة' : 'Languages' },
     { number: '100%', label: lang === 'ar' ? 'دقة علمية' : 'Scientific Accuracy' },
   ];

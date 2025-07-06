@@ -347,7 +347,7 @@ async function testDataIntegrity() {
     const colorResults = JSON.parse(fs.readFileSync(colorResultsPath, 'utf8'));
 
     // Test 1: Check if we have expected number of tests
-    const expectedTestCount = 12;
+    const expectedTestCount = 15;
     const hasExpectedTests = chemicalTests.length === expectedTestCount;
     addTestResult(
       `Has ${expectedTestCount} chemical tests | يحتوي على ${expectedTestCount} اختبار كيميائي`,

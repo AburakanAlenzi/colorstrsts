@@ -144,7 +144,7 @@ http://localhost:3000/ar/admin
 ========================================
 
 □ Test admin login with generated password
-□ Verify all 12 chemical tests work
+□ Verify all 15 chemical tests work
 □ Check bilingual support (Arabic/English)
 □ Test print functionality
 □ Verify mobile responsiveness
