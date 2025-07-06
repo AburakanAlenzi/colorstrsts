@@ -70,31 +70,59 @@
    ```bash
    cp .env.local.example .env.local
    ```
-   
-   قم بتحديث الملف بالقيم الصحيحة:
+
+   قم بتحديث الملف بالقيم الصحيحة من Firebase Console:
    ```env
-   # Firebase Configuration
+   # Firebase Configuration - احصل على هذه القيم من Firebase Console
    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your_project-default-rtdb.firebaseio.com
    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   
-   # Tap Payment Configuration
-   TAP_SECRET_KEY=sk_test_your_tap_secret_key
-   NEXT_PUBLIC_TAP_PUBLISHABLE_KEY=pk_test_your_tap_publishable_key
-   
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
    # Application URLs
    NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
-4. **إعداد Firebase**
+4. **اختبار إعداد Firebase**
+   ```bash
+   npm run test-firebase
+   ```
+
+5. **إعداد قاعدة البيانات**
    ```bash
    npm run setup:database
    ```
 
-5. **تشغيل التطبيق**
+6. **تشغيل التطبيق**
    ```bash
    npm run dev
    ```
+
+## 🔒 الأمان والحماية
+
+### إعداد Firebase الآمن
+- ✅ **متغيرات البيئة**: جميع إعدادات Firebase محفوظة في متغيرات البيئة
+- ✅ **التحقق التلقائي**: النظام يتحقق من وجود جميع المتغيرات المطلوبة
+- ✅ **استبعاد Git**: ملفات البيئة مستبعدة من نظام التحكم في الإصدارات
+- ✅ **قواعد الأمان**: Firebase Security Rules مطبقة لحماية البيانات
+
+### اختبار الأمان
+```bash
+# اختبار إعداد Firebase
+npm run test-firebase
+
+# اختبار قاعدة البيانات
+npm run test-database
+
+# فحص الأمان
+npm run security-check
+```
+
+### دليل الإعداد الآمن
+راجع ملف `FIREBASE_SETUP_GUIDE.md` للحصول على دليل شامل لإعداد Firebase بشكل آمن في بيئات مختلفة.
 
 ## 💳 إعداد نظام الدفع
 

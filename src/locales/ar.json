@@ -37,6 +37,7 @@
     "logout": "تسجيل الخروج",
     "login": "تسجيل الدخول",
     "register": "إنشاء حساب",
+    "user": "المستخدم",
     "image_analysis": "تحليل الألوان بالصور",
     "image_analysis_short": "تحليل الألوان"
   },

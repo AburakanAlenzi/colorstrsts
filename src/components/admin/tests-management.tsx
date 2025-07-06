@@ -16,9 +16,13 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   ChartBarIcon,
-  SwatchIcon
+  SwatchIcon,
+  CloudArrowUpIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline';
-import { databaseColorTestService, GroupedTest } from '@/lib/database-color-test-service';
+import { firebaseTestsService, ChemicalTest, TestStatistics } from '@/lib/firebase-tests-service';
+import { databaseColorTestService } from '@/lib/database-color-test-service';
+import { TestForm } from './TestForm';
 import toast from 'react-hot-toast';
 
 interface TestsManagementProps {
@@ -26,16 +30,19 @@ interface TestsManagementProps {
 }
 
 export function TestsManagement({ lang }: TestsManagementProps) {
-  const [tests, setTests] = useState<GroupedTest[]>([]);
+  const [tests, setTests] = useState<ChemicalTest[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTestType, setSelectedTestType] = useState<string>('all');
   const [showDetails, setShowDetails] = useState<string | null>(null);
-  const [statistics, setStatistics] = useState({
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingTest, setEditingTest] = useState<ChemicalTest | null>(null);
+  const [statistics, setStatistics] = useState<TestStatistics>({
     total_tests: 0,
     total_results: 0,
     unique_substances: 0,
-    unique_colors: 0
+    unique_colors: 0,
+    tests_by_type: {}
   });
 
   const t = getTranslationsSync(lang);
@@ -46,14 +53,14 @@ export function TestsManagement({ lang }: TestsManagementProps) {
 
   const loadTests = async () => {
     try {
-      // Use the database color test service to get tests from DatabaseColorTest.json
-      const groupedTests = await databaseColorTestService.getGroupedTests();
-      const stats = await databaseColorTestService.getTestsStatistics();
+      // Load tests from Firebase
+      const firebaseTests = await firebaseTestsService.getAllTests();
+      const stats = await firebaseTestsService.getTestsStatistics();
 
-      setTests(groupedTests);
+      setTests(firebaseTests);
       setStatistics(stats);
 
-      console.log('✅ Loaded database color tests:', groupedTests.length);
+      console.log('✅ Loaded Firebase tests:', firebaseTests.length);
       console.log('📊 Statistics:', stats);
 
     } catch (error) {
@@ -64,19 +71,53 @@ export function TestsManagement({ lang }: TestsManagementProps) {
     }
   };
 
-  const handleViewDetails = (testName: string) => {
-    setShowDetails(showDetails === testName ? null : testName);
+  const handleViewDetails = (testId: string) => {
+    setShowDetails(showDetails === testId ? null : testId);
   };
 
-  const handleReloadData = async () => {
-    setLoading(true);
+  const handleEditTest = (test: ChemicalTest) => {
+    setEditingTest(test);
+  };
+
+  const handleDeleteTest = async (testId: string) => {
+    if (!confirm(lang === 'ar' ? 'هل أنت متأكد من حذف هذا الاختبار؟' : 'Are you sure you want to delete this test?')) {
+      return;
+    }
+
     try {
-      await databaseColorTestService.reloadData();
+      await firebaseTestsService.deleteTest(testId);
       await loadTests();
-      toast.success(lang === 'ar' ? 'تم تحديث البيانات' : 'Data refreshed');
+      toast.success(lang === 'ar' ? 'تم حذف الاختبار' : 'Test deleted successfully');
     } catch (error) {
-      console.error('Error reloading data:', error);
-      toast.error(lang === 'ar' ? 'خطأ في تحديث البيانات' : 'Error refreshing data');
+      console.error('Error deleting test:', error);
+      toast.error(lang === 'ar' ? 'خطأ في حذف الاختبار' : 'Error deleting test');
+    }
+  };
+
+  const handleImportFromJSON = async () => {
+    try {
+      setLoading(true);
+      const groupedTests = await databaseColorTestService.getGroupedTests();
+
+      // Convert grouped tests to individual tests for Firebase
+      const testsToImport = groupedTests.map(groupedTest => ({
+        method_name: groupedTest.method_name,
+        method_name_ar: groupedTest.method_name_ar,
+        test_type: groupedTest.test_type,
+        test_number: groupedTest.test_number,
+        prepare: groupedTest.prepare,
+        prepare_ar: groupedTest.prepare_ar,
+        reference: groupedTest.reference,
+        results: groupedTest.results,
+        created_by: 'json_import'
+      }));
+
+      await firebaseTestsService.importFromJSON(testsToImport);
+      await loadTests();
+      toast.success(lang === 'ar' ? 'تم استيراد البيانات من JSON' : 'Data imported from JSON successfully');
+    } catch (error) {
+      console.error('Error importing from JSON:', error);
+      toast.error(lang === 'ar' ? 'خطأ في استيراد البيانات' : 'Error importing data');
     } finally {
       setLoading(false);
     }
@@ -125,7 +166,22 @@ export function TestsManagement({ lang }: TestsManagementProps) {
         </div>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <Button
-            onClick={handleReloadData}
+            onClick={() => setShowAddForm(true)}
+            className="flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <PlusIcon className="h-4 w-4" />
+            <span>{lang === 'ar' ? 'إضافة اختبار' : 'Add Test'}</span>
+          </Button>
+          <Button
+            onClick={handleImportFromJSON}
+            variant="outline"
+            className="flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <CloudArrowUpIcon className="h-4 w-4" />
+            <span>{lang === 'ar' ? 'استيراد من JSON' : 'Import from JSON'}</span>
+          </Button>
+          <Button
+            onClick={loadTests}
             variant="outline"
             className="flex items-center space-x-2 rtl:space-x-reverse"
           >
@@ -240,7 +296,7 @@ export function TestsManagement({ lang }: TestsManagementProps) {
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTests.map((test) => (
-                <React.Fragment key={test.method_name}>
+                <React.Fragment key={test.id}>
                   <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -271,7 +327,7 @@ export function TestsManagement({ lang }: TestsManagementProps) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <span className="text-sm font-medium text-foreground">{test.total_results}</span>
+                        <span className="text-sm font-medium text-foreground">{test.results.length}</span>
                         <span className="text-xs text-muted-foreground">
                           {lang === 'ar' ? 'نتيجة' : 'results'}
                         </span>
@@ -282,17 +338,33 @@ export function TestsManagement({ lang }: TestsManagementProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleViewDetails(test.method_name)}
+                          onClick={() => handleViewDetails(test.id!)}
                           className="text-blue-600 hover:text-blue-700"
                         >
                           <EyeIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditTest(test)}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteTest(test.id!)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <TrashIcon className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
                   </tr>
 
                   {/* Details Row */}
-                  {showDetails === test.method_name && (
+                  {showDetails === test.id && (
                     <tr>
                       <td colSpan={5} className="px-6 py-4 bg-gray-50 dark:bg-gray-700">
                         <div className="space-y-4">
@@ -368,6 +440,19 @@ export function TestsManagement({ lang }: TestsManagementProps) {
             }
           </p>
         </div>
+      )}
+
+      {/* Test Form Modal */}
+      {(showAddForm || editingTest) && (
+        <TestForm
+          lang={lang}
+          test={editingTest}
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingTest(null);
+          }}
+          onSave={loadTests}
+        />
       )}
     </div>
   );

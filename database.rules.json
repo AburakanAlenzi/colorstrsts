@@ -1,0 +1,98 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    
+    "chemical_tests": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.admin == true",
+      "$testId": {
+        ".validate": "newData.hasChildren(['method_name', 'test_type', 'results'])"
+      }
+    },
+    
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "newData.hasChildren(['email', 'created_at'])",
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$/i)"
+        },
+        "subscription": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && (auth.uid == $uid || auth.token.admin == true)"
+        },
+        "usage": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+    
+    "test_results": {
+      "$resultId": {
+        ".read": "auth != null && auth.uid == data.child('userId').val()",
+        ".write": "auth != null && auth.uid == newData.child('userId').val()",
+        ".validate": "newData.hasChildren(['userId', 'testId', 'timestamp'])",
+        "userId": {
+          ".validate": "newData.val() == auth.uid"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+    
+    "test_sessions": {
+      "$sessionId": {
+        ".read": "auth != null && auth.uid == data.child('userId').val()",
+        ".write": "auth != null && auth.uid == newData.child('userId').val()",
+        ".validate": "newData.hasChildren(['userId', 'startTime'])",
+        "userId": {
+          ".validate": "newData.val() == auth.uid"
+        }
+      }
+    },
+    
+    "test_usage": {
+      "$usageId": {
+        ".read": "auth != null && auth.uid == data.child('uid').val()",
+        ".write": "auth != null && auth.uid == newData.child('uid').val()",
+        ".validate": "newData.hasChildren(['uid', 'testId', 'timestamp'])",
+        "uid": {
+          ".validate": "newData.val() == auth.uid"
+        }
+      }
+    },
+    
+    "activity_logs": {
+      ".read": "auth != null && auth.token.admin == true",
+      "$logId": {
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['userId', 'action', 'timestamp'])",
+        "userId": {
+          ".validate": "newData.val() == auth.uid"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+    
+    "admin": {
+      ".read": "auth != null && auth.token.admin == true",
+      ".write": "auth != null && auth.token.admin == true"
+    },
+    
+    "public": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.admin == true"
+    },
+    
+    "statistics": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.admin == true"
+    }
+  }
+}

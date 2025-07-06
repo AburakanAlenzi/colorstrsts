@@ -5,45 +5,102 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
-import { 
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import {
   UserIcon,
-  LockClosedIcon,
+  UserPlusIcon,
   EyeIcon,
-  EyeSlashIcon
+  EyeSlashIcon,
+  ArrowRightIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-interface LoginPageProps {
+interface AuthPageProps {
   lang: Language;
 }
 
-export function LoginPage({ lang }: LoginPageProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export function AuthPage({ lang }: AuthPageProps) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const router = useRouter();
   const t = getTranslationsSync(lang);
+  const { signIn, signUp, signInWithGoogle } = useAuth();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, accept any email/password
-      if (email && password) {
+      if (isLogin) {
+        // Login logic
+        if (!formData.email || !formData.password) {
+          toast.error(lang === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
+          return;
+        }
+
+        await signIn(formData.email, formData.password);
         toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
         router.push(`/${lang}`);
       } else {
-        toast.error(lang === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
+        // Registration logic
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+          toast.error(lang === 'ar' ? 'يرجى ملء جميع الحقول' : 'Please fill all fields');
+          return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+          toast.error(lang === 'ar' ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          toast.error(lang === 'ar' ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' : 'Password must be at least 6 characters');
+          return;
+        }
+
+        await signUp(formData.email, formData.password, formData.name);
+        toast.success(lang === 'ar' ? 'تم إنشاء الحساب بنجاح' : 'Account created successfully');
+        router.push(`/${lang}`);
       }
-    } catch (error) {
-      toast.error(lang === 'ar' ? 'خطأ في تسجيل الدخول' : 'Login error');
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      const errorMessage = error?.message || (isLogin ? 'Login error' : 'Registration error');
+      toast.error(lang === 'ar' ?
+        (isLogin ? 'خطأ في تسجيل الدخول' : 'خطأ في إنشاء الحساب') :
+        errorMessage
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
+      router.push(`/${lang}`);
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      toast.error(lang === 'ar' ? 'خطأ في تسجيل الدخول بـ Google' : 'Google sign in error');
     } finally {
       setLoading(false);
     }
@@ -52,20 +109,78 @@ export function LoginPage({ lang }: LoginPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-gray-900 dark:to-secondary-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
+        {/* Header */}
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900 mb-4">
-            <UserIcon className="h-8 w-8 text-primary-600" />
+            {isLogin ? (
+              <UserIcon className="h-8 w-8 text-primary-600" />
+            ) : (
+              <UserPlusIcon className="h-8 w-8 text-primary-600" />
+            )}
           </div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
+            {isLogin
+              ? (lang === 'ar' ? 'تسجيل الدخول' : 'Sign In')
+              : (lang === 'ar' ? 'إنشاء حساب جديد' : 'Create Account')
+            }
           </h2>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {lang === 'ar' ? 'أدخل بياناتك للوصول إلى حسابك' : 'Enter your credentials to access your account'}
+            {isLogin
+              ? (lang === 'ar' ? 'أدخل بياناتك للوصول إلى حسابك' : 'Enter your credentials to access your account')
+              : (lang === 'ar' ? 'أدخل بياناتك لإنشاء حساب جديد' : 'Enter your details to create a new account')
+            }
           </p>
+        </div>
+
+        {/* Toggle Buttons */}
+        <div className="flex rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
+          <button
+            type="button"
+            onClick={() => setIsLogin(true)}
+            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              isLogin
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
+            {lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsLogin(false)}
+            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              !isLogin
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
+            {lang === 'ar' ? 'إنشاء حساب' : 'Sign Up'}
+          </button>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
+            {/* Name field for registration */}
+            {!isLogin && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required={!isLogin}
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                  placeholder={lang === 'ar' ? 'أدخل اسمك الكامل' : 'Enter your full name'}
+                />
+              </div>
+            )}
+
+            {/* Email field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
@@ -76,13 +191,14 @@ export function LoginPage({ lang }: LoginPageProps) {
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                 placeholder={lang === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'}
               />
             </div>
 
+            {/* Password field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {lang === 'ar' ? 'كلمة المرور' : 'Password'}
@@ -92,10 +208,10 @@ export function LoginPage({ lang }: LoginPageProps) {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                   placeholder={lang === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'}
                 />
@@ -112,8 +228,42 @@ export function LoginPage({ lang }: LoginPageProps) {
                 </button>
               </div>
             </div>
+
+            {/* Confirm Password field for registration */}
+            {!isLogin && (
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {lang === 'ar' ? 'تأكيد كلمة المرور' : 'Confirm Password'}
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required={!isLogin}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    placeholder={lang === 'ar' ? 'أعد إدخال كلمة المرور' : 'Re-enter your password'}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Submit Button */}
           <div>
             <Button
               type="submit"
@@ -121,33 +271,45 @@ export function LoginPage({ lang }: LoginPageProps) {
               loading={loading}
               disabled={loading}
             >
-              {loading 
-                ? (lang === 'ar' ? 'جاري تسجيل الدخول...' : 'Signing in...') 
-                : (lang === 'ar' ? 'تسجيل الدخول' : 'Sign In')
+              {loading
+                ? (isLogin
+                    ? (lang === 'ar' ? 'جاري تسجيل الدخول...' : 'Signing in...')
+                    : (lang === 'ar' ? 'جاري إنشاء الحساب...' : 'Creating account...')
+                  )
+                : (isLogin
+                    ? (lang === 'ar' ? 'تسجيل الدخول' : 'Sign In')
+                    : (lang === 'ar' ? 'إنشاء حساب' : 'Create Account')
+                  )
               }
             </Button>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {lang === 'ar' ? 'ليس لديك حساب؟' : "Don't have an account?"}{' '}
-              <Link
-                href={`/${lang}/auth/register`}
-                className="font-medium text-primary-600 hover:text-primary-500"
-              >
-                {lang === 'ar' ? 'إنشاء حساب جديد' : 'Sign up'}
-              </Link>
-            </p>
+          {/* Google Sign In */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white dark:bg-gray-900 text-gray-500">
+                {lang === 'ar' ? 'أو' : 'Or'}
+              </span>
+            </div>
           </div>
 
-          <div className="text-center">
-            <Link
-              href={`/${lang}`}
-              className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              {lang === 'ar' ? 'العودة إلى الصفحة الرئيسية' : 'Back to home'}
-            </Link>
-          </div>
+          <GoogleSignInButton
+            onSuccess={() => {
+              toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Login successful');
+              router.push(`/${lang}`);
+            }}
+            onError={(error) => {
+              toast.error(lang === 'ar' ? 'خطأ في تسجيل الدخول بـ Google' : 'Google sign in error');
+              console.error('Google sign in error:', error);
+            }}
+            disabled={loading}
+            className="w-full border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 px-4 py-2"
+          >
+            {lang === 'ar' ? 'تسجيل الدخول بـ Google' : 'Continue with Google'}
+          </GoogleSignInButton>
         </form>
       </div>
     </div>

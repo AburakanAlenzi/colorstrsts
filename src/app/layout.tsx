@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_Arabic } from 'next/font/google';
+import { AuthProvider } from '@/components/auth/AuthProvider';
+import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 const inter = Inter({
@@ -106,15 +108,18 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#0ea5e9" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body 
+      <body
         className={`${inter.variable} ${notoSansArabic.variable} font-arabic antialiased`}
         suppressHydrationWarning
       >
-        <div id="root">
-          {children}
-        </div>
-        <div id="modal-root" />
-        <div id="toast-root" />
+        <AuthProvider>
+          <div id="root">
+            {children}
+          </div>
+          <div id="modal-root" />
+          <div id="toast-root" />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

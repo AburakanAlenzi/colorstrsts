@@ -37,6 +37,7 @@
     "logout": "Logout",
     "login": "Login",
     "register": "Register",
+    "user": "User",
     "image_analysis": "Image Color Analysis",
     "image_analysis_short": "Image Analysis"
   },

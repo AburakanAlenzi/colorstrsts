@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,13 @@ import {
   WrenchScrewdriverIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  CloudArrowUpIcon,
+  ServerIcon
 } from '@heroicons/react/24/outline';
+import { firebaseTestsService, TestStatistics } from '@/lib/firebase-tests-service';
+import { databaseColorTestService } from '@/lib/database-color-test-service';
+import toast from 'react-hot-toast';
 
 interface DatabaseManagementProps {
   lang: Language;
@@ -25,23 +30,62 @@ interface DatabaseStatus {
   size: string;
   version: string;
   uptime: string;
+  firebaseConnected: boolean;
+  lastSync: string;
 }
 
 export function DatabaseManagement({ lang }: DatabaseManagementProps) {
   const [dbStatus, setDbStatus] = useState<DatabaseStatus>({
     status: 'healthy',
-    totalRecords: 1247,
-    lastBackup: '2025-01-10 14:30:00',
-    size: '2.4 MB',
+    totalRecords: 0,
+    lastBackup: '',
+    size: '0 MB',
     version: '2.0.0',
-    uptime: '15 days, 6 hours'
+    uptime: '0 days',
+    firebaseConnected: false,
+    lastSync: ''
   });
   const [loading, setLoading] = useState(false);
   const [backupLoading, setBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
+  const [statistics, setStatistics] = useState<TestStatistics | null>(null);
 
   const t = getTranslationsSync(lang);
+
+  // Load Firebase statistics on component mount
+  useEffect(() => {
+    loadFirebaseStatistics();
+  }, []);
+
+  const loadFirebaseStatistics = async () => {
+    setLoading(true);
+    try {
+      const stats = await firebaseTestsService.getTestsStatistics();
+      const tests = await firebaseTestsService.getAllTests();
+
+      setStatistics(stats);
+      setDbStatus(prev => ({
+        ...prev,
+        status: 'healthy',
+        totalRecords: tests.length,
+        firebaseConnected: true,
+        lastSync: new Date().toLocaleString(),
+        size: `${(JSON.stringify(tests).length / 1024).toFixed(1)} KB`
+      }));
+    } catch (error) {
+      console.error('Error loading Firebase statistics:', error);
+      setDbStatus(prev => ({
+        ...prev,
+        status: 'error',
+        firebaseConnected: false
+      }));
+      toast.error(lang === 'ar' ? 'خطأ في الاتصال بـ Firebase' : 'Error connecting to Firebase');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -64,22 +108,24 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
   const createBackup = async () => {
     setBackupLoading(true);
     try {
-      // Simulate backup creation
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      // Get all tests from Firebase
+      const tests = await firebaseTestsService.getAllTests();
+      const stats = await firebaseTestsService.getTestsStatistics();
+
       // Create backup file
       const backupData = {
         timestamp: new Date().toISOString(),
         version: dbStatus.version,
-        records: dbStatus.totalRecords,
-        data: 'Mock backup data...'
+        records: tests.length,
+        statistics: stats,
+        tests: tests
       };
-      
+
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `database-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `firebase-backup-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -90,10 +136,44 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
         ...prev,
         lastBackup: new Date().toLocaleString()
       }));
+
+      toast.success(lang === 'ar' ? 'تم إنشاء النسخة الاحتياطية' : 'Backup created successfully');
     } catch (error) {
       console.error('Error creating backup:', error);
+      toast.error(lang === 'ar' ? 'خطأ في إنشاء النسخة الاحتياطية' : 'Error creating backup');
     } finally {
       setBackupLoading(false);
+    }
+  };
+
+  const importFromJSON = async () => {
+    setImportLoading(true);
+    try {
+      // Get tests from local JSON service
+      const groupedTests = await databaseColorTestService.getGroupedTests();
+
+      // Convert grouped tests to individual tests for Firebase
+      const testsToImport = groupedTests.map(groupedTest => ({
+        method_name: groupedTest.method_name,
+        method_name_ar: groupedTest.method_name_ar,
+        test_type: groupedTest.test_type,
+        test_number: groupedTest.test_number,
+        prepare: groupedTest.prepare,
+        prepare_ar: groupedTest.prepare_ar,
+        reference: groupedTest.reference,
+        results: groupedTest.results,
+        created_by: 'json_import'
+      }));
+
+      await firebaseTestsService.importFromJSON(testsToImport);
+      await loadFirebaseStatistics(); // Refresh statistics
+
+      toast.success(lang === 'ar' ? 'تم استيراد البيانات من JSON' : 'Data imported from JSON successfully');
+    } catch (error) {
+      console.error('Error importing from JSON:', error);
+      toast.error(lang === 'ar' ? 'خطأ في استيراد البيانات' : 'Error importing data');
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -219,17 +299,84 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
             </p>
           </div>
 
-          {/* Uptime */}
+          {/* Firebase Connection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {lang === 'ar' ? 'وقت التشغيل' : 'Uptime'}
+              {lang === 'ar' ? 'اتصال Firebase' : 'Firebase Connection'}
+            </label>
+            <div className={`inline-flex items-center space-x-2 rtl:space-x-reverse px-3 py-2 rounded-lg ${
+              dbStatus.firebaseConnected
+                ? 'text-green-600 bg-green-50 dark:bg-green-950'
+                : 'text-red-600 bg-red-50 dark:bg-red-950'
+            }`}>
+              <ServerIcon className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {dbStatus.firebaseConnected
+                  ? (lang === 'ar' ? 'متصل' : 'Connected')
+                  : (lang === 'ar' ? 'غير متصل' : 'Disconnected')
+                }
+              </span>
+            </div>
+          </div>
+
+          {/* Last Sync */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {lang === 'ar' ? 'آخر مزامنة' : 'Last Sync'}
             </label>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {dbStatus.uptime}
+              {dbStatus.lastSync || (lang === 'ar' ? 'لم يتم' : 'Never')}
             </p>
           </div>
         </div>
       </div>
+
+      {/* Firebase Statistics */}
+      {statistics && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 p-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+            {lang === 'ar' ? 'إحصائيات Firebase' : 'Firebase Statistics'}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'ar' ? 'إجمالي الاختبارات' : 'Total Tests'}
+              </label>
+              <p className="text-2xl font-bold text-primary-600">
+                {statistics.total_tests}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'ar' ? 'أنواع الاختبارات' : 'Test Types'}
+              </label>
+              <p className="text-2xl font-bold text-blue-600">
+                {statistics.tests_by_type ? Object.keys(statistics.tests_by_type).length : 0}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'ar' ? 'إجمالي النتائج' : 'Total Results'}
+              </label>
+              <p className="text-2xl font-bold text-green-600">
+                {statistics.total_results}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'ar' ? 'آخر تحديث' : 'Last Updated'}
+              </label>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {statistics.last_updated ? new Date(statistics.last_updated).toLocaleString() : 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Database Operations */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 p-6">
@@ -237,7 +384,7 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
           {lang === 'ar' ? 'عمليات قاعدة البيانات' : 'Database Operations'}
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Backup */}
           <div className="space-y-4">
             <div className="text-center">
@@ -301,6 +448,31 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
             </div>
           </div>
 
+          {/* Import from JSON */}
+          <div className="space-y-4">
+            <div className="text-center">
+              <CloudArrowUpIcon className="h-12 w-12 text-purple-600 mx-auto mb-3" />
+              <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                {lang === 'ar' ? 'استيراد من JSON' : 'Import from JSON'}
+              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                {lang === 'ar'
+                  ? 'استيراد البيانات من ملف JSON المحلي إلى Firebase'
+                  : 'Import data from local JSON file to Firebase'
+                }
+              </p>
+            </div>
+            <Button
+              onClick={importFromJSON}
+              loading={importLoading}
+              disabled={importLoading}
+              variant="outline"
+              className="w-full"
+            >
+              {lang === 'ar' ? 'استيراد البيانات' : 'Import Data'}
+            </Button>
+          </div>
+
           {/* Maintenance */}
           <div className="space-y-4">
             <div className="text-center">
@@ -309,7 +481,7 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
                 {lang === 'ar' ? 'صيانة قاعدة البيانات' : 'Database Maintenance'}
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                {lang === 'ar' 
+                {lang === 'ar'
                   ? 'تشغيل مهام الصيانة وتحسين الأداء'
                   : 'Run maintenance tasks and optimize performance'
                 }

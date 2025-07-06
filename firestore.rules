@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - المستخدمون
+    // Users can only read and write their own data
+    // يمكن للمستخدمين قراءة وكتابة بياناتهم فقط
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Test usage collection - استخدام الاختبارات
+    // Users can only access their own test usage data
+    // يمكن للمستخدمين الوصول لبيانات استخدام اختباراتهم فقط
+    match /testUsage/{document} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.uid;
+    }
+    
+    // Subscription data - بيانات الاشتراكات
+    // Users can read their subscription data, only system can write
+    // يمكن للمستخدمين قراءة بيانات اشتراكهم، النظام فقط يمكنه الكتابة
+    match /subscriptions/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.auth.token.admin == true; // Only admin can modify subscriptions
+    }
+    
+    // Chemical tests collection - مجموعة الاختبارات الكيميائية
+    // Read access for authenticated users, write access for admins only
+    // قراءة للمستخدمين المصادق عليهم، كتابة للمديرين فقط
+    match /chemical_tests/{testId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Test results collection - نتائج الاختبارات
+    // Users can only access their own test results
+    // يمكن للمستخدمين الوصول لنتائج اختباراتهم فقط
+    match /test_results/{resultId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Test sessions collection - جلسات الاختبار
+    // Users can only access their own test sessions
+    // يمكن للمستخدمين الوصول لجلسات اختبارهم فقط
+    match /test_sessions/{sessionId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Activity logs - سجلات النشاط
+    // Users can read their own activity, admins can read all
+    // يمكن للمستخدمين قراءة نشاطهم، المديرين يمكنهم قراءة الكل
+    match /activity_logs/{logId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.token.admin == true);
+      allow create: if request.auth != null;
+    }
+    
+    // Admin data - بيانات المدير
+    // Only admins can access admin data
+    // المديرين فقط يمكنهم الوصول لبيانات المدير
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Public data - البيانات العامة
+    // Read-only access for all authenticated users
+    // قراءة فقط لجميع المستخدمين المصادق عليهم
+    match /public/{document=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Default deny rule - قاعدة الرفض الافتراضية
+    // Deny all other access
+    // رفض جميع الوصولات الأخرى
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Helper functions - دوال مساعدة
+function isAuthenticated() {
+  return request.auth != null;
+}
+
+function isOwner(userId) {
+  return request.auth != null && request.auth.uid == userId;
+}
+
+function isAdmin() {
+  return request.auth != null && request.auth.token.admin == true;
+}
+
+function isValidUser() {
+  return request.auth != null && 
+         request.auth.uid != null && 
+         request.auth.uid.size() > 0;
+}

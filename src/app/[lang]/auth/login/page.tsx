@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { Language } from '@/types';
 import { getTranslations } from '@/lib/translations';
-import { LoginPage } from '@/components/pages/login-page';
+import { AuthPage } from '@/components/pages/login-page';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 // Generate static params for supported languages
 export async function generateStaticParams() {
@@ -31,5 +32,9 @@ export async function generateMetadata({
 
 export default async function Login({ params }: LoginPageProps) {
   const { lang } = await params;
-  return <LoginPage lang={lang} />;
+  return (
+    <AuthGuard lang={lang} requireAuth={false}>
+      <AuthPage lang={lang} />
+    </AuthGuard>
+  );
 }

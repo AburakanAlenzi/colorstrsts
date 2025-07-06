@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import { ResultsPage } from '@/components/pages/results-page';
 import { getTranslations } from '@/lib/translations';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 interface ResultsPageProps {
   params: Promise<{
@@ -28,5 +29,9 @@ export async function generateMetadata({
 export default async function Results({ params }: ResultsPageProps) {
   const { lang } = await params;
 
-  return <ResultsPage lang={lang} />;
+  return (
+    <AuthGuard lang={lang} requireAuth={true}>
+      <ResultsPage lang={lang} />
+    </AuthGuard>
+  );
 }

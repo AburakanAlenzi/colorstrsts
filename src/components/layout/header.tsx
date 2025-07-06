@@ -16,7 +16,7 @@ import {
   XMarkIcon,
   UserIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
+  PowerIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
 
@@ -158,7 +158,17 @@ export function Header({ lang }: HeaderProps) {
             <ThemeToggle />
             
             {user ? (
-              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                {/* عرض اسم المستخدم */}
+                <div className="hidden sm:flex items-center space-x-2 rtl:space-x-reverse bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-full">
+                  <div className="w-6 h-6 bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center">
+                    <UserIcon className="h-3 w-3 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                    {user.full_name || user.email?.split('@')[0] || t('navigation.user')}
+                  </span>
+                </div>
+
                 <Button
                   variant="ghost"
                   size="sm"
@@ -174,9 +184,21 @@ export function Header({ lang }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  asChild
+                >
+                  <Link href={`/${lang}/dashboard`}>
+                    <span className="flex items-center">
+                      <Cog6ToothIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                      {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                    </span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={handleSignOut}
                 >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                  <PowerIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
                   {t('navigation.logout')}
                 </Button>
               </div>
@@ -256,24 +278,75 @@ export function Header({ lang }: HeaderProps) {
                 </span>
               </button>
               
-              {!user && (
-                <div className="pt-4 border-t border-gray-300 dark:border-gray-600">
-                  <Link
-                    href={`/${lang}/auth/login`}
-                    className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t('navigation.login')}
-                  </Link>
-                  <Link
-                    href={`/${lang}/auth/register`}
-                    className="block px-3 py-2 text-base font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t('navigation.register')}
-                  </Link>
-                </div>
-              )}
+              {/* قسم المستخدم */}
+              <div className="pt-4 border-t border-gray-300 dark:border-gray-600">
+                {user ? (
+                  <>
+                    {/* عرض اسم المستخدم في الموبايل */}
+                    <div className="px-3 py-2 mb-2">
+                      <div className="flex items-center space-x-3 rtl:space-x-reverse bg-primary-50 dark:bg-primary-900/20 px-3 py-2 rounded-lg">
+                        <div className="w-8 h-8 bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center">
+                          <UserIcon className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                            {user.full_name || user.email?.split('@')[0] || t('navigation.user')}
+                          </p>
+                          <p className="text-xs text-primary-500 dark:text-primary-400">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      href={`/${lang}/profile`}
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <UserIcon className="h-5 w-5 mr-3 rtl:ml-3 rtl:mr-0" />
+                      {t('navigation.profile')}
+                    </Link>
+
+                    <Link
+                      href={`/${lang}/dashboard`}
+                      className="flex items-center px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Cog6ToothIcon className="h-5 w-5 mr-3 rtl:ml-3 rtl:mr-0" />
+                      {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left flex items-center px-3 py-2 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
+                    >
+                      <PowerIcon className="h-5 w-5 mr-3 rtl:ml-3 rtl:mr-0" />
+                      {t('navigation.logout')}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={`/${lang}/auth/login`}
+                      className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('navigation.login')}
+                    </Link>
+                    <Link
+                      href={`/${lang}/auth/register`}
+                      className="block px-3 py-2 text-base font-medium text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950 rounded-md"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {t('navigation.register')}
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}

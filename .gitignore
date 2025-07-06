@@ -44,3 +44,75 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.patch
+*.orig
+*~
+
+# Build outputs and cache
+dist/
+.cache/
+.parcel-cache/
+.nuxt/
+.vuepress/dist/
+
+# API backups and temporary files
+api_backup/
+backup/
+temp/
+
+# Development configuration files
+next.config.dev.js
+next.config.temp.js
+config.dev.*
+
+# Log files
+*.log
+logs/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Firebase cache
+.firebase/
+
+# Capacitor
+.capacitor/
+android/
+ios/
+
+# PWA
+sw.js
+workbox-*.js
+
+# Testing
+.jest/
+test-results/
+coverage/

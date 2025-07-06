@@ -80,10 +80,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
+
+      // إعداد إضافي لـ Google Provider
+      provider.addScope('email');
+      provider.addScope('profile');
+
+      // إعداد معاملات مخصصة
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+
+      const result = await signInWithPopup(auth, provider);
+
+      // التحقق من نجاح العملية
+      if (result.user) {
+        console.log('Google sign in successful:', result.user.email);
+        return result;
+      } else {
+        throw new Error('No user returned from Google sign in');
+      }
+    } catch (error: any) {
       console.error('Google sign in error:', error);
-      throw error;
+
+      // معالجة أخطاء محددة
+      if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('تم إغلاق نافذة تسجيل الدخول');
+      } else if (error.code === 'auth/popup-blocked') {
+        throw new Error('تم حجب النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        throw new Error('تم إلغاء طلب تسجيل الدخول');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        throw new Error('تسجيل الدخول بـ Google غير مفعل');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        throw new Error('النطاق غير مصرح له');
+      } else {
+        throw new Error(error.message || 'خطأ في تسجيل الدخول بـ Google');
+      }
     }
   };
 

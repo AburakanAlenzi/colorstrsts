@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from './AuthProvider';
+import GoogleSignInButton from './GoogleSignInButton';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface LoginModalProps {
@@ -78,6 +79,18 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
         return 'البريد الإلكتروني غير صالح';
       case 'auth/too-many-requests':
         return 'تم تجاوز عدد المحاولات المسموح. حاول مرة أخرى لاحقاً';
+      case 'auth/popup-closed-by-user':
+        return 'تم إغلاق نافذة تسجيل الدخول';
+      case 'auth/popup-blocked':
+        return 'تم حجب النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة';
+      case 'auth/cancelled-popup-request':
+        return 'تم إلغاء طلب تسجيل الدخول';
+      case 'auth/operation-not-allowed':
+        return 'تسجيل الدخول بـ Google غير مفعل';
+      case 'auth/unauthorized-domain':
+        return 'النطاق غير مصرح له';
+      case 'auth/network-request-failed':
+        return 'خطأ في الاتصال بالشبكة';
       default:
         return 'حدث خطأ أثناء تسجيل الدخول';
     }
@@ -208,13 +221,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
                 </div>
               </div>
 
-              <button
-                onClick={handleGoogleSignIn}
+              <GoogleSignInButton
+                onSuccess={onClose}
+                onError={(error) => setError(error)}
                 disabled={loading}
-                className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:opacity-50"
-              >
-                تسجيل الدخول بـ Google
-              </button>
+                className="mt-4 w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 flex items-center justify-center"
+              />
             </div>
 
             <div className="mt-4 text-center space-y-2">
