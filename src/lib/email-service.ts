@@ -65,8 +65,8 @@ class EmailService {
    * Send verification code via email
    */
   async sendVerificationCode(
-    email: string, 
-    code: string, 
+    email: string,
+    code: string,
     lang: 'ar' | 'en' = 'ar'
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
@@ -74,7 +74,7 @@ class EmailService {
       if (!this.isInitialized) {
         const initialized = await this.initialize();
         if (!initialized) {
-          throw new Error('EmailJS not initialized');
+          throw new Error('Email service not initialized');
         }
       }
 
@@ -92,14 +92,52 @@ class EmailService {
         };
       }
 
-      // في بيئة الإنتاج، استخدم الطريقة البديلة
-      return await this.fallbackEmailSend(email, code, lang);
+      // في بيئة الإنتاج، استخدم خدمة حقيقية
+      return await this.sendViaWebService(email, code, lang);
 
     } catch (error) {
       console.error('Email sending failed:', error);
-      
-      // في حالة فشل EmailJS، استخدم الطريقة البديلة
+
+      // في حالة فشل الخدمة الأساسية، استخدم الطريقة البديلة
       return await this.fallbackEmailSend(email, code, lang);
+    }
+  }
+
+  /**
+   * إرسال رسالة اتصال عبر الإيميل
+   * Send contact message via email
+   */
+  async sendContactMessage(
+    formData: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      // في بيئة التطوير، نستخدم محاكاة
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📧 [DEV] Simulating contact message send');
+        console.log('📧 [DEV] From:', formData.email);
+        console.log('📧 [DEV] Subject:', formData.subject);
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        return {
+          success: true,
+          messageId: `dev_contact_${Date.now()}`
+        };
+      }
+
+      // في بيئة الإنتاج، استخدم خدمة حقيقية
+      return await this.sendContactViaWebService(formData);
+
+    } catch (error) {
+      console.error('Contact message sending failed:', error);
+
+      // استخدام الطريقة البديلة
+      return await this.fallbackContactSend(formData);
     }
   }
 
@@ -150,32 +188,133 @@ Ministry of Health - Saudi Arabia
   }
 
   /**
+   * إرسال عبر خدمة ويب مجانية
+   * Send via free web service
+   */
+  private async sendViaWebService(
+    email: string,
+    code: string,
+    lang: 'ar' | 'en'
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      const subject = lang === 'ar'
+        ? 'رمز التحقق - استعادة كلمة مرور الأدمن'
+        : 'Verification Code - Admin Password Recovery';
+
+      const message = this.generateEmailMessage(code, lang);
+
+      // استخدام خدمة FormSubmit (مجانية)
+      const response = await fetch('https://formsubmit.co/aburakan4551@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Color Testing System',
+          email: 'noreply@colortest.system',
+          subject: subject,
+          message: message,
+          _captcha: 'false',
+          _template: 'table'
+        })
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          messageId: `formsubmit_${Date.now()}`
+        };
+      } else {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+    } catch (error) {
+      console.error('Web service email failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * إرسال رسالة اتصال عبر خدمة ويب
+   * Send contact message via web service
+   */
+  private async sendContactViaWebService(
+    formData: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      // استخدام خدمة FormSubmit (مجانية)
+      const response = await fetch('https://formsubmit.co/aburakan4551@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: `[Color Testing] ${formData.subject}`,
+          message: `
+From: ${formData.name} (${formData.email})
+Subject: ${formData.subject}
+
+Message:
+${formData.message}
+
+---
+Sent from Color Testing Drug Detection App
+Date: ${new Date().toLocaleString()}
+          `.trim(),
+          _captcha: 'false',
+          _template: 'table'
+        })
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          messageId: `contact_${Date.now()}`
+        };
+      } else {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+    } catch (error) {
+      console.error('Contact web service failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * طريقة بديلة لإرسال الإيميل (mailto)
    * Fallback email method (mailto)
    */
   private async fallbackEmailSend(
-    email: string, 
-    code: string, 
+    email: string,
+    code: string,
     lang: 'ar' | 'en'
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       const subject = encodeURIComponent(
-        lang === 'ar' 
+        lang === 'ar'
           ? 'رمز التحقق - استعادة كلمة مرور الأدمن'
           : 'Verification Code - Admin Password Recovery'
       );
-      
+
       const body = encodeURIComponent(this.generateEmailMessage(code, lang));
-      
+
       // فتح تطبيق الإيميل الافتراضي
       const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
-      
+
       if (typeof window !== 'undefined') {
         window.open(mailtoLink, '_blank');
       }
 
       console.log('📧 Fallback: Email client opened');
-      
+
       return {
         success: true,
         messageId: 'fallback_mailto'
@@ -186,6 +325,51 @@ Ministry of Health - Saudi Arabia
       return {
         success: false,
         error: 'All email methods failed'
+      };
+    }
+  }
+
+  /**
+   * طريقة بديلة لإرسال رسالة الاتصال
+   * Fallback contact message method
+   */
+  private async fallbackContactSend(
+    formData: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      const emailBody = `
+From: ${formData.name} (${formData.email})
+Subject: ${formData.subject}
+
+Message:
+${formData.message}
+
+---
+Sent from Color Testing Drug Detection App
+Date: ${new Date().toLocaleString()}
+      `.trim();
+
+      const mailtoLink = `mailto:aburakan4551@gmail.com?subject=${encodeURIComponent(`[Color Testing] ${formData.subject}`)}&body=${encodeURIComponent(emailBody)}`;
+
+      if (typeof window !== 'undefined') {
+        window.open(mailtoLink, '_blank');
+      }
+
+      return {
+        success: true,
+        messageId: 'fallback_contact_mailto'
+      };
+
+    } catch (error) {
+      console.error('Fallback contact failed:', error);
+      return {
+        success: false,
+        error: 'All contact methods failed'
       };
     }
   }

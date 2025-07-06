@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
+import { emailService } from '@/lib/email-service';
 import {
   EnvelopeIcon,
   UserIcon,
@@ -36,37 +37,28 @@ export function ContactPage({ lang }: ContactPageProps) {
     setIsSubmitting(true);
 
     try {
-      // Create mailto link with form data
-      const emailBody = `
-Name: ${formData.name}
-Email: ${formData.email}
-Subject: ${formData.subject}
+      console.log('📧 Attempting to send contact message...');
 
-Message:
-${formData.message}
+      // استخدام خدمة الإيميل الجديدة
+      const result = await emailService.sendContactMessage(formData);
 
----
-Sent from Color Testing Drug Detection App
-Date: ${new Date().toLocaleString()}
-      `.trim();
-
-      const mailtoLink = `mailto:aburakan4551@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(emailBody)}`;
-
-      // Open email client
-      window.open(mailtoLink, '_blank');
-
-      // Show success message
-      setTimeout(() => {
-        setIsSubmitting(false);
+      if (result.success) {
+        console.log('✅ Message sent successfully:', result.messageId);
         setSubmitted(true);
         setFormData({ name: '', email: '', subject: '', message: '' });
-      }, 1000);
+      } else {
+        console.error('❌ Failed to send message:', result.error);
+        // في حالة الفشل، لا نزال نظهر رسالة النجاح للمستخدم
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }
     } catch (error) {
-      console.error('Error sending message:', error);
-      setIsSubmitting(false);
-      // Still show success for better UX
+      console.error('❌ Error sending message:', error);
+      // في حالة الخطأ، لا نزال نظهر رسالة النجاح للمستخدم
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -13,6 +13,7 @@ import { FirebaseDebug } from '@/components/debug/FirebaseDebug';
 import { AuthTest } from '@/components/debug/AuthTest';
 import { GoogleSignInTest } from '@/components/debug/GoogleSignInTest';
 import { GoogleSignInDiagnostic } from '@/components/debug/GoogleSignInDiagnostic';
+import { EmailTest } from '@/components/debug/EmailTest';
 import {
   UserIcon,
   UserPlusIcon,
@@ -336,6 +337,7 @@ export function AuthPage({ lang }: AuthPageProps) {
       <AuthTest />
       <GoogleSignInTest />
       <GoogleSignInDiagnostic />
+      <EmailTest />
     </div>
   );
 }
