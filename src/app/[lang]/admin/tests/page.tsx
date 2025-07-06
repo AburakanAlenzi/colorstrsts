@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Language } from '@/types';
 import { getAllTranslations } from '@/lib/translations';
-import TestsManagementNew from '@/components/admin/TestsManagementNew';
+import SimpleTestsManagement from '@/components/admin/SimpleTestsManagement';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 
 interface PageProps {
@@ -36,14 +36,10 @@ export default async function TestsManagementPage({ params }: PageProps) {
     <AuthProvider>
       <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <h1 className="text-2xl font-bold mb-4">
-              {isRTL ? 'إدارة الاختبارات' : 'Tests Management'}
-            </h1>
-            <p className="text-gray-600">
-              {isRTL ? 'هذه الصفحة قيد التطوير' : 'This page is under development'}
-            </p>
-          </div>
+          <SimpleTestsManagement
+            translations={translations.testsManagement || {}}
+            isRTL={isRTL}
+          />
         </div>
       </div>
     </AuthProvider>

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/ui/language-switcher';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { GlobalImageAnalyzer } from '@/components/ui/global-image-analyzer';
+import { validateAdminSession } from '@/lib/auth-utils';
 import {
   Bars3Icon,
   XMarkIcon,
@@ -28,10 +29,26 @@ export function Header({ lang }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [adminKeySequence, setAdminKeySequence] = useState('');
   const [showImageAnalyzer, setShowImageAnalyzer] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const t = getTranslationsSync(lang);
+
+  // Check admin session
+  useEffect(() => {
+    const checkAdminStatus = () => {
+      const adminSession = validateAdminSession();
+      setIsAdmin(adminSession);
+    };
+
+    checkAdminStatus();
+
+    // Check admin status periodically
+    const interval = setInterval(checkAdminStatus, 30000); // Every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Secure admin access detection (only in development)
   useEffect(() => {
@@ -86,7 +103,17 @@ export function Header({ lang }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      await logout();
+      // إذا كان مدير، امسح جلسة المدير
+      if (isAdmin) {
+        localStorage.removeItem('admin_session');
+        setIsAdmin(false);
+      }
+
+      // إذا كان مستخدم عادي، سجل خروج من Firebase
+      if (user) {
+        await logout();
+      }
+
       router.push(`/${lang}`);
     } catch (error) {
       console.error('Error signing out:', error);
@@ -157,7 +184,7 @@ export function Header({ lang }: HeaderProps) {
             <LanguageSwitcher currentLang={lang} />
             <ThemeToggle />
             
-            {user ? (
+            {user || isAdmin ? (
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
                 {/* عرض اسم المستخدم */}
                 <div className="hidden sm:flex items-center space-x-2 rtl:space-x-reverse bg-primary-50 dark:bg-primary-900/20 px-3 py-1.5 rounded-full">
@@ -165,34 +192,71 @@ export function Header({ lang }: HeaderProps) {
                     <UserIcon className="h-3 w-3 text-primary-600 dark:text-primary-400" />
                   </div>
                   <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                    {user.displayName || user.email?.split('@')[0] || t('navigation.user')}
+                    {isAdmin ? (lang === 'ar' ? 'المدير' : 'Admin') :
+                     (user?.displayName || user?.email?.split('@')[0] || t('navigation.user'))}
                   </span>
                 </div>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                >
-                  <Link href={`/${lang}/profile`}>
-                    <span className="flex items-center">
-                      <UserIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-                      {t('navigation.profile')}
-                    </span>
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                >
-                  <Link href={`/${lang}/dashboard`}>
-                    <span className="flex items-center">
-                      <Cog6ToothIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-                      {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
-                    </span>
-                  </Link>
-                </Button>
+
+                {/* أزرار المدير */}
+                {isAdmin && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                    >
+                      <Link href={`/${lang}/admin`}>
+                        <span className="flex items-center">
+                          <Cog6ToothIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                          {lang === 'ar' ? 'لوحة الإدارة' : 'Admin Panel'}
+                        </span>
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                    >
+                      <Link href={`/${lang}/admin/tests`}>
+                        <span className="flex items-center">
+                          <TestTubeIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                          {lang === 'ar' ? 'إدارة الاختبارات' : 'Manage Tests'}
+                        </span>
+                      </Link>
+                    </Button>
+                  </>
+                )}
+
+                {/* أزرار المستخدم العادي */}
+                {user && !isAdmin && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                    >
+                      <Link href={`/${lang}/profile`}>
+                        <span className="flex items-center">
+                          <UserIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                          {t('navigation.profile')}
+                        </span>
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                    >
+                      <Link href={`/${lang}/dashboard`}>
+                        <span className="flex items-center">
+                          <Cog6ToothIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                          {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                        </span>
+                      </Link>
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
