@@ -29,13 +29,14 @@ export async function generateMetadata({
 
 export default async function Dashboard({ params }: DashboardPageProps) {
   const { lang } = await params;
+  const isRTL = lang === 'ar';
 
   return (
     <AuthGuard lang={lang} requireAuth={true}>
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950">
+      <div className={`min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <div className={`text-center mb-12 ${isRTL ? 'rtl' : 'ltr'}`}>
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                 {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
               </h1>
@@ -48,14 +49,14 @@ export default async function Dashboard({ params }: DashboardPageProps) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* العمود الأيسر - الإحصائيات والإجراءات السريعة */}
-              <div className="lg:col-span-1 space-y-6">
+              {/* العمود الأول - الإحصائيات والإجراءات السريعة */}
+              <div className={`lg:col-span-1 space-y-6 ${isRTL ? 'lg:order-1' : 'lg:order-1'}`}>
                 <UserStats lang={lang} />
                 <QuickActions lang={lang} />
               </div>
 
-              {/* العمود الأيمن - الاختبارات الأخيرة */}
-              <div className="lg:col-span-2">
+              {/* العمود الثاني - الاختبارات الأخيرة */}
+              <div className={`lg:col-span-2 ${isRTL ? 'lg:order-2' : 'lg:order-2'}`}>
                 <RecentTests lang={lang} />
               </div>
             </div>
