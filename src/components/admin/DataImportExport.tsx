@@ -23,23 +23,64 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
     setMessage(null);
 
     try {
-      // Simulate file processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Here you would normally process the CSV/Excel file
-      // For now, we'll just show a success message
+      // Read file content
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim());
+
+      if (lines.length < 2) {
+        throw new Error('File must contain header and at least one data row');
+      }
+
+      // Parse CSV
+      const headers = lines[0].split(',').map(h => h.trim());
+      const requiredHeaders = ['id', 'method_name', 'method_name_ar', 'color_result', 'color_result_ar', 'possible_substance', 'possible_substance_ar', 'prepare', 'test_type', 'test_number', 'reference'];
+
+      // Validate headers
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+      if (missingHeaders.length > 0) {
+        throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
+      }
+
+      // Parse data rows
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        if (values.length === headers.length) {
+          const row: any = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index];
+          });
+          data.push(row);
+        }
+      }
+
+      // Save to localStorage (simulating database update)
+      const existingData = JSON.parse(localStorage.getItem('chemical_tests') || '[]');
+      const updatedData = [...existingData];
+
+      data.forEach(newTest => {
+        const existingIndex = updatedData.findIndex(test => test.id === newTest.id);
+        if (existingIndex >= 0) {
+          updatedData[existingIndex] = newTest; // Update existing
+        } else {
+          updatedData.push(newTest); // Add new
+        }
+      });
+
+      localStorage.setItem('chemical_tests', JSON.stringify(updatedData));
+
       setMessage({
         type: 'success',
-        text: isRTL 
-          ? `تم استيراد البيانات بنجاح من ${file.name}`
-          : `Data imported successfully from ${file.name}`
+        text: isRTL
+          ? `تم استيراد ${data.length} اختبار بنجاح من ${file.name}`
+          : `Successfully imported ${data.length} tests from ${file.name}`
       });
     } catch (error) {
       setMessage({
         type: 'error',
-        text: isRTL 
-          ? 'حدث خطأ أثناء استيراد البيانات'
-          : 'Error occurred while importing data'
+        text: isRTL
+          ? `خطأ في استيراد البيانات: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`
+          : `Import error: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     } finally {
       setImporting(false);
@@ -52,16 +93,54 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
     setMessage(null);
 
     try {
-      // Simulate export process
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Create sample CSV data
-      const csvData = `id,method_name,method_name_ar,color_result,color_result_ar,possible_substance,possible_substance_ar,prepare,test_type,test_number,reference
-1,Marquis Test,اختبار ماركيز,Purple/Black,بنفسجي/أسود,MDMA/Amphetamines,إم دي إم إيه/أمفيتامينات,Add 2-3 drops of reagent,Presumptive,1,DEA Guidelines
-2,Mecke Test,اختبار ميك,Blue/Green,أزرق/أخضر,Opiates,مواد أفيونية,Add 2-3 drops of reagent,Presumptive,2,UNODC Manual`;
+      // Get data from localStorage
+      const storedData = JSON.parse(localStorage.getItem('chemical_tests') || '[]');
+
+      // If no data, use default template data
+      const defaultData = [
+        {
+          id: '1',
+          method_name: 'Marquis Test',
+          method_name_ar: 'اختبار ماركيز',
+          color_result: 'Purple/Black',
+          color_result_ar: 'بنفسجي/أسود',
+          possible_substance: 'MDMA/Amphetamines',
+          possible_substance_ar: 'إم دي إم إيه/أمفيتامينات',
+          prepare: 'Add 2-3 drops of reagent',
+          test_type: 'Presumptive',
+          test_number: '1',
+          reference: 'DEA Guidelines'
+        },
+        {
+          id: '2',
+          method_name: 'Mecke Test',
+          method_name_ar: 'اختبار ميك',
+          color_result: 'Blue/Green',
+          color_result_ar: 'أزرق/أخضر',
+          possible_substance: 'Opiates',
+          possible_substance_ar: 'مواد أفيونية',
+          prepare: 'Add 2-3 drops of reagent',
+          test_type: 'Presumptive',
+          test_number: '2',
+          reference: 'UNODC Manual'
+        }
+      ];
+
+      const dataToExport = storedData.length > 0 ? storedData : defaultData;
+
+      // Create CSV header
+      const headers = ['id', 'method_name', 'method_name_ar', 'color_result', 'color_result_ar', 'possible_substance', 'possible_substance_ar', 'prepare', 'test_type', 'test_number', 'reference'];
+
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...dataToExport.map(row =>
+          headers.map(header => `"${(row[header] || '').toString().replace(/"/g, '""')}"`).join(',')
+        )
+      ].join('\n');
 
       // Create and download file
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
@@ -73,14 +152,14 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
 
       setMessage({
         type: 'success',
-        text: isRTL 
-          ? 'تم تصدير البيانات بنجاح'
-          : 'Data exported successfully'
+        text: isRTL
+          ? `تم تصدير ${dataToExport.length} اختبار بنجاح`
+          : `Successfully exported ${dataToExport.length} tests`
       });
     } catch (error) {
       setMessage({
         type: 'error',
-        text: isRTL 
+        text: isRTL
           ? 'حدث خطأ أثناء تصدير البيانات'
           : 'Error occurred while exporting data'
       });

@@ -4,6 +4,7 @@ import { Language } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import DataImportExport from '@/components/admin/DataImportExport';
+import TestsManagement from '@/components/admin/TestsManagement';
 
 interface PageProps {
   params: Promise<{
@@ -33,15 +34,10 @@ export default async function TestsManagementPage({ params }: PageProps) {
   return (
     <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
+        <div className="max-w-6xl mx-auto">
+          {/* Tests Management */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              {isRTL ? 'إدارة الاختبارات الكيميائية' : 'Chemical Tests Management'}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {isRTL ? 'إدارة وتحرير الاختبارات الكيميائية ونتائج الألوان' : 'Manage and edit chemical tests and color results'}
-            </p>
+            <TestsManagement isRTL={isRTL} />
           </div>
 
           {/* Quick Stats */}

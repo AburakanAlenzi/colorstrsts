@@ -239,12 +239,43 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
         </div>
       </div>
 
+      {/* Admin Management */}
+      <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          {lang === 'ar' ? 'إدارة النظام' : 'System Management'}
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <Button
+            onClick={() => window.location.href = `/${lang}/admin/subscribers`}
+            className="flex items-center justify-center space-x-2 rtl:space-x-reverse h-20"
+          >
+            <UsersIcon className="h-6 w-6" />
+            <div className="text-center">
+              <div className="font-medium">{lang === 'ar' ? 'إدارة المشتركين' : 'Subscribers Management'}</div>
+              <div className="text-xs opacity-80">{lang === 'ar' ? 'الاشتراكات و STC Pay' : 'Subscriptions & STC Pay'}</div>
+            </div>
+          </Button>
+
+          <Button
+            onClick={() => window.location.href = `/${lang}/admin/tests`}
+            className="flex items-center justify-center space-x-2 rtl:space-x-reverse h-20"
+          >
+            <BeakerIcon className="h-6 w-6" />
+            <div className="text-center">
+              <div className="font-medium">{lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management'}</div>
+              <div className="text-xs opacity-80">{lang === 'ar' ? 'إضافة وتحرير وحذف' : 'Add, Edit & Delete'}</div>
+            </div>
+          </Button>
+        </div>
+      </div>
+
       {/* Data Management */}
       <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {lang === 'ar' ? 'إدارة البيانات' : 'Data Management'}
         </h3>
-        
+
         <div className="flex flex-wrap gap-4">
           <Button
             onClick={handleExportData}
