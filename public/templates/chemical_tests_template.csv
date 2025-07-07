@@ -1,0 +1,6 @@
+id,method_name,method_name_ar,color_result,color_result_ar,possible_substance,possible_substance_ar,prepare,test_type,test_number,reference
+1,Marquis Test,اختبار ماركيز,Purple/Black,بنفسجي/أسود,MDMA/Amphetamines,إم دي إم إيه/أمفيتامينات,Add 2-3 drops of reagent,Presumptive,1,DEA Guidelines
+2,Mecke Test,اختبار ميك,Blue/Green,أزرق/أخضر,Opiates,مواد أفيونية,Add 2-3 drops of reagent,Presumptive,2,UNODC Manual
+3,Mandelin Test,اختبار مانديلين,Orange/Red,برتقالي/أحمر,Ketamine,كيتامين,Add 2-3 drops of reagent,Presumptive,3,Forensic Guidelines
+4,Liebermann Test,اختبار ليبرمان,Yellow,أصفر,Cocaine,كوكايين,Add 2-3 drops of reagent,Presumptive,4,SWGDRUG Standards
+5,Simon's Test,اختبار سايمون,Blue,أزرق,Secondary Amines,أمينات ثانوية,Add reagent A then B,Confirmatory,5,Scientific Literature

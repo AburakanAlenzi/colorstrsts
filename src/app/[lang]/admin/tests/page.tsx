@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Language } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import DataImportExport from '@/components/admin/DataImportExport';
 
 interface PageProps {
   params: Promise<{
@@ -129,6 +130,14 @@ export default async function TestsManagementPage({ params }: PageProps) {
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Data Import/Export */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {isRTL ? 'إدارة البيانات' : 'Data Management'}
+            </h3>
+            <DataImportExport isRTL={isRTL} />
           </div>
 
           {/* Back to Admin */}
