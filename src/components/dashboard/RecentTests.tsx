@@ -145,10 +145,15 @@ export function RecentTests({ lang }: RecentTestsProps) {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-foreground mb-6">
-          {lang === 'ar' ? 'الاختبارات الأخيرة' : 'Recent Tests'}
-        </h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+            <BeakerIcon className="h-5 w-5 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">
+            {lang === 'ar' ? 'الاختبارات الأخيرة' : 'Recent Tests'}
+          </h2>
+        </div>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -168,11 +173,16 @@ export function RecentTests({ lang }: RecentTestsProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-foreground">
-          {lang === 'ar' ? 'الاختبارات الأخيرة' : 'Recent Tests'}
-        </h2>
+        <div className="flex items-center space-x-3 rtl:space-x-reverse">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+            <BeakerIcon className="h-5 w-5 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">
+            {lang === 'ar' ? 'الاختبارات الأخيرة' : 'Recent Tests'}
+          </h2>
+        </div>
         <Button variant="outline" asChild>
           <Link href={`/${lang}/results`}>
             {lang === 'ar' ? 'عرض الكل' : 'View All'}

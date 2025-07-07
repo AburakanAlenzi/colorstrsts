@@ -64,7 +64,12 @@
     "preparation_time": 7,
     "icon": "ExclamationTriangleIcon",
     "color_primary": "#FFFF00",
-    "created_at": "2025-01-01T00:00:00Z"
+    "created_at": "2025-01-01T00:00:00Z",
+    "prepare": "1. Place a small amount of the suspected material on an acid-resistant spot plate.\n2. Add one drop of concentrated nitric acid.\n3. Observe the color change immediately.\n4. Note: This test requires extreme caution due to the corrosive nature of nitric acid.",
+    "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي مقاوم للأحماض.\n2. أضف قطرة واحدة من حمض النيتريك المركز.\n3. راقب تغيير اللون فوراً.\n4. ملاحظة: يتطلب هذا الاختبار حذراً شديداً بسبب الطبيعة الآكلة لحمض النيتريك.",
+    "test_type": "F/L",
+    "test_number": "Test 4",
+    "reference": "Clarke, E.G.C. (1986). Clarke's Isolation and Identification of Drugs, 2nd ed., The Pharmaceutical Press, London, pp. 89-92."
   },
   {
     "id": "fast-blue-b-test",
@@ -225,8 +230,8 @@
     "created_at": "2025-01-01T00:00:00Z",
     "prepare": "1. Place a small amount of the suspected material on an acid-resistant spot plate.\n2. Add one drop of concentrated nitric acid.\n3. Add one drop of concentrated sulfuric acid.\n4. Observe the color change from orange to red indicating methadone.",
     "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي مقاوم للأحماض.\n2. أضف قطرة واحدة من حمض النيتريك المركز.\n3. أضف قطرة واحدة من حمض الكبريتيك المركز.\n4. راقب تغيير اللون من البرتقالي إلى الأحمر الذي يشير إلى الميثادون.",
-    "test_type": "",
-    "test_number": "",
-    "reference": ""
+    "test_type": "F/L",
+    "test_number": "Test 26",
+    "reference": "Moffat, A.C., Osselton, M.D., Widdop, B. (2004). Clarke's Analysis of Drugs and Poisons, 3rd ed., Pharmaceutical Press, London, pp. 1245-1248."
   }
 ]

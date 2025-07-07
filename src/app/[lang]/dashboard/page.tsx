@@ -33,30 +33,41 @@ export default async function Dashboard({ params }: DashboardPageProps) {
 
   return (
     <AuthGuard lang={lang} requireAuth={true}>
-      <div className={`min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className={`text-center mb-12 ${isRTL ? 'rtl' : 'ltr'}`}>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+      <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-950 dark:via-background dark:to-blue-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-800">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-6">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
               </h1>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
                 {lang === 'ar'
-                  ? 'إدارة اختباراتك ومتابعة نتائجك'
-                  : 'Manage your tests and track your results'
+                  ? 'مرحباً بك في لوحة التحكم الخاصة بك. إدارة اختباراتك ومتابعة نتائجك بسهولة'
+                  : 'Welcome to your personal dashboard. Manage your tests and track your results with ease'
                 }
               </p>
             </div>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* العمود الأول - الإحصائيات والإجراءات السريعة */}
-              <div className={`lg:col-span-1 space-y-6 ${isRTL ? 'lg:order-1' : 'lg:order-1'}`}>
+        {/* Main Content */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+              {/* Sidebar - Stats and Quick Actions */}
+              <div className={`xl:col-span-1 space-y-6 ${isRTL ? 'xl:order-1' : 'xl:order-1'}`}>
                 <UserStats lang={lang} />
                 <QuickActions lang={lang} />
               </div>
 
-              {/* العمود الثاني - الاختبارات الأخيرة */}
-              <div className={`lg:col-span-2 ${isRTL ? 'lg:order-2' : 'lg:order-2'}`}>
+              {/* Main Content - Recent Tests */}
+              <div className={`xl:col-span-3 ${isRTL ? 'xl:order-2' : 'xl:order-2'}`}>
                 <RecentTests lang={lang} />
               </div>
             </div>

@@ -113,11 +113,16 @@ export function UserStats({ lang }: UserStatsProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-foreground">
-          {lang === 'ar' ? 'إحصائيات الاستخدام' : 'Usage Statistics'}
-        </h2>
+        <div className="flex items-center space-x-3 rtl:space-x-reverse">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+            <ChartBarIcon className="h-5 w-5 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">
+            {lang === 'ar' ? 'إحصائياتك' : 'Your Stats'}
+          </h2>
+        </div>
         {getSubscriptionBadge()}
       </div>
 

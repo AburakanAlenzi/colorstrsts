@@ -76,10 +76,17 @@ export function QuickActions({ lang }: QuickActionsProps) {
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-      <h2 className="text-2xl font-bold text-foreground mb-6">
-        {lang === 'ar' ? 'إجراءات سريعة' : 'Quick Actions'}
-      </h2>
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-foreground">
+          {lang === 'ar' ? 'إجراءات سريعة' : 'Quick Actions'}
+        </h2>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         {actions.map((action, index) => {

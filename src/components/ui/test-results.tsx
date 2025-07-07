@@ -355,30 +355,54 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
         {(() => {
           const test = DataService.getChemicalTestById(testId);
           const reference = test?.reference;
-          if (reference) {
+
+          // Debug logging
+          console.log('TestResults - testId:', testId);
+          console.log('TestResults - test found:', test);
+          console.log('TestResults - reference:', reference);
+
+          if (reference && reference.trim()) {
             return (
-              <div className="p-6 print:p-4 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
+              <div className="p-6 print:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-t border-blue-200 dark:border-blue-800">
                 <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
-                    {lang === 'ar' ? 'المرجع العلمي' : 'Scientific Reference'}
-                  </h3>
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                      {lang === 'ar' ? 'المرجع العلمي' : 'Scientific Reference'}
+                    </h3>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      {lang === 'ar' ? 'المصدر الأكاديمي للطريقة' : 'Academic source for this method'}
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-5 border-2 border-blue-200 dark:border-blue-700 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-5 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
                   <div className="flex items-start space-x-3 rtl:space-x-reverse">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <svg className="w-3 h-3 text-blue-600 dark:text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg className="w-4 h-4 text-blue-600 dark:text-blue-300" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div className="flex-1">
+                      <div className="mb-2">
+                        <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full">
+                          {lang === 'ar' ? 'مرجع علمي' : 'Scientific Reference'}
+                        </span>
+                      </div>
                       <p className="text-sm text-blue-900 dark:text-blue-100 font-medium leading-relaxed">
                         {reference}
                       </p>
+                      <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700">
+                        <p className="text-xs text-blue-700 dark:text-blue-300">
+                          {lang === 'ar'
+                            ? 'هذا المرجع يؤكد صحة الطريقة المستخدمة في هذا الاختبار'
+                            : 'This reference validates the methodology used in this test'
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
