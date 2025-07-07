@@ -33,7 +33,7 @@ export default async function ProfilePage({ params }: PageProps) {
 
   return (
     <AuthProvider>
-      <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`min-h-screen bg-gray-50 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="container mx-auto px-4 py-8">
           <UserProfile
             translations={translations.profile || {}}

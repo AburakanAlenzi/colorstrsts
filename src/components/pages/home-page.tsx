@@ -20,6 +20,7 @@ interface HomePageProps {
 
 export function HomePage({ lang }: HomePageProps) {
   const t = getTranslationsSync(lang);
+  const isRTL = lang === 'ar';
 
   const features = [
     {
@@ -60,7 +61,7 @@ export function HomePage({ lang }: HomePageProps) {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>

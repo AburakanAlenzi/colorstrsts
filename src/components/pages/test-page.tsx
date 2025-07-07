@@ -90,6 +90,7 @@ export function TestPage({ lang, testId }: TestPageProps) {
 
   const router = useRouter();
   const { user } = useAuth();
+  const isRTL = lang === 'ar';
 
   useEffect(() => {
     const loadTestData = async () => {
@@ -269,7 +270,7 @@ export function TestPage({ lang, testId }: TestPageProps) {
   const StepIcon = getStepIcon(currentStep);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950">
+    <div className={`min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

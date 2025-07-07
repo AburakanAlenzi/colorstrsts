@@ -42,6 +42,7 @@ export function AuthPage({ lang }: AuthPageProps) {
   const router = useRouter();
   const t = getTranslationsSync(lang);
   const { signIn, signUp, signInWithGoogle } = useAuth();
+  const isRTL = lang === 'ar';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -113,7 +114,7 @@ export function AuthPage({ lang }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-gray-900 dark:to-secondary-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className={`min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-gray-900 dark:to-secondary-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
