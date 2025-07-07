@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { validateAdminSession } from '@/lib/auth-utils';
 
@@ -11,15 +10,20 @@ interface SimpleTestsManagementProps {
 }
 
 export default function SimpleTestsManagement({ translations = {}, isRTL }: SimpleTestsManagementProps) {
-  const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAdminStatus = () => {
-      const adminSession = validateAdminSession();
-      setIsAdmin(adminSession);
-      setLoading(false);
+      try {
+        const adminSession = validateAdminSession();
+        setIsAdmin(adminSession);
+      } catch (error) {
+        console.log('Admin session check failed:', error);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
     };
 
     checkAdminStatus();
