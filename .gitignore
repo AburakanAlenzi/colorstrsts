@@ -66,6 +66,11 @@ api_backup/
 backup/
 temp/
 
+# API routes (disabled for static export)
+src/app/api/
+**/api/route.ts
+**/api/**/route.ts
+
 # Development configuration files
 next.config.dev.js
 next.config.temp.js

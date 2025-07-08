@@ -47,7 +47,7 @@ const nextConfig = {
   },
   // Enable static exports for deployment
   output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? 'export' : undefined,
-  trailingSlash: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? true : false,
+  trailingSlash: !!(process.env.NETLIFY || process.env.NODE_ENV === 'production'),
   distDir: 'out',
 
   // إعدادات خاصة بـ Capacitor
