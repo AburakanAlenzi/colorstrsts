@@ -11,6 +11,8 @@ import { ExcelManagement } from './excel-management';
 import { TestsManagement } from './tests-management';
 import TestsManagementNew from './TestsManagementNew';
 import { ColorResultsManagement } from './color-results-management';
+import { SubscriptionManagement } from './SubscriptionManagement';
+import { STCPaySettings } from './STCPaySettings';
 import {
   ChartBarIcon,
   BeakerIcon,
@@ -24,7 +26,9 @@ import {
   CheckCircleIcon,
   CircleStackIcon,
   TableCellsIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CreditCardIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 
 interface AdminDashboardProps {
@@ -57,6 +61,8 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
     { id: 'dashboard', name: lang === 'ar' ? 'لوحة التحكم' : 'Dashboard', icon: ChartBarIcon },
     { id: 'tests', name: lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management', icon: BeakerIcon },
     { id: 'colors', name: lang === 'ar' ? 'إدارة النتائج اللونية' : 'Color Results', icon: SwatchIcon },
+    { id: 'subscriptions', name: lang === 'ar' ? 'إدارة الاشتراكات' : 'Subscriptions', icon: CreditCardIcon },
+    { id: 'payments', name: lang === 'ar' ? 'إعدادات الدفع' : 'Payment Settings', icon: Cog6ToothIcon },
     { id: 'reports', name: lang === 'ar' ? 'التقارير' : 'Reports', icon: DocumentTextIcon },
     { id: 'database', name: lang === 'ar' ? 'قاعدة البيانات' : 'Database', icon: CircleStackIcon },
     { id: 'excel', name: lang === 'ar' ? 'ملفات Excel' : 'Excel Files', icon: TableCellsIcon }
@@ -173,6 +179,10 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
         return <TestsManagementNew translations={getTranslationsSync(lang).testsManagement} isRTL={lang === 'ar'} />;
       case 'colors':
         return <ColorResultsManagement lang={lang} />;
+      case 'subscriptions':
+        return <SubscriptionManagement lang={lang} />;
+      case 'payments':
+        return <STCPaySettings lang={lang} />;
       case 'reports':
         return <ReportsSystem lang={lang} />;
       case 'database':
@@ -296,20 +306,20 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
 
           <div className="space-y-4">
             <button
-              onClick={() => window.location.href = `/${lang}/admin/subscribers`}
+              onClick={() => setActiveTab('subscriptions')}
               className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl p-4 flex items-center space-x-4 rtl:space-x-reverse transition-all duration-200 transform hover:scale-105"
             >
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <UsersIcon className="h-6 w-6" />
+                <CreditCardIcon className="h-6 w-6" />
               </div>
               <div className="text-left rtl:text-right">
-                <div className="font-semibold">{lang === 'ar' ? 'إدارة المشتركين' : 'Subscribers Management'}</div>
-                <div className="text-sm opacity-90">{lang === 'ar' ? 'الاشتراكات و STC Pay' : 'Subscriptions & STC Pay'}</div>
+                <div className="font-semibold">{lang === 'ar' ? 'إدارة الاشتراكات' : 'Subscription Management'}</div>
+                <div className="text-sm opacity-90">{lang === 'ar' ? 'المستخدمين والمدفوعات' : 'Users & Payments'}</div>
               </div>
             </button>
 
             <button
-              onClick={() => window.location.href = `/${lang}/admin/tests`}
+              onClick={() => setActiveTab('tests')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl p-4 flex items-center space-x-4 rtl:space-x-reverse transition-all duration-200 transform hover:scale-105"
             >
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -318,6 +328,19 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
               <div className="text-left rtl:text-right">
                 <div className="font-semibold">{lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management'}</div>
                 <div className="text-sm opacity-90">{lang === 'ar' ? 'إضافة وتحرير وحذف' : 'Add, Edit & Delete'}</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('payments')}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl p-4 flex items-center space-x-4 rtl:space-x-reverse transition-all duration-200 transform hover:scale-105"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Cog6ToothIcon className="h-6 w-6" />
+              </div>
+              <div className="text-left rtl:text-right">
+                <div className="font-semibold">{lang === 'ar' ? 'إعدادات الدفع' : 'Payment Settings'}</div>
+                <div className="text-sm opacity-90">{lang === 'ar' ? 'STC Pay وإعدادات النظام' : 'STC Pay & System Config'}</div>
               </div>
             </button>
           </div>

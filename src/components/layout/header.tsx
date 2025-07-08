@@ -96,7 +96,6 @@ export function Header({ lang }: HeaderProps) {
     { name: t('navigation.home'), href: `/${lang}` },
     { name: t('navigation.tests'), href: `/${lang}/tests` },
     { name: t('navigation.results'), href: `/${lang}/results` },
-    { name: t('navigation.subscription'), href: `/${lang}/subscription` },
     { name: t('navigation.contact'), href: `/${lang}/contact` },
   ];
 

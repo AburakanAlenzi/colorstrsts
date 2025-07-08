@@ -238,26 +238,31 @@ export function UserStats({ lang }: UserStatsProps) {
             </a>
           </Button>
           
-          {!stats.isSubscribed && stats.freeTestsRemaining <= 1 && (
-            <Button
-              variant="outline"
-              className="border-yellow-300 text-yellow-700 hover:bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:hover:bg-yellow-900/20"
-              onClick={() => window.location.href = `/${lang}/subscription`}
-            >
-              <StarIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-              {lang === 'ar' ? 'ترقية للمميز' : 'Upgrade to Premium'}
-            </Button>
-          )}
+          {/* أزرار الاشتراك للمستخدمين العاديين فقط */}
+          {user && !user.email?.includes('admin') && (
+            <>
+              {!stats.isSubscribed && stats.freeTestsRemaining <= 1 && (
+                <Button
+                  variant="outline"
+                  className="border-yellow-300 text-yellow-700 hover:bg-yellow-50 dark:border-yellow-600 dark:text-yellow-400 dark:hover:bg-yellow-900/20"
+                  onClick={() => window.location.href = `/${lang}/subscription`}
+                >
+                  <StarIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                  {lang === 'ar' ? 'ترقية للمميز' : 'Upgrade to Premium'}
+                </Button>
+              )}
 
-          {stats.isSubscribed && stats.subscription && (
-            <Button
-              variant="outline"
-              className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20"
-              onClick={() => window.location.href = `/${lang}/subscription`}
-            >
-              <CreditCardIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-              {lang === 'ar' ? 'إدارة الاشتراك' : 'Manage Subscription'}
-            </Button>
+              {stats.isSubscribed && stats.subscription && (
+                <Button
+                  variant="outline"
+                  className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20"
+                  onClick={() => window.location.href = `/${lang}/subscription`}
+                >
+                  <CreditCardIcon className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                  {lang === 'ar' ? 'إدارة الاشتراك' : 'Manage Subscription'}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>
