@@ -35,6 +35,7 @@ export function ResultsPage({ lang }: ResultsPageProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const t = getTranslationsSync(lang);
+  const isRTL = lang === 'ar';
 
   useEffect(() => {
     const loadResults = () => {
@@ -100,7 +101,7 @@ export function ResultsPage({ lang }: ResultsPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950">
+    <div className={`min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-primary-950 dark:via-background dark:to-secondary-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
