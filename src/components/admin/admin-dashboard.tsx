@@ -186,87 +186,160 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
 
   const renderDashboard = () => (
     <div className="space-y-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">
-                {lang === 'ar' ? 'إجمالي الاختبارات' : 'Total Tests'}
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalTests}</p>
-            </div>
-            <BeakerIcon className="h-8 w-8 text-primary-600" />
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl p-8 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              {lang === 'ar' ? 'مرحباً بك في لوحة الإدارة' : 'Welcome to Admin Dashboard'}
+            </h1>
+            <p className="text-cyan-100">
+              {lang === 'ar' ? 'إدارة شاملة لنظام اختبارات الألوان' : 'Comprehensive management for color testing system'}
+            </p>
           </div>
-        </div>
-
-        <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">
-                {lang === 'ar' ? 'النتائج اللونية' : 'Color Results'}
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalColors}</p>
+          <div className="hidden md:block">
+            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+              <ChartBarIcon className="h-10 w-10 text-white" />
             </div>
-            <SwatchIcon className="h-8 w-8 text-primary-600" />
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">
-                {lang === 'ar' ? 'جلسات الاختبار' : 'Test Sessions'}
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.totalSessions}</p>
-            </div>
-            <UsersIcon className="h-8 w-8 text-primary-600" />
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">
-                {lang === 'ar' ? 'حالة النظام' : 'System Health'}
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {lang === 'ar' ? 'ممتاز' : 'Excellent'}
-              </p>
-            </div>
-            <CheckCircleIcon className="h-8 w-8 text-green-600" />
           </div>
         </div>
       </div>
 
-      {/* Admin Management */}
-      <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          {lang === 'ar' ? 'إدارة النظام' : 'System Management'}
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <Button
-            onClick={() => window.location.href = `/${lang}/admin/subscribers`}
-            className="flex items-center justify-center space-x-2 rtl:space-x-reverse h-20"
-          >
-            <UsersIcon className="h-6 w-6" />
-            <div className="text-center">
-              <div className="font-medium">{lang === 'ar' ? 'إدارة المشتركين' : 'Subscribers Management'}</div>
-              <div className="text-xs opacity-80">{lang === 'ar' ? 'الاشتراكات و STC Pay' : 'Subscriptions & STC Pay'}</div>
+      {/* Stats Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Tests Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {lang === 'ar' ? 'إجمالي الاختبارات' : 'Total Tests'}
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stats.totalTests}</p>
+              <div className="flex items-center mt-2">
+                <span className="text-green-500 text-sm font-medium">+12%</span>
+                <span className="text-gray-500 text-sm ml-2">{lang === 'ar' ? 'هذا الشهر' : 'this month'}</span>
+              </div>
             </div>
-          </Button>
-
-          <Button
-            onClick={() => window.location.href = `/${lang}/admin/tests`}
-            className="flex items-center justify-center space-x-2 rtl:space-x-reverse h-20"
-          >
-            <BeakerIcon className="h-6 w-6" />
-            <div className="text-center">
-              <div className="font-medium">{lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management'}</div>
-              <div className="text-xs opacity-80">{lang === 'ar' ? 'إضافة وتحرير وحذف' : 'Add, Edit & Delete'}</div>
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <BeakerIcon className="h-6 w-6 text-blue-600" />
             </div>
-          </Button>
+          </div>
+        </div>
+
+        {/* Color Results Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {lang === 'ar' ? 'النتائج اللونية' : 'Color Results'}
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stats.totalColors}</p>
+              <div className="flex items-center mt-2">
+                <span className="text-purple-500 text-sm font-medium">+8%</span>
+                <span className="text-gray-500 text-sm ml-2">{lang === 'ar' ? 'هذا الأسبوع' : 'this week'}</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+              <SwatchIcon className="h-6 w-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Test Sessions Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {lang === 'ar' ? 'جلسات الاختبار' : 'Test Sessions'}
+              </p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{stats.totalSessions}</p>
+              <div className="flex items-center mt-2">
+                <span className="text-green-500 text-sm font-medium">+24%</span>
+                <span className="text-gray-500 text-sm ml-2">{lang === 'ar' ? 'اليوم' : 'today'}</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <UsersIcon className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* System Health Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {lang === 'ar' ? 'حالة النظام' : 'System Health'}
+              </p>
+              <p className="text-3xl font-bold text-green-600 mt-2">
+                {lang === 'ar' ? 'ممتاز' : 'Excellent'}
+              </p>
+              <div className="flex items-center mt-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-gray-500 text-sm">{lang === 'ar' ? 'جميع الأنظمة تعمل' : 'All systems operational'}</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <CheckCircleIcon className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Management Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+            {lang === 'ar' ? 'الإجراءات السريعة' : 'Quick Actions'}
+          </h3>
+
+          <div className="space-y-4">
+            <button
+              onClick={() => window.location.href = `/${lang}/admin/subscribers`}
+              className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl p-4 flex items-center space-x-4 rtl:space-x-reverse transition-all duration-200 transform hover:scale-105"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <UsersIcon className="h-6 w-6" />
+              </div>
+              <div className="text-left rtl:text-right">
+                <div className="font-semibold">{lang === 'ar' ? 'إدارة المشتركين' : 'Subscribers Management'}</div>
+                <div className="text-sm opacity-90">{lang === 'ar' ? 'الاشتراكات و STC Pay' : 'Subscriptions & STC Pay'}</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => window.location.href = `/${lang}/admin/tests`}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl p-4 flex items-center space-x-4 rtl:space-x-reverse transition-all duration-200 transform hover:scale-105"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <BeakerIcon className="h-6 w-6" />
+              </div>
+              <div className="text-left rtl:text-right">
+                <div className="font-semibold">{lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management'}</div>
+                <div className="text-sm opacity-90">{lang === 'ar' ? 'إضافة وتحرير وحذف' : 'Add, Edit & Delete'}</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Analytics Chart Placeholder */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+            {lang === 'ar' ? 'إحصائيات الاستخدام' : 'Usage Analytics'}
+          </h3>
+
+          <div className="h-64 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl flex items-center justify-center">
+            <div className="text-center">
+              <ChartBarIcon className="h-16 w-16 text-blue-400 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400">
+                {lang === 'ar' ? 'مخطط الإحصائيات' : 'Analytics Chart'}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                {lang === 'ar' ? 'قريباً...' : 'Coming Soon...'}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

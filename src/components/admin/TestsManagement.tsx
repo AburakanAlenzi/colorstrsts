@@ -4,7 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Edit, Trash2, Save, X, TestTube } from 'lucide-react';
+import {
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+  CheckIcon,
+  XMarkIcon,
+  BeakerIcon
+} from '@heroicons/react/24/outline';
 
 interface ChemicalTest {
   id: string;
@@ -159,7 +166,7 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
           </p>
         </div>
         <Button onClick={() => setShowAddForm(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+          <PlusIcon className="h-4 w-4" />
           {isRTL ? 'إضافة اختبار جديد' : 'Add New Test'}
         </Button>
       </div>
@@ -232,11 +239,11 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
             </div>
             <div className="flex gap-2">
               <Button onClick={handleAddTest} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
+                <CheckIcon className="h-4 w-4" />
                 {isRTL ? 'حفظ' : 'Save'}
               </Button>
               <Button variant="outline" onClick={() => setShowAddForm(false)} className="flex items-center gap-2">
-                <X className="h-4 w-4" />
+                <XMarkIcon className="h-4 w-4" />
                 {isRTL ? 'إلغاء' : 'Cancel'}
               </Button>
             </div>
@@ -251,7 +258,7 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
-                  <TestTube className="h-5 w-5 text-blue-600" />
+                  <BeakerIcon className="h-5 w-5 text-blue-600" />
                   <div>
                     <CardTitle className="text-lg">
                       {isRTL ? test.method_name_ar : test.method_name}
@@ -268,7 +275,7 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
                     onClick={() => handleEdit(test)}
                     className="flex items-center gap-1"
                   >
-                    <Edit className="h-3 w-3" />
+                    <PencilIcon className="h-3 w-3" />
                     {isRTL ? 'تحرير' : 'Edit'}
                   </Button>
                   <Button
@@ -277,7 +284,7 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
                     onClick={() => handleDelete(test.id)}
                     className="flex items-center gap-1 text-red-600 hover:text-red-700"
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <TrashIcon className="h-3 w-3" />
                     {isRTL ? 'حذف' : 'Delete'}
                   </Button>
                 </div>
@@ -312,11 +319,11 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={handleSaveEdit} className="flex items-center gap-2">
-                    <Save className="h-4 w-4" />
+                    <CheckIcon className="h-4 w-4" />
                     {isRTL ? 'حفظ' : 'Save'}
                   </Button>
                   <Button variant="outline" onClick={handleCancelEdit} className="flex items-center gap-2">
-                    <X className="h-4 w-4" />
+                    <XMarkIcon className="h-4 w-4" />
                     {isRTL ? 'إلغاء' : 'Cancel'}
                   </Button>
                 </div>
@@ -342,7 +349,7 @@ export default function TestsManagement({ isRTL }: TestsManagementProps) {
       {tests.length === 0 && (
         <Card>
           <CardContent className="text-center py-8">
-            <TestTube className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <BeakerIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">
               {isRTL ? 'لا توجد اختبارات متاحة' : 'No tests available'}
             </p>

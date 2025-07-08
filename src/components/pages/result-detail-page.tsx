@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Language } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PrintReport } from '@/components/print/PrintReport';
 import {
   ArrowLeftIcon,
   BeakerIcon,
@@ -14,7 +15,8 @@ import {
   DocumentTextIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  PrinterIcon
 } from '@heroicons/react/24/outline';
 
 interface ResultDetailPageProps {
@@ -42,6 +44,7 @@ interface TestResult {
 export function ResultDetailPage({ lang, resultId }: ResultDetailPageProps) {
   const [result, setResult] = useState<TestResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPrintView, setShowPrintView] = useState(false);
   const router = useRouter();
   const isRTL = lang === 'ar';
 
@@ -163,7 +166,7 @@ export function ResultDetailPage({ lang, resultId }: ResultDetailPageProps) {
               <ArrowLeftIcon className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`} />
               <span>{isRTL ? 'رجوع' : 'Back'}</span>
             </Button>
-            
+
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
                 <BeakerIcon className="h-5 w-5 text-white" />
@@ -177,6 +180,14 @@ export function ResultDetailPage({ lang, resultId }: ResultDetailPageProps) {
                 </p>
               </div>
             </div>
+
+            <Button
+              onClick={() => setShowPrintView(true)}
+              className="flex items-center space-x-2 rtl:space-x-reverse bg-green-600 hover:bg-green-700"
+            >
+              <PrinterIcon className="h-4 w-4" />
+              <span>{isRTL ? 'طباعة التقرير' : 'Print Report'}</span>
+            </Button>
           </div>
 
           {/* Test Information */}
@@ -317,6 +328,29 @@ export function ResultDetailPage({ lang, resultId }: ResultDetailPageProps) {
           )}
         </div>
       </div>
+
+      {/* Print View Modal */}
+      {showPrintView && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold">
+                {isRTL ? 'معاينة الطباعة' : 'Print Preview'}
+              </h2>
+              <Button
+                variant="outline"
+                onClick={() => setShowPrintView(false)}
+                className="flex items-center space-x-2 rtl:space-x-reverse"
+              >
+                <span>{isRTL ? 'إغلاق' : 'Close'}</span>
+              </Button>
+            </div>
+            <div className="p-4">
+              <PrintReport lang={lang} testResult={result} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -59,16 +59,22 @@ export default async function Dashboard({ params }: DashboardPageProps) {
         {/* Main Content */}
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-              {/* Sidebar - Stats and Quick Actions */}
-              <div className={`xl:col-span-1 space-y-6 ${isRTL ? 'xl:order-1' : 'xl:order-1'}`}>
-                <UserStats lang={lang} />
-                <QuickActions lang={lang} />
+            <div className="space-y-8">
+              {/* Quick Actions */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <QuickActions lang={lang} />
+                </div>
               </div>
 
-              {/* Main Content - Recent Tests */}
-              <div className={`xl:col-span-3 ${isRTL ? 'xl:order-2' : 'xl:order-2'}`}>
+              {/* Recent Tests - Full Width */}
+              <div className="w-full">
                 <RecentTests lang={lang} />
+              </div>
+
+              {/* User Stats - Below Recent Tests */}
+              <div className="w-full">
+                <UserStats lang={lang} />
               </div>
             </div>
           </div>
