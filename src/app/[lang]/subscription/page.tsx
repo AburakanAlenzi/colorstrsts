@@ -3,6 +3,14 @@ import { Language } from '@/types';
 import { SubscriptionPlans } from '@/components/subscription/SubscriptionPlans';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface SubscriptionPageProps {
   params: Promise<{
     lang: Language;

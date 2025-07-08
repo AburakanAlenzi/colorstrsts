@@ -3,6 +3,14 @@ import { Language } from '@/types';
 import { PaymentSuccess } from '@/components/subscription/PaymentSuccess';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface PaymentSuccessPageProps {
   params: Promise<{
     lang: Language;

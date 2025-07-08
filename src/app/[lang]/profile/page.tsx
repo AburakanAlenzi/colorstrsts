@@ -5,6 +5,14 @@ import { getAllTranslations } from '@/lib/translations';
 import UserProfile from '@/components/profile/UserProfile';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface PageProps {
   params: Promise<{
     lang: Language;

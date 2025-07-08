@@ -4,6 +4,14 @@ import { Language } from '@/types';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import SettingsPage from '@/components/pages/settings-page';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface PageProps {
   params: Promise<{
     lang: Language;

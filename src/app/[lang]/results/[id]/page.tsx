@@ -11,6 +11,26 @@ interface ResultDetailPageProps {
   }>;
 }
 
+// Generate static params for static export
+export async function generateStaticParams() {
+  // Generate common language and sample result combinations
+  const languages = ['ar', 'en'];
+  const sampleResults = ['sample-1', 'sample-2', 'sample-3', 'demo-result'];
+
+  const params = [];
+
+  for (const lang of languages) {
+    for (const id of sampleResults) {
+      params.push({
+        lang,
+        id
+      });
+    }
+  }
+
+  return params;
+}
+
 export async function generateMetadata({ params }: ResultDetailPageProps): Promise<Metadata> {
   const { lang, id } = await params;
 

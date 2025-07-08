@@ -3,6 +3,14 @@ import { Language } from '@/types';
 import { getTranslations } from '@/lib/translations';
 import { ExclamationTriangleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface SafetyPageProps {
   params: Promise<{
     lang: Language;

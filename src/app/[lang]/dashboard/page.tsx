@@ -6,6 +6,14 @@ import { UserStats } from '@/components/profile/UserStats';
 import { RecentTests } from '@/components/dashboard/RecentTests';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 
+// Generate static params for supported languages
+export async function generateStaticParams() {
+  return [
+    { lang: 'ar' },
+    { lang: 'en' },
+  ];
+}
+
 interface DashboardPageProps {
   params: Promise<{
     lang: Language;
