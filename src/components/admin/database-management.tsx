@@ -17,6 +17,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { firebaseTestsService, TestStatistics } from '@/lib/firebase-tests-service';
 import { databaseColorTestService } from '@/lib/database-color-test-service';
+import {
+  runFirebaseDiagnostics,
+  fixCommonFirebaseIssues,
+  createSampleData,
+  exportFirebaseData,
+  type FirebaseDiagnostics
+} from '@/lib/firebase-diagnostics';
 import toast from 'react-hot-toast';
 
 interface DatabaseManagementProps {
@@ -48,6 +55,8 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
   const [loading, setLoading] = useState(false);
   const [backupLoading, setBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
+  const [diagnostics, setDiagnostics] = useState<FirebaseDiagnostics | null>(null);
+  const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
   const [statistics, setStatistics] = useState<TestStatistics | null>(null);
@@ -102,6 +111,59 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
       case 'warning': return <ExclamationTriangleIcon className="h-5 w-5" />;
       case 'error': return <ExclamationTriangleIcon className="h-5 w-5" />;
       default: return <ClockIcon className="h-5 w-5" />;
+    }
+  };
+
+  // تشخيص Firebase شامل
+  const runDiagnostics = async () => {
+    setDiagnosticsLoading(true);
+    try {
+      const result = await runFirebaseDiagnostics();
+      setDiagnostics(result);
+
+      // تحديث حالة قاعدة البيانات بناءً على التشخيص
+      setDbStatus(prev => ({
+        ...prev,
+        totalRecords: result.totalRecords,
+        firebaseConnected: result.isConnected,
+        status: result.isConnected ? (result.totalRecords > 0 ? 'healthy' : 'warning') : 'error',
+        size: `${result.totalSize.toFixed(2)} KB`,
+        lastSync: new Date().toLocaleString(lang === 'ar' ? 'ar-SA' : 'en-US')
+      }));
+
+      if (result.errors.length > 0) {
+        toast.error(lang === 'ar' ? 'تم العثور على أخطاء في التشخيص' : 'Errors found in diagnostics');
+      } else {
+        toast.success(lang === 'ar' ? 'تم التشخيص بنجاح' : 'Diagnostics completed successfully');
+      }
+
+    } catch (error) {
+      console.error('Error running diagnostics:', error);
+      toast.error(lang === 'ar' ? 'فشل في تشخيص Firebase' : 'Failed to run Firebase diagnostics');
+    } finally {
+      setDiagnosticsLoading(false);
+    }
+  };
+
+  // إصلاح مشاكل Firebase
+  const fixFirebaseIssues = async () => {
+    setLoading(true);
+    try {
+      const result = await fixCommonFirebaseIssues();
+
+      if (result.success) {
+        toast.success(lang === 'ar' ? result.messageAr : result.message);
+        // إعادة تشغيل التشخيص بعد الإصلاح
+        await runDiagnostics();
+      } else {
+        toast.error(lang === 'ar' ? result.messageAr : result.message);
+      }
+
+    } catch (error) {
+      console.error('Error fixing Firebase issues:', error);
+      toast.error(lang === 'ar' ? 'فشل في إصلاح المشاكل' : 'Failed to fix issues');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -384,7 +446,51 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
           {lang === 'ar' ? 'عمليات قاعدة البيانات' : 'Database Operations'}
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Firebase Diagnostics */}
+          <div className="space-y-3">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100">
+              {lang === 'ar' ? 'تشخيص Firebase' : 'Firebase Diagnostics'}
+            </h4>
+            <Button
+              onClick={runDiagnostics}
+              disabled={diagnosticsLoading}
+              className="w-full flex items-center justify-center space-x-2 rtl:space-x-reverse"
+            >
+              {diagnosticsLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : (
+                <WrenchScrewdriverIcon className="h-4 w-4" />
+              )}
+              <span>
+                {diagnosticsLoading
+                  ? (lang === 'ar' ? 'جاري التشخيص...' : 'Running Diagnostics...')
+                  : (lang === 'ar' ? 'تشخيص شامل' : 'Run Diagnostics')
+                }
+              </span>
+            </Button>
+
+            {/* Fix Issues Button */}
+            <Button
+              onClick={fixFirebaseIssues}
+              disabled={loading}
+              variant="outline"
+              className="w-full flex items-center justify-center space-x-2 rtl:space-x-reverse"
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+              ) : (
+                <WrenchScrewdriverIcon className="h-4 w-4" />
+              )}
+              <span>
+                {loading
+                  ? (lang === 'ar' ? 'جاري الإصلاح...' : 'Fixing...')
+                  : (lang === 'ar' ? 'إصلاح المشاكل' : 'Fix Issues')
+                }
+              </span>
+            </Button>
+          </div>
+
           {/* Backup */}
           <div className="space-y-4">
             <div className="text-center">
@@ -517,6 +623,100 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
           </div>
         </div>
       </div>
+
+      {/* Diagnostics Results */}
+      {diagnostics && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 p-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+            {lang === 'ar' ? 'نتائج التشخيص' : 'Diagnostics Results'}
+          </h3>
+
+          {/* Connection Status */}
+          <div className="mb-6">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse mb-2">
+              {diagnostics.isConnected ? (
+                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+              ) : (
+                <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
+              )}
+              <span className="font-medium">
+                {lang === 'ar' ? 'حالة الاتصال:' : 'Connection Status:'}
+              </span>
+              <span className={diagnostics.isConnected ? 'text-green-600' : 'text-red-600'}>
+                {diagnostics.isConnected
+                  ? (lang === 'ar' ? 'متصل' : 'Connected')
+                  : (lang === 'ar' ? 'غير متصل' : 'Disconnected')
+                }
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {lang === 'ar' ? `معرف المشروع: ${diagnostics.projectId}` : `Project ID: ${diagnostics.projectId}`}
+            </p>
+          </div>
+
+          {/* Collections Info */}
+          {diagnostics.collections.length > 0 && (
+            <div className="mb-6">
+              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">
+                {lang === 'ar' ? 'المجموعات:' : 'Collections:'}
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {diagnostics.collections.map((collection, index) => (
+                  <div key={index} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">{collection.name}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {collection.count} {lang === 'ar' ? 'سجل' : 'records'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {collection.size}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Errors */}
+          {diagnostics.errors.length > 0 && (
+            <div className="mb-6">
+              <h4 className="font-medium text-red-600 mb-3">
+                {lang === 'ar' ? 'الأخطاء المكتشفة:' : 'Detected Errors:'}
+              </h4>
+              <div className="space-y-2">
+                {diagnostics.errors.map((error, index) => (
+                  <div key={index} className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-2xl font-bold text-blue-600">{diagnostics.totalRecords}</p>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                {lang === 'ar' ? 'إجمالي السجلات' : 'Total Records'}
+              </p>
+            </div>
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <p className="text-2xl font-bold text-green-600">{diagnostics.totalSize.toFixed(2)} KB</p>
+              <p className="text-sm text-green-700 dark:text-green-300">
+                {lang === 'ar' ? 'الحجم التقديري' : 'Estimated Size'}
+              </p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <p className="text-2xl font-bold text-purple-600">{diagnostics.collections.length}</p>
+              <p className="text-sm text-purple-700 dark:text-purple-300">
+                {lang === 'ar' ? 'المجموعات' : 'Collections'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
