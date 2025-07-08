@@ -9,7 +9,7 @@ import {
   XCircleIcon,
   CreditCardIcon,
   ArrowLeftIcon,
-  RefreshCcwIcon
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 interface PaymentCancelProps {
@@ -142,11 +142,11 @@ export function PaymentCancel({ lang }: PaymentCancelProps) {
 
           {/* Action Buttons */}
           <div className="space-y-4">
-            <Button 
+            <Button
               onClick={() => router.push(`/${lang}/subscription`)}
               className="w-full flex items-center justify-center space-x-2 rtl:space-x-reverse"
             >
-              <RefreshCcwIcon className="h-4 w-4" />
+              <ArrowPathIcon className="h-4 w-4" />
               <span>{isRTL ? 'المحاولة مرة أخرى' : 'Try Again'}</span>
             </Button>
             

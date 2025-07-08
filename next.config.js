@@ -45,10 +45,10 @@ const nextConfig = {
       },
     ];
   },
-  // Enable static exports for deployment (disabled for API routes)
-  // output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? 'export' : undefined,
-  // trailingSlash: process.env.NETLIFY || process.env.NODE_ENV === 'production',
-  // distDir: 'out',
+  // Enable static exports for deployment
+  output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  trailingSlash: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? true : false,
+  distDir: 'out',
 
   // إعدادات خاصة بـ Capacitor
   assetPrefix: '',

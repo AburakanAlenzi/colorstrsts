@@ -15,7 +15,7 @@ import {
   CreditCardIcon,
   ShieldCheckIcon,
   ClockIcon,
-  InfinityIcon
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 
@@ -254,7 +254,7 @@ export function SubscriptionPlans({ lang }: SubscriptionPlansProps) {
                   <div className="mb-6 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
                       {plan.testLimit === -1 ? (
-                        <InfinityIcon className="h-5 w-5 text-blue-500" />
+                        <ArrowPathIcon className="h-5 w-5 text-blue-500" />
                       ) : (
                         <ClockIcon className="h-5 w-5 text-blue-500" />
                       )}
