@@ -11,10 +11,10 @@ import {
 
 // STC Pay Configuration
 const STC_PAY_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_STC_PAY_BASE_URL || 'https://api.stcpay.com.sa',
-  merchantId: process.env.NEXT_PUBLIC_STC_PAY_MERCHANT_ID || 'demo_merchant',
-  apiKey: process.env.STC_PAY_API_KEY || 'demo_api_key',
-  environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+  baseUrl: (typeof window === 'undefined' ? process.env.NEXT_PUBLIC_STC_PAY_BASE_URL : '') || 'https://api.stcpay.com.sa',
+  merchantId: (typeof window === 'undefined' ? process.env.NEXT_PUBLIC_STC_PAY_MERCHANT_ID : '') || 'demo_merchant',
+  apiKey: (typeof window === 'undefined' ? process.env.STC_PAY_API_KEY : '') || 'demo_api_key',
+  environment: (typeof window === 'undefined' && process.env.NODE_ENV === 'production') ? 'production' : 'sandbox'
 };
 
 class STCPayService {
@@ -33,11 +33,12 @@ class STCPayService {
    */
   async createPayment(request: STCPaymentRequest): Promise<STCPaymentResponse> {
     try {
-      // في البيئة التجريبية، نقوم بمحاكاة الاستجابة
-      if (STC_PAY_CONFIG.environment === 'sandbox') {
+      // في البيئة التجريبية أو client-side، نقوم بمحاكاة الاستجابة
+      if (STC_PAY_CONFIG.environment === 'sandbox' || typeof window !== 'undefined') {
         return this.mockCreatePayment(request);
       }
 
+      // في بيئة الخادم فقط
       const response = await fetch(`${this.baseUrl}/v1/payments`, {
         method: 'POST',
         headers: {
@@ -94,11 +95,12 @@ class STCPayService {
    */
   async checkPaymentStatus(transactionId: string): Promise<PaymentStatus> {
     try {
-      // في البيئة التجريبية، نقوم بمحاكاة الاستجابة
-      if (STC_PAY_CONFIG.environment === 'sandbox') {
+      // في البيئة التجريبية أو client-side، نقوم بمحاكاة الاستجابة
+      if (STC_PAY_CONFIG.environment === 'sandbox' || typeof window !== 'undefined') {
         return this.mockCheckPaymentStatus(transactionId);
       }
 
+      // في بيئة الخادم فقط
       const response = await fetch(`${this.baseUrl}/v1/payments/${transactionId}`, {
         method: 'GET',
         headers: {
