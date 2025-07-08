@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
-import { 
+import {
   LockClosedIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -12,6 +12,7 @@ import {
   ShieldCheckIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import { EmergencyAccess } from './EmergencyAccess';
 
 interface AdminLoginProps {
   lang: Language;

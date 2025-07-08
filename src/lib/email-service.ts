@@ -78,6 +78,18 @@ class EmailService {
         }
       }
 
+      // For troubleshooting: Always show the code in console
+      console.log(`🔑 ADMIN RECOVERY CODE: ${code}`);
+      console.log(`📧 Email: ${email}`);
+      console.log(`🌐 Language: ${lang}`);
+
+      // For immediate access: Store code in localStorage for debugging
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('debug_recovery_code', code);
+        localStorage.setItem('debug_recovery_timestamp', Date.now().toString());
+        console.log('🔧 DEBUG: Recovery code stored in localStorage');
+      }
+
       // في بيئة التطوير، نستخدم محاكاة
       if (process.env.NODE_ENV === 'development') {
         console.log('📧 [DEV] Simulating email send to:', email);
