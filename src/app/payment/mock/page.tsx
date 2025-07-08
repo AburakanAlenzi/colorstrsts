@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,11 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline';
 
-export default function MockPaymentPage() {
+// Required for static export
+export const dynamic = 'force-static';
+
+// Component that uses useSearchParams wrapped in Suspense
+function MockPaymentContent() {
   const [processing, setProcessing] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const router = useRouter();
@@ -146,15 +150,28 @@ export default function MockPaymentPage() {
   );
 }
 
-// Auto-redirect after 5 seconds
-setTimeout(() => {
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const transactionId = urlParams.get('transaction_id');
-    const lang = window.location.pathname.includes('/ar/') ? 'ar' : 'en';
-    
-    if (transactionId) {
-      window.location.href = `/${lang}/subscription/success?transaction_id=${transactionId}&status=completed`;
-    }
-  }
-}, 5000);
+// Loading component for Suspense fallback
+function LoadingPayment() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Card className="max-w-md w-full">
+        <CardHeader className="text-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ClockIcon className="h-8 w-8 text-blue-600 animate-spin" />
+          </div>
+          <CardTitle>Loading Payment Gateway</CardTitle>
+          <CardDescription>Please wait...</CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function MockPaymentPage() {
+  return (
+    <Suspense fallback={<LoadingPayment />}>
+      <MockPaymentContent />
+    </Suspense>
+  );
+}
