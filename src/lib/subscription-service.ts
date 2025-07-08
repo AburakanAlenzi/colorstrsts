@@ -1,17 +1,27 @@
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  query, 
-  where, 
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  query,
+  where,
   getDocs,
   addDoc,
-  serverTimestamp 
+  serverTimestamp,
+  orderBy,
+  limit,
+  Timestamp
 } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import { db } from './firebase';
+import {
+  UserSubscription,
+  SubscriptionUsage,
+  PaymentHistory,
+  SubscriptionPlan,
+  SUBSCRIPTION_PLANS
+} from '@/types/subscription';
 
 export interface UserProfile {
   uid: string;
@@ -212,4 +222,203 @@ export async function updateUserSubscription(
     subscription: subscriptionData,
     updatedAt: serverTimestamp()
   });
+}
+
+// ===== STC Pay Integration Functions =====
+
+/**
+ * إنشاء اشتراك جديد مع STC Pay
+ */
+export async function createSTCSubscription(subscription: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  try {
+    const subscriptionId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const subscriptionData: UserSubscription = {
+      ...subscription,
+      id: subscriptionId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    await setDoc(doc(db, 'stc_subscriptions', subscriptionId), {
+      ...subscriptionData,
+      startDate: Timestamp.fromDate(subscriptionData.startDate),
+      endDate: Timestamp.fromDate(subscriptionData.endDate),
+      createdAt: Timestamp.fromDate(subscriptionData.createdAt),
+      updatedAt: Timestamp.fromDate(subscriptionData.updatedAt)
+    });
+
+    // تهيئة استخدام المستخدم
+    await initializeSTCUsage(subscription.userId, subscription.planId);
+
+    return subscriptionId;
+  } catch (error) {
+    console.error('Error creating STC subscription:', error);
+    throw new Error('Failed to create subscription');
+  }
+}
+
+/**
+ * الحصول على اشتراك المستخدم الحالي مع STC Pay
+ */
+export async function getUserSTCSubscription(userId: string): Promise<UserSubscription | null> {
+  try {
+    const q = query(
+      collection(db, 'stc_subscriptions'),
+      where('userId', '==', userId),
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc'),
+      limit(1)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const docData = querySnapshot.docs[0];
+    const data = docData.data();
+
+    return {
+      ...data,
+      startDate: data.startDate.toDate(),
+      endDate: data.endDate.toDate(),
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate()
+    } as UserSubscription;
+  } catch (error) {
+    console.error('Error getting user STC subscription:', error);
+    return null;
+  }
+}
+
+/**
+ * تحديث حالة اشتراك STC Pay
+ */
+export async function updateSTCSubscriptionStatus(
+  subscriptionId: string,
+  status: UserSubscription['status'],
+  transactionId?: string
+): Promise<void> {
+  try {
+    const updateData: any = {
+      status,
+      updatedAt: Timestamp.fromDate(new Date())
+    };
+
+    if (transactionId) {
+      updateData.transactionId = transactionId;
+    }
+
+    await updateDoc(doc(db, 'stc_subscriptions', subscriptionId), updateData);
+  } catch (error) {
+    console.error('Error updating STC subscription status:', error);
+    throw new Error('Failed to update subscription status');
+  }
+}
+
+/**
+ * التحقق من صحة اشتراك STC Pay
+ */
+export async function isSTCSubscriptionValid(userId: string): Promise<boolean> {
+  try {
+    const subscription = await getUserSTCSubscription(userId);
+
+    if (!subscription) {
+      return false;
+    }
+
+    if (subscription.status !== 'active') {
+      return false;
+    }
+
+    const now = new Date();
+    if (now > subscription.endDate) {
+      // انتهت صلاحية الاشتراك، تحديث الحالة
+      await updateSTCSubscriptionStatus(subscription.id, 'expired');
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error checking STC subscription validity:', error);
+    return false;
+  }
+}
+
+/**
+ * إضافة سجل دفع STC Pay
+ */
+export async function addSTCPaymentHistory(payment: Omit<PaymentHistory, 'id'>): Promise<void> {
+  try {
+    const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    await setDoc(doc(db, 'stc_payment_history', paymentId), {
+      ...payment,
+      id: paymentId,
+      paidAt: Timestamp.fromDate(payment.paidAt)
+    });
+  } catch (error) {
+    console.error('Error adding STC payment history:', error);
+    throw new Error('Failed to add payment history');
+  }
+}
+
+/**
+ * الحصول على تاريخ مدفوعات STC Pay
+ */
+export async function getSTCPaymentHistory(userId: string): Promise<PaymentHistory[]> {
+  try {
+    const q = query(
+      collection(db, 'stc_payment_history'),
+      where('userId', '==', userId),
+      orderBy('paidAt', 'desc')
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        ...data,
+        paidAt: data.paidAt.toDate()
+      } as PaymentHistory;
+    });
+  } catch (error) {
+    console.error('Error getting STC payment history:', error);
+    return [];
+  }
+}
+
+/**
+ * تهيئة استخدام المستخدم لـ STC Pay
+ */
+async function initializeSTCUsage(userId: string, planId: string): Promise<void> {
+  try {
+    const plan = SUBSCRIPTION_PLANS.find(p => p.id === planId);
+    if (!plan) {
+      throw new Error('Invalid plan ID');
+    }
+
+    const now = new Date();
+    const resetDate = new Date(now);
+    resetDate.setMonth(resetDate.getMonth() + 1);
+
+    const usage: SubscriptionUsage = {
+      userId,
+      planId,
+      testsUsed: 0,
+      testsLimit: plan.testLimit,
+      resetDate
+    };
+
+    await setDoc(doc(db, 'stc_subscription_usage', userId), {
+      ...usage,
+      resetDate: Timestamp.fromDate(usage.resetDate)
+    });
+  } catch (error) {
+    console.error('Error initializing STC usage:', error);
+    throw new Error('Failed to initialize usage');
+  }
 }
