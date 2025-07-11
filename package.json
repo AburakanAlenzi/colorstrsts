@@ -12,6 +12,8 @@
     "build:netlify": "node build-netlify.js",
     "build:debug": "node build-debug.js && npm run build",
     "build:simple": "next build",
+    "check-build": "node check-build.js",
+    "test-build": "node test-build.js",
     "start": "next start",
     "lint": "next lint",
     "type-check": "npx tsc --noEmit",
