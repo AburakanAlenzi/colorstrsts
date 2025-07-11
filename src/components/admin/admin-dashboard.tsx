@@ -12,6 +12,7 @@ import { TestsManagement } from './tests-management';
 import TestsManagementNew from './TestsManagementNew';
 import { ColorResultsManagement } from './color-results-management';
 import { SubscriptionManagement } from './SubscriptionManagement';
+import SubscriptionSettings from './SubscriptionSettings';
 import { STCPaySettings } from './STCPaySettings';
 import { UsageChart } from './UsageChart';
 import { exportTests } from '@/lib/firebase-tests';
@@ -30,7 +31,8 @@ import {
   TableCellsIcon,
   DocumentTextIcon,
   CreditCardIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  LockOpenIcon
 } from '@heroicons/react/24/outline';
 
 interface AdminDashboardProps {
@@ -64,6 +66,7 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
     { id: 'tests', name: lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management', icon: BeakerIcon },
     { id: 'colors', name: lang === 'ar' ? 'إدارة النتائج اللونية' : 'Color Results', icon: SwatchIcon },
     { id: 'subscriptions', name: lang === 'ar' ? 'إدارة الاشتراكات' : 'Subscriptions', icon: CreditCardIcon },
+    { id: 'subscription-settings', name: lang === 'ar' ? 'إعدادات الوصول' : 'Access Settings', icon: LockOpenIcon },
     { id: 'payments', name: lang === 'ar' ? 'إعدادات الدفع' : 'Payment Settings', icon: Cog6ToothIcon },
     { id: 'reports', name: lang === 'ar' ? 'التقارير' : 'Reports', icon: DocumentTextIcon },
     { id: 'database', name: lang === 'ar' ? 'قاعدة البيانات' : 'Database', icon: CircleStackIcon },
@@ -578,6 +581,8 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
         return <ColorResultsManagement lang={lang} />;
       case 'subscriptions':
         return <SubscriptionManagement lang={lang} />;
+      case 'subscription-settings':
+        return <SubscriptionSettings lang={lang} />;
       case 'payments':
         return <STCPaySettings lang={lang} />;
       case 'reports':

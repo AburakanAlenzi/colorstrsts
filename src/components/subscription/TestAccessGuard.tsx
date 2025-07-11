@@ -147,7 +147,18 @@ export function TestAccessGuard({
 
   // إذا كان الاختبار يتطلب اشتراك مميز
   if (accessStatus?.requiresSubscription) {
-    const isFreeTest = testIndex < 5;
+    // Get current settings to show accurate information
+    const settings = typeof window !== 'undefined' ?
+      (() => {
+        try {
+          const saved = localStorage.getItem('subscription_settings');
+          return saved ? JSON.parse(saved) : { freeTestsCount: 5 };
+        } catch {
+          return { freeTestsCount: 5 };
+        }
+      })() : { freeTestsCount: 5 };
+
+    const isFreeTest = testIndex < settings.freeTestsCount;
     
     return (
       <>
@@ -164,7 +175,7 @@ export function TestAccessGuard({
               <div className="bg-blue-50 p-3 rounded-md mb-4">
                 <p className="text-sm text-blue-800">
                   <Star className="w-4 h-4 inline mr-1" />
-                  أول 5 اختبارات مجانية للجميع
+                  أول {settings.freeTestsCount} اختبارات مجانية للجميع
                 </p>
                 <p className="text-sm text-blue-800">
                   <Crown className="w-4 h-4 inline mr-1" />

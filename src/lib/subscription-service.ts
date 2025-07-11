@@ -141,33 +141,85 @@ export async function recordTestUsage(
   }
 }
 
+// Get admin subscription settings
+function getSubscriptionSettings() {
+  try {
+    // Check global settings first
+    if (typeof window !== 'undefined' && (window as any).subscriptionSettings) {
+      return (window as any).subscriptionSettings;
+    }
+
+    // Fallback to localStorage
+    const savedSettings = localStorage.getItem('subscription_settings');
+    if (savedSettings) {
+      return JSON.parse(savedSettings);
+    }
+  } catch (error) {
+    console.error('Error loading subscription settings:', error);
+  }
+
+  // Default settings
+  return {
+    freeTestsEnabled: true,
+    freeTestsCount: 5,
+    premiumRequired: true,
+    globalFreeAccess: false,
+    specificPremiumTests: []
+  };
+}
+
 // التحقق من إمكانية الوصول للاختبار
 export async function canAccessTest(uid: string, testIndex: number): Promise<{
   canAccess: boolean;
   reason?: string;
   requiresSubscription?: boolean;
 }> {
+  // Get admin settings
+  const settings = getSubscriptionSettings();
+
+  // If global free access is enabled, allow all tests
+  if (settings.globalFreeAccess) {
+    return { canAccess: true };
+  }
+
   const userProfile = await getUserProfile(uid);
-  
+
   if (!userProfile) {
     return { canAccess: false, reason: 'User profile not found' };
   }
 
-  // أول 5 اختبارات مجانية (indices 0-4)
-  if (testIndex < 5) {
+  // Check if this specific test requires premium
+  if (settings.specificPremiumTests && settings.specificPremiumTests.includes(testIndex + 1)) {
+    // This test specifically requires premium
+    if (userProfile.subscription?.status === 'active' && userProfile.subscription?.plan === 'premium') {
+      return { canAccess: true };
+    }
+    return {
+      canAccess: false,
+      reason: 'Premium subscription required for this test',
+      requiresSubscription: true
+    };
+  }
+
+  // Check free tests limit
+  if (settings.freeTestsEnabled && testIndex < settings.freeTestsCount) {
     return { canAccess: true };
   }
 
-  // باقي الاختبارات تتطلب اشتراك نشط
-  if (userProfile.subscription?.status === 'active' && userProfile.subscription?.plan === 'premium') {
-    return { canAccess: true };
+  // If premium is required for advanced tests and user doesn't have premium
+  if (settings.premiumRequired && testIndex >= settings.freeTestsCount) {
+    if (userProfile.subscription?.status === 'active' && userProfile.subscription?.plan === 'premium') {
+      return { canAccess: true };
+    }
+    return {
+      canAccess: false,
+      reason: 'Premium subscription required',
+      requiresSubscription: true
+    };
   }
 
-  return { 
-    canAccess: false, 
-    reason: 'Premium subscription required',
-    requiresSubscription: true 
-  };
+  // Default allow access
+  return { canAccess: true };
 }
 
 // الحصول على إحصائيات الاستخدام

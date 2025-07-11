@@ -60,6 +60,7 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
   const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
   const [statistics, setStatistics] = useState<TestStatistics | null>(null);
+  const [cleanupLoading, setCleanupLoading] = useState(false);
 
   const t = getTranslationsSync(lang);
 
@@ -169,40 +170,151 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
 
   const createBackup = async () => {
     setBackupLoading(true);
-    try {
-      // Get all tests from Firebase
-      const tests = await firebaseTestsService.getAllTests();
-      const stats = await firebaseTestsService.getTestsStatistics();
 
-      // Create backup file
+    try {
+      console.log('🔄 Starting backup process...');
+
+      // Check Firebase connection first
+      if (!firebaseTestsService) {
+        throw new Error('Firebase service not initialized');
+      }
+
+      // Get all tests from Firebase with error handling
+      let tests = [];
+      let stats = null;
+
+      try {
+        console.log('📊 Fetching tests from Firebase...');
+        tests = await firebaseTestsService.getAllTests();
+        console.log(`✅ Retrieved ${tests.length} tests`);
+      } catch (testsError) {
+        console.warn('⚠️ Failed to fetch tests from Firebase:', testsError);
+        // Try to get from localStorage as fallback
+        const localTests = localStorage.getItem('chemical_tests');
+        if (localTests) {
+          tests = JSON.parse(localTests);
+          console.log(`📱 Using ${tests.length} tests from localStorage as fallback`);
+        }
+      }
+
+      try {
+        console.log('📈 Fetching statistics...');
+        stats = await firebaseTestsService.getTestsStatistics();
+        console.log('✅ Retrieved statistics');
+      } catch (statsError) {
+        console.warn('⚠️ Failed to fetch statistics:', statsError);
+        // Generate basic stats from tests data
+        stats = {
+          total_tests: tests.length,
+          total_results: tests.reduce((sum, test) => sum + (test.results?.length || 0), 0),
+          unique_substances: new Set(tests.flatMap(test =>
+            test.results?.map(r => r.possible_substance) || []
+          )).size,
+          unique_colors: new Set(tests.flatMap(test =>
+            test.results?.map(r => r.color_result) || []
+          )).size,
+          tests_by_type: tests.reduce((acc, test) => {
+            acc[test.test_type] = (acc[test.test_type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        };
+      }
+
+      // Get additional data sources
+      const colorResults = JSON.parse(localStorage.getItem('color_test_results') || '[]');
+      const userProfiles = JSON.parse(localStorage.getItem('user_profiles') || '[]');
+
+      // Create comprehensive backup data
       const backupData = {
-        timestamp: new Date().toISOString(),
-        version: dbStatus.version,
-        records: tests.length,
-        statistics: stats,
-        tests: tests
+        metadata: {
+          timestamp: new Date().toISOString(),
+          version: dbStatus.version || '2.0.0',
+          backup_type: 'complete',
+          source: 'admin_panel',
+          total_records: tests.length + colorResults.length + userProfiles.length
+        },
+        firebase_data: {
+          tests: tests,
+          statistics: stats
+        },
+        local_storage_data: {
+          color_results: colorResults,
+          user_profiles: userProfiles,
+          settings: JSON.parse(localStorage.getItem('app_settings') || '{}')
+        },
+        summary: {
+          tests_count: tests.length,
+          results_count: colorResults.length,
+          users_count: userProfiles.length,
+          backup_size_mb: 0 // Will be calculated after JSON.stringify
+        }
       };
 
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      // Calculate backup size
+      const jsonString = JSON.stringify(backupData, null, 2);
+      backupData.summary.backup_size_mb = Math.round((new Blob([jsonString]).size / 1024 / 1024) * 100) / 100;
+
+      console.log('💾 Creating backup file...');
+
+      // Create and download backup file
+      const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `firebase-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `complete-backup-${new Date().toISOString().split('T')[0]}-${Date.now()}.json`;
+
+      // Ensure the element is added to DOM for download to work
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
 
       // Update last backup time
       setDbStatus(prev => ({
         ...prev,
-        lastBackup: new Date().toLocaleString()
+        lastBackup: new Date().toLocaleString('ar-SA', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
       }));
 
-      toast.success(lang === 'ar' ? 'تم إنشاء النسخة الاحتياطية' : 'Backup created successfully');
+      console.log('✅ Backup created successfully');
+      toast.success(
+        lang === 'ar'
+          ? `تم إنشاء النسخة الاحتياطية بنجاح (${backupData.summary.backup_size_mb} ميجابايت)`
+          : `Backup created successfully (${backupData.summary.backup_size_mb} MB)`
+      );
+
     } catch (error) {
-      console.error('Error creating backup:', error);
-      toast.error(lang === 'ar' ? 'خطأ في إنشاء النسخة الاحتياطية' : 'Error creating backup');
+      console.error('❌ Error creating backup:', error);
+
+      // Provide more specific error messages
+      let errorMessage = lang === 'ar' ? 'خطأ في إنشاء النسخة الاحتياطية' : 'Error creating backup';
+
+      if (error instanceof Error) {
+        if (error.message.includes('Firebase')) {
+          errorMessage = lang === 'ar'
+            ? 'خطأ في الاتصال بقاعدة البيانات'
+            : 'Database connection error';
+        } else if (error.message.includes('permission')) {
+          errorMessage = lang === 'ar'
+            ? 'خطأ في الصلاحيات'
+            : 'Permission error';
+        } else if (error.message.includes('network')) {
+          errorMessage = lang === 'ar'
+            ? 'خطأ في الشبكة'
+            : 'Network error';
+        }
+      }
+
+      toast.error(`${errorMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setBackupLoading(false);
     }
@@ -241,25 +353,218 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
 
   const handleRestore = async (file: File) => {
     setRestoreLoading(true);
+
     try {
-      // Simulate restore process
-      await new Promise(resolve => setTimeout(resolve, 4000));
-      
-      // In real app, would validate and restore from file
-      console.log('Restoring from file:', file.name);
-      
-      alert(lang === 'ar' 
-        ? 'تم استعادة قاعدة البيانات بنجاح' 
-        : 'Database restored successfully'
+      console.log('🔄 Starting restore process for file:', file.name);
+
+      // Validate file type
+      if (!file.name.endsWith('.json')) {
+        throw new Error('Invalid file type. Please select a JSON backup file.');
+      }
+
+      // Read file content
+      const fileContent = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+
+      // Parse and validate backup data
+      let backupData;
+      try {
+        backupData = JSON.parse(fileContent);
+      } catch (parseError) {
+        throw new Error('Invalid JSON format in backup file');
+      }
+
+      // Validate backup structure
+      if (!backupData.metadata || !backupData.metadata.timestamp) {
+        throw new Error('Invalid backup file structure');
+      }
+
+      console.log('📊 Backup metadata:', backupData.metadata);
+
+      // Create current backup before restore
+      console.log('💾 Creating safety backup before restore...');
+      await createBackup();
+
+      // Restore Firebase data
+      if (backupData.firebase_data?.tests && Array.isArray(backupData.firebase_data.tests)) {
+        console.log(`🔄 Restoring ${backupData.firebase_data.tests.length} tests to Firebase...`);
+
+        try {
+          // Clear existing data (optional - you might want to merge instead)
+          // await firebaseTestsService.clearAllTests();
+
+          // Import tests
+          await firebaseTestsService.importFromJSON(backupData.firebase_data.tests);
+          console.log('✅ Firebase data restored');
+        } catch (firebaseError) {
+          console.warn('⚠️ Firebase restore failed, continuing with localStorage:', firebaseError);
+        }
+      }
+
+      // Restore localStorage data
+      if (backupData.local_storage_data) {
+        console.log('🔄 Restoring localStorage data...');
+
+        if (backupData.local_storage_data.color_results) {
+          localStorage.setItem('color_test_results', JSON.stringify(backupData.local_storage_data.color_results));
+        }
+
+        if (backupData.local_storage_data.user_profiles) {
+          localStorage.setItem('user_profiles', JSON.stringify(backupData.local_storage_data.user_profiles));
+        }
+
+        if (backupData.local_storage_data.settings) {
+          localStorage.setItem('app_settings', JSON.stringify(backupData.local_storage_data.settings));
+        }
+
+        console.log('✅ localStorage data restored');
+      }
+
+      // Refresh statistics and UI
+      await loadFirebaseStatistics();
+
+      // Update status
+      setDbStatus(prev => ({
+        ...prev,
+        lastRestore: new Date().toLocaleString('ar-SA', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }));
+
+      console.log('✅ Restore completed successfully');
+
+      const restoredCount = backupData.summary?.tests_count || backupData.firebase_data?.tests?.length || 0;
+      toast.success(
+        lang === 'ar'
+          ? `تم استعادة قاعدة البيانات بنجاح (${restoredCount} اختبار)`
+          : `Database restored successfully (${restoredCount} tests)`
       );
+
     } catch (error) {
-      console.error('Error restoring database:', error);
-      alert(lang === 'ar' 
-        ? 'خطأ في استعادة قاعدة البيانات' 
-        : 'Error restoring database'
-      );
+      console.error('❌ Error restoring database:', error);
+
+      let errorMessage = lang === 'ar' ? 'خطأ في استعادة قاعدة البيانات' : 'Error restoring database';
+
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid file')) {
+          errorMessage = lang === 'ar' ? 'ملف النسخة الاحتياطية غير صالح' : 'Invalid backup file';
+        } else if (error.message.includes('JSON')) {
+          errorMessage = lang === 'ar' ? 'خطأ في تنسيق الملف' : 'File format error';
+        } else if (error.message.includes('read')) {
+          errorMessage = lang === 'ar' ? 'خطأ في قراءة الملف' : 'File reading error';
+        }
+      }
+
+      toast.error(`${errorMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setRestoreLoading(false);
+    }
+  };
+
+  const cleanupDatabase = async () => {
+    setCleanupLoading(true);
+
+    try {
+      console.log('🧹 Starting database cleanup...');
+
+      // Create backup before cleanup
+      console.log('💾 Creating backup before cleanup...');
+      await createBackup();
+
+      let cleanedItems = 0;
+
+      // Clean localStorage
+      console.log('🔄 Cleaning localStorage...');
+
+      // Remove old/invalid entries
+      const keysToCheck = ['color_test_results', 'user_profiles', 'chemical_tests'];
+
+      keysToCheck.forEach(key => {
+        try {
+          const data = localStorage.getItem(key);
+          if (data) {
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed)) {
+              // Remove duplicates and invalid entries
+              const cleaned = parsed.filter((item, index, arr) => {
+                // Remove duplicates based on id
+                if (item.id) {
+                  return arr.findIndex(i => i.id === item.id) === index;
+                }
+                return true;
+              }).filter(item => {
+                // Remove invalid entries
+                return item && typeof item === 'object';
+              });
+
+              if (cleaned.length !== parsed.length) {
+                localStorage.setItem(key, JSON.stringify(cleaned));
+                cleanedItems += parsed.length - cleaned.length;
+                console.log(`✅ Cleaned ${parsed.length - cleaned.length} items from ${key}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.warn(`⚠️ Error cleaning ${key}:`, error);
+        }
+      });
+
+      // Clean old cache entries
+      const allKeys = Object.keys(localStorage);
+      const oldCacheKeys = allKeys.filter(key =>
+        key.startsWith('cache_') ||
+        key.startsWith('temp_') ||
+        key.includes('_old') ||
+        key.includes('_backup_')
+      );
+
+      oldCacheKeys.forEach(key => {
+        try {
+          const item = localStorage.getItem(key);
+          if (item) {
+            const data = JSON.parse(item);
+            // Remove cache entries older than 7 days
+            if (data.timestamp && new Date(data.timestamp) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) {
+              localStorage.removeItem(key);
+              cleanedItems++;
+              console.log(`🗑️ Removed old cache: ${key}`);
+            }
+          }
+        } catch (error) {
+          // If can't parse, probably old/invalid - remove it
+          localStorage.removeItem(key);
+          cleanedItems++;
+        }
+      });
+
+      // Refresh statistics
+      await loadFirebaseStatistics();
+
+      console.log(`✅ Database cleanup completed. Cleaned ${cleanedItems} items.`);
+
+      toast.success(
+        lang === 'ar'
+          ? `تم تنظيف قاعدة البيانات بنجاح (${cleanedItems} عنصر)`
+          : `Database cleaned successfully (${cleanedItems} items)`
+      );
+
+    } catch (error) {
+      console.error('❌ Error during database cleanup:', error);
+      toast.error(
+        lang === 'ar'
+          ? 'خطأ في تنظيف قاعدة البيانات'
+          : 'Error cleaning database'
+      );
+    } finally {
+      setCleanupLoading(false);
     }
   };
 
@@ -499,19 +804,47 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
                 {lang === 'ar' ? 'إنشاء نسخة احتياطية' : 'Create Backup'}
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                {lang === 'ar' 
-                  ? 'إنشاء نسخة احتياطية من قاعدة البيانات الحالية'
-                  : 'Create a backup of the current database'
+                {lang === 'ar'
+                  ? 'إنشاء نسخة احتياطية شاملة من جميع البيانات'
+                  : 'Create a complete backup of all data sources'
                 }
               </p>
+              {dbStatus.lastBackup && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {lang === 'ar' ? 'آخر نسخة احتياطية:' : 'Last backup:'} {dbStatus.lastBackup}
+                </p>
+              )}
             </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-sm">
+              <h5 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                {lang === 'ar' ? 'ما يتم نسخه:' : 'What gets backed up:'}
+              </h5>
+              <ul className="text-blue-700 dark:text-blue-300 space-y-1 text-xs">
+                <li>• {lang === 'ar' ? 'جميع الاختبارات من Firebase' : 'All tests from Firebase'}</li>
+                <li>• {lang === 'ar' ? 'نتائج الألوان المحلية' : 'Local color results'}</li>
+                <li>• {lang === 'ar' ? 'ملفات المستخدمين' : 'User profiles'}</li>
+                <li>• {lang === 'ar' ? 'الإعدادات والإحصائيات' : 'Settings & statistics'}</li>
+              </ul>
+            </div>
+
             <Button
               onClick={createBackup}
               loading={backupLoading}
               disabled={backupLoading}
               className="w-full"
             >
-              {lang === 'ar' ? 'إنشاء نسخة احتياطية' : 'Create Backup'}
+              {backupLoading ? (
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>{lang === 'ar' ? 'جاري إنشاء النسخة...' : 'Creating backup...'}</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <ArrowDownTrayIcon className="h-4 w-4" />
+                  <span>{lang === 'ar' ? 'إنشاء نسخة احتياطية' : 'Create Backup'}</span>
+                </div>
+              )}
             </Button>
           </div>
 
@@ -523,12 +856,35 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
                 {lang === 'ar' ? 'استعادة قاعدة البيانات' : 'Restore Database'}
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                {lang === 'ar' 
+                {lang === 'ar'
                   ? 'استعادة قاعدة البيانات من نسخة احتياطية'
                   : 'Restore database from backup file'
                 }
               </p>
+              {dbStatus.lastRestore && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {lang === 'ar' ? 'آخر استعادة:' : 'Last restore:'} {dbStatus.lastRestore}
+                </p>
+              )}
             </div>
+
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-sm">
+              <div className="flex items-start space-x-2 rtl:space-x-reverse">
+                <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h5 className="font-medium text-amber-800 dark:text-amber-200 mb-1">
+                    {lang === 'ar' ? 'تحذير:' : 'Warning:'}
+                  </h5>
+                  <p className="text-amber-700 dark:text-amber-300 text-xs">
+                    {lang === 'ar'
+                      ? 'سيتم إنشاء نسخة احتياطية تلقائياً قبل الاستعادة'
+                      : 'A safety backup will be created automatically before restore'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <input
                 type="file"
@@ -549,7 +905,17 @@ export function DatabaseManagement({ lang }: DatabaseManagementProps) {
                 variant="outline"
                 className="w-full"
               >
-                {lang === 'ar' ? 'اختيار ملف الاستعادة' : 'Choose Restore File'}
+                {restoreLoading ? (
+                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                    <span>{lang === 'ar' ? 'جاري الاستعادة...' : 'Restoring...'}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <ArrowUpTrayIcon className="h-4 w-4" />
+                    <span>{lang === 'ar' ? 'اختيار ملف الاستعادة' : 'Choose Restore File'}</span>
+                  </div>
+                )}
               </Button>
             </div>
           </div>
