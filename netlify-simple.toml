@@ -1,0 +1,38 @@
+[build]
+  command = "npm install && next build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "10"
+  NODE_ENV = "production"
+  NEXT_TELEMETRY_DISABLED = "1"
+  NETLIFY = "true"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[context.production.environment]
+  NEXT_PUBLIC_ADMIN_PASSWORD_HASH = "8dacfb011f9ed4c4545fefb97acf99624fb02d876716ff03ae584173cd00822e"
+  NEXT_PUBLIC_AUTH_SALT = "b84997540de9ae822a6aa27e333cd8c8ce6b79079cf448ff6b8a027a845a666b"
+  NEXT_PUBLIC_ADMIN_EMAIL = "admin@colortest.local"
+  NEXT_PUBLIC_ADMIN_SESSION_DURATION = "3600000"
+  NEXT_PUBLIC_MAX_LOGIN_ATTEMPTS = "5"
+  NEXT_PUBLIC_LOCKOUT_DURATION = "900000"
+  
+  # Firebase Configuration
+  NEXT_PUBLIC_FIREBASE_API_KEY = "your_api_key_here"
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "colorstests-573ef.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_DATABASE_URL = "https://colorstests-573ef.firebaseio.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID = "colorstests-573ef"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "colorstests-573ef.appspot.com"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "your_sender_id"
+  NEXT_PUBLIC_FIREBASE_APP_ID = "your_app_id"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

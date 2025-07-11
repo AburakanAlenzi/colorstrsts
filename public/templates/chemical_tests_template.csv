@@ -1,0 +1,7 @@
+test_id,test_name,test_name_ar,color_result,color_result_ar,color_hex,possible_substance,possible_substance_ar,confidence_level,category,reference
+marquis-test,Marquis Test,اختبار ماركيز,Purple to Black,بنفسجي إلى أسود,#8B5CF6,MDMA Amphetamine,إم دي إم إيه أمفيتامين,85,basic,REF-001
+mecke-test,Mecke Test,اختبار ميكي,Blue to Green,أزرق إلى أخضر,#008B8B,Cocaine Heroin,الكوكايين الهيروين,90,basic,REF-002
+ferric-sulfate-test,Ferric Sulfate Test,اختبار كبريتات الحديد,Orange to Brown,برتقالي إلى بني,#FFA500,Morphine Heroin,المورفين الهيروين,80,advanced,REF-003
+liebermann-test,Liebermann Test,اختبار ليبرمان,Yellow to Orange,أصفر إلى برتقالي,#FFD700,LSD Psilocybin,إل إس دي سيلوسيبين,75,intermediate,REF-004
+simon-test,Simon Test,اختبار سايمون,Blue to Purple,أزرق إلى بنفسجي,#4169E1,Methamphetamine MDMA,الميثامفيتامين إم دي إم إيه,88,basic,REF-005
+ehrlich-test,Ehrlich Test,اختبار إيرليش,Purple to Pink,بنفسجي إلى وردي,#DA70D6,LSD DMT,إل إس دي دي إم تي,92,advanced,REF-006

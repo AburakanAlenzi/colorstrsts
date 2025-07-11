@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and auth pages from indexing
+Disallow: /*/admin/
+Disallow: /*/auth/
+Disallow: /api/
+
+# Host
+Host: https://colorstrsts.vercel.app
+
+# Sitemaps
+Sitemap: https://colorstrsts.vercel.app/sitemap.xml
+
+# Additional metadata
+# Color Testing for Drug Detection
+# اختبارات الألوان للكشف عن المخدرات والمؤثرات العقلية

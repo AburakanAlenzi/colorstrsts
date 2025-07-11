@@ -1,0 +1,123 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js
+.next/
+out/
+build/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.patch
+*.orig
+*~
+
+# Build outputs and cache
+dist/
+.cache/
+.parcel-cache/
+.nuxt/
+.vuepress/dist/
+
+# API backups and temporary files
+api_backup/
+backup/
+temp/
+
+# API routes (disabled for static export)
+src/app/api/
+**/api/route.ts
+**/api/**/route.ts
+
+# Development configuration files
+next.config.dev.js
+next.config.temp.js
+config.dev.*
+
+# Log files
+*.log
+logs/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Firebase cache
+.firebase/
+
+# Capacitor
+.capacitor/
+android/
+ios/
+
+# PWA
+sw.js
+workbox-*.js
+
+# Testing
+.jest/
+test-results/
+coverage/

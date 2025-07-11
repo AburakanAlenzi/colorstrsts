@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <rect width="16" height="16" rx="2" fill="#3B82F6"/>
+  
+  <!-- Test Tube 1 -->
+  <rect x="4" y="3" width="2" height="10" rx="1" fill="#E5E7EB"/>
+  <rect x="4.3" y="8" width="1.4" height="4.5" rx="0.7" fill="#EF4444"/>
+  <rect x="3.5" y="2.5" width="3" height="1" rx="0.3" fill="#374151"/>
+  
+  <!-- Test Tube 2 -->
+  <rect x="10" y="4" width="2" height="9" rx="1" fill="#E5E7EB"/>
+  <rect x="10.3" y="9" width="1.4" height="3.5" rx="0.7" fill="#10B981"/>
+  <rect x="9.5" y="3.5" width="3" height="1" rx="0.3" fill="#374151"/>
+  
+  <!-- Small bubbles -->
+  <circle cx="5" cy="9" r="0.2" fill="#FBBF24"/>
+  <circle cx="11" cy="10" r="0.2" fill="#FBBF24"/>
+</svg>
