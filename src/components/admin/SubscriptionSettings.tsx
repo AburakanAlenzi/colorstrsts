@@ -8,8 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { 
-  CrownIcon,
+import {
+  StarIcon,
   LockOpenIcon,
   LockClosedIcon,
   Cog6ToothIcon,
@@ -223,7 +223,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CrownIcon className="h-5 w-5 text-yellow-600" />
+              <StarIcon className="h-5 w-5 text-yellow-600" />
               {isRTL ? 'الاختبارات المميزة المحددة' : 'Specific Premium Tests'}
             </CardTitle>
             <CardDescription>
@@ -257,7 +257,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                       key={testNumber}
                       className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
                     >
-                      <CrownIcon className="h-3 w-3" />
+                      <StarIcon className="h-3 w-3" />
                       {isRTL ? `اختبار ${testNumber}` : `Test ${testNumber}`}
                       <button
                         onClick={() => handleRemovePremiumTest(testNumber)}
@@ -299,7 +299,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                   </li>
                   {settings.specificPremiumTests.length > 0 && (
                     <li className="flex items-center gap-2">
-                      <CrownIcon className="h-4 w-4 text-yellow-600" />
+                      <StarIcon className="h-4 w-4 text-yellow-600" />
                       {isRTL 
                         ? `${settings.specificPremiumTests.length} اختبارات تتطلب اشتراك مميز`
                         : `${settings.specificPremiumTests.length} tests require premium subscription`
