@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "next dev",
     "dev:static": "next dev",
-    "build": "next build",
+    "build": "cross-env NODE_ENV=production NETLIFY=true next build",
     "build:next": "next build",
     "build:static": "cross-env NODE_ENV=production next build",
     "build:netlify": "next build",
+    "build:debug": "node build-debug.js && npm run build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "npx tsc --noEmit",
