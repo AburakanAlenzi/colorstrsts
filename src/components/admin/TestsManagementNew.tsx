@@ -18,6 +18,7 @@ import {
 } from '@/lib/firebase-tests';
 import TestsTable from './TestsTable';
 import TestFormNew from './TestFormNew';
+import TestsStatistics from './TestsStatistics';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -383,64 +384,12 @@ export default function TestsManagementNew({ translations = {}, isRTL }: TestsMa
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations?.stats?.totalTests || 'Total Tests'}
-              </CardTitle>
-              <TestTube className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{statistics.total}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations?.stats?.testTypes || "Test Types"}
-              </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{Object.keys(statistics.byType).length}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations?.stats?.recentTests || "Recent Tests"}
-              </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{statistics.recentTests.length}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {translations?.stats?.byType || "By Type"}
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-1">
-                {Object.entries(statistics.byType).map(([type, count]) => (
-                  <Badge key={type} variant="secondary" className="text-xs">
-                    {type}: {count as number}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Enhanced Statistics */}
+      <TestsStatistics
+        lang={lang}
+        tests={tests}
+        onRefresh={loadStatistics}
+      />
 
       {/* Tests Table */}
       <TestsTable

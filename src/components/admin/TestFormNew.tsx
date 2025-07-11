@@ -35,6 +35,11 @@ interface TestFormData {
   test_type: string;
   test_number: string;
   reference?: string;
+  category?: string;
+  safety_level?: string;
+  preparation_time?: number;
+  description?: string;
+  description_ar?: string;
 }
 
 interface TestFormNewProps {
@@ -47,7 +52,9 @@ interface TestFormNewProps {
   isRTL: boolean;
 }
 
-const TEST_TYPES = ['F/L', 'P/L', 'C/L', 'S/L', 'M/L', 'Other'];
+const TEST_TYPES = ['F/L', 'P/L', 'C/L', 'S/L', 'M/L', 'L', 'Other'];
+const CATEGORIES = ['basic', 'advanced', 'specialized'];
+const SAFETY_LEVELS = ['low', 'medium', 'high', 'extreme'];
 
 export default function TestFormNew({
   isOpen,
@@ -83,6 +90,11 @@ export default function TestFormNew({
       setValue('test_type', test.test_type);
       setValue('test_number', test.test_number);
       setValue('reference', test.reference || '');
+      setValue('category', test.category || '');
+      setValue('safety_level', test.safety_level || '');
+      setValue('preparation_time', test.preparation_time || 0);
+      setValue('description', test.description || '');
+      setValue('description_ar', test.description_ar || '');
     } else {
       // Reset form for new test
       reset();
@@ -204,6 +216,73 @@ export default function TestFormNew({
               )}
             </div>
 
+            {/* Category */}
+            <div className="space-y-2">
+              <Label htmlFor="category">
+                {isRTL ? 'الفئة' : 'Category'}
+              </Label>
+              <Select onValueChange={(value) => setValue('category', value)} value={watch('category')}>
+                <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
+                  <SelectValue placeholder={isRTL ? 'اختر الفئة' : 'Select category'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.category && (
+                <p className="text-sm text-red-500">{errors.category.message}</p>
+              )}
+            </div>
+
+            {/* Safety Level */}
+            <div className="space-y-2">
+              <Label htmlFor="safety_level">
+                {isRTL ? 'مستوى الأمان' : 'Safety Level'}
+              </Label>
+              <Select onValueChange={(value) => setValue('safety_level', value)} value={watch('safety_level')}>
+                <SelectTrigger className={errors.safety_level ? 'border-red-500' : ''}>
+                  <SelectValue placeholder={isRTL ? 'اختر مستوى الأمان' : 'Select safety level'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {SAFETY_LEVELS.map((level) => (
+                    <SelectItem key={level} value={level}>
+                      {level}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.safety_level && (
+                <p className="text-sm text-red-500">{errors.safety_level.message}</p>
+              )}
+            </div>
+
+            {/* Preparation Time */}
+            <div className="space-y-2">
+              <Label htmlFor="preparation_time">
+                {isRTL ? 'وقت التحضير (دقائق)' : 'Preparation Time (minutes)'}
+              </Label>
+              <Input
+                id="preparation_time"
+                type="number"
+                min="1"
+                max="60"
+                {...register('preparation_time', {
+                  valueAsNumber: true,
+                  min: { value: 1, message: isRTL ? 'الحد الأدنى دقيقة واحدة' : 'Minimum 1 minute' },
+                  max: { value: 60, message: isRTL ? 'الحد الأقصى 60 دقيقة' : 'Maximum 60 minutes' }
+                })}
+                placeholder={isRTL ? 'مثال: 5' : 'e.g., 5'}
+                className={errors.preparation_time ? 'border-red-500' : ''}
+              />
+              {errors.preparation_time && (
+                <p className="text-sm text-red-500">{errors.preparation_time.message}</p>
+              )}
+            </div>
+
             {/* Color Result - English */}
             <div className="space-y-2">
               <Label htmlFor="color_result">
@@ -275,6 +354,41 @@ export default function TestFormNew({
               />
               {errors.possible_substance_ar && (
                 <p className="text-sm text-red-500">{errors.possible_substance_ar.message}</p>
+              )}
+            </div>
+
+            {/* Description - English */}
+            <div className="space-y-2">
+              <Label htmlFor="description">
+                {isRTL ? 'الوصف (إنجليزي)' : 'Description (English)'}
+              </Label>
+              <Textarea
+                id="description"
+                {...register('description')}
+                placeholder="Brief description of the test purpose and application"
+                className={errors.description ? 'border-red-500' : ''}
+                rows={3}
+              />
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description.message}</p>
+              )}
+            </div>
+
+            {/* Description - Arabic */}
+            <div className="space-y-2">
+              <Label htmlFor="description_ar">
+                {isRTL ? 'الوصف (عربي)' : 'Description (Arabic)'}
+              </Label>
+              <Textarea
+                id="description_ar"
+                {...register('description_ar')}
+                placeholder="وصف مختصر لغرض الاختبار وتطبيقه"
+                className={errors.description_ar ? 'border-red-500' : ''}
+                rows={3}
+                dir="rtl"
+              />
+              {errors.description_ar && (
+                <p className="text-sm text-red-500">{errors.description_ar.message}</p>
               )}
             </div>
           </div>

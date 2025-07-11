@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ChemicalTest } from '@/lib/firebase-tests';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import TestDetailsModal from './TestDetailsModal';
 import { 
   Eye, 
   Edit, 
@@ -79,6 +80,19 @@ export default function TestsTable({
   translations,
   isRTL
 }: TestsTableProps) {
+  const [selectedTest, setSelectedTest] = useState<ChemicalTest | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const handleViewTest = (test: ChemicalTest) => {
+    setSelectedTest(test);
+    setIsDetailsModalOpen(true);
+    onView(test); // Keep the original callback
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedTest(null);
+  };
   const [itemsPerPage] = useState(15);
 
   const formatDate = (timestamp: any) => {
@@ -224,7 +238,7 @@ export default function TestsTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onView(test)}>
+                        <DropdownMenuItem onClick={() => handleViewTest(test)}>
                           <Eye className="mr-2 h-4 w-4" />
                           {translations.table.view}
                         </DropdownMenuItem>
@@ -296,6 +310,15 @@ export default function TestsTable({
           </div>
         </div>
       )}
+
+      {/* Test Details Modal */}
+      <TestDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetails}
+        test={selectedTest}
+        translations={translations}
+        isRTL={isRTL}
+      />
     </div>
   );
 }
