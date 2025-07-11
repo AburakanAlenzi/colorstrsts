@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_Arabic } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
+import '../styles/print.css';
 
 const inter = Inter({
   subsets: ['latin'],

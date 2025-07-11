@@ -24,7 +24,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { 
+import {
   BeakerIcon,
   ClockIcon,
   DocumentTextIcon,
@@ -32,6 +32,7 @@ import {
   EyeIcon,
   BookOpenIcon
 } from '@heroicons/react/24/outline';
+import PrintButton from '../print/PrintButton';
 
 interface TestDetailsModalProps {
   isOpen: boolean;
@@ -288,7 +289,12 @@ export default function TestDetailsModal({
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-between pt-4">
+          <PrintButton
+            test={test}
+            variant="outline"
+            size="sm"
+          />
           <Button onClick={onClose} variant="outline">
             {isRTL ? 'إغلاق' : 'Close'}
           </Button>

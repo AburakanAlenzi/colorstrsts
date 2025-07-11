@@ -5,15 +5,17 @@ import { ChemicalTest } from '@/lib/firebase-tests';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TestDetailsModal from './TestDetailsModal';
-import { 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Search, 
+import PrintButton from '../print/PrintButton';
+import {
+  Eye,
+  Edit,
+  Trash2,
+  Search,
   Filter,
   ChevronLeft,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  Printer
 } from 'lucide-react';
 import {
   Table,
@@ -172,6 +174,14 @@ export default function TestsTable({
               ))}
             </SelectContent>
           </Select>
+
+          {/* Print Button */}
+          <PrintButton
+            tests={tests}
+            variant="outline"
+            size="sm"
+            className="whitespace-nowrap"
+          />
         </div>
       </div>
 
@@ -246,7 +256,18 @@ export default function TestsTable({
                           <Edit className="mr-2 h-4 w-4" />
                           {translations.table.edit}
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="p-0"
+                        >
+                          <div className="w-full">
+                            <PrintButton test={test} variant="ghost" size="sm" className="w-full justify-start p-2 h-auto font-normal" />
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
                           onClick={() => onDelete(test)}
                           className="text-red-600"
                         >
