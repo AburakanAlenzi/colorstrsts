@@ -58,6 +58,8 @@
     "@capacitor/ios": "^7.3.0",
     "@emailjs/browser": "^4.4.1",
     "@heroicons/react": "^2.0.18",
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-tabs": "^1.0.4",
     "@hookform/resolvers": "^3.3.4",
     "@stripe/stripe-js": "^7.4.0",
     "@tailwindcss/forms": "^0.5.7",
