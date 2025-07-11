@@ -834,20 +834,21 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
               }
             </p>
           </div>
-        </div>
 
-          <Button
-            onClick={handleClearData}
-            variant="destructive"
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <TrashIcon className="h-4 w-4" />
-            <span>{lang === 'ar' ? 'مسح البيانات' : 'Clear Data'}</span>
-          </Button>
+          {/* Clear Data Button */}
+          <div className="mt-4">
+            <Button
+              onClick={handleClearData}
+              variant="destructive"
+              className="flex items-center space-x-2 rtl:space-x-reverse"
+            >
+              <TrashIcon className="h-4 w-4" />
+              <span>{lang === 'ar' ? 'مسح البيانات' : 'Clear Data'}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border border-gray-300 rounded-lg p-6 dark:bg-gray-800 dark:border-gray-600">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">

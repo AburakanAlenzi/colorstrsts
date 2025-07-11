@@ -17,34 +17,30 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   },
   // Note: redirects, rewrites, and headers don't work with static export
-  // These are disabled for production builds
-  async redirects() {
-    if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
-      return [];
-    }
-    return [
-      {
-        source: '/',
-        destination: '/ar',
-        permanent: false,
-      },
-    ];
-  },
-  async rewrites() {
-    if (process.env.NETLIFY || process.env.NODE_ENV === 'production') {
-      return [];
-    }
-    return [
-      {
-        source: '/admin',
-        destination: '/ar/admin',
-      },
-      {
-        source: '/en/admin',
-        destination: '/en/admin',
-      },
-    ];
-  },
+  // These are completely disabled for static export builds
+  ...(!(process.env.NETLIFY || process.env.NODE_ENV === 'production') && {
+    async redirects() {
+      return [
+        {
+          source: '/',
+          destination: '/ar',
+          permanent: false,
+        },
+      ];
+    },
+    async rewrites() {
+      return [
+        {
+          source: '/admin',
+          destination: '/ar/admin',
+        },
+        {
+          source: '/en/admin',
+          destination: '/en/admin',
+        },
+      ];
+    },
+  }),
   // Enable static exports for deployment
   output: process.env.NETLIFY || process.env.NODE_ENV === 'production' ? 'export' : undefined,
   trailingSlash: !!(process.env.NETLIFY || process.env.NODE_ENV === 'production'),

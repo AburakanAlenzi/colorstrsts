@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:simple"
   publish = "out"
 
 [build.environment]
@@ -10,8 +10,8 @@
   NEXT_TELEMETRY_DISABLED = "1"
   NETLIFY = "true"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# Disable Next.js plugin for static export
+# This is handled by static export instead
 
 [context.production.environment]
   NEXT_PUBLIC_ADMIN_PASSWORD_HASH = "8dacfb011f9ed4c4545fefb97acf99624fb02d876716ff03ae584173cd00822e"
