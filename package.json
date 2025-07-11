@@ -15,6 +15,8 @@
     "check-build": "node check-build.js",
     "test-build": "node test-build.js",
     "syntax-check": "node syntax-check.js",
+    "fix-data": "node fix-missing-data.js",
+    "validate-data": "node validate-tests-data.js",
     "start": "next start",
     "lint": "next lint",
     "type-check": "npx tsc --noEmit",
