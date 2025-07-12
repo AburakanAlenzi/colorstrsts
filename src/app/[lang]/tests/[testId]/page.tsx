@@ -2,66 +2,63 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Language } from '@/types';
 import { TestPage } from '@/components/pages/test-page';
-import { getChemicalTests } from '@/lib/firebase-realtime';
+import { getAllTestIds, getTestById } from '@/lib/local-data-service';
 import { getTranslations } from '@/lib/translations';
 
 // Note: Using static generation with fallback for compatibility with static export
 
 // Generate static params for all test combinations
 export async function generateStaticParams() {
-  // Include all possible test IDs that might be used
-  const allPossibleTestIds = [
-    // Test pages
-    'test-simple',
+  try {
+    // Get all test IDs from the local JSON file
+    const testIds = getAllTestIds();
+    console.log(`📋 Generating static params for ${testIds.length} tests`);
 
-    // Basic tests from fallback data
-    'marquis-test',
-    'mecke-test',
-    'fast-blue-b-test',
-    'mandelin-test',
-    'ehrlich-test',
+    // Add special test pages
+    const allTestIds = [
+      'test-simple', // Debug test page
+      ...testIds
+    ];
 
-    // Additional common tests
-    'hofmann-test',
-    'simon-test',
-    'froehde-test',
-    'liebermann-test',
-    'scott-test',
-    'cobalt-thiocyanate-test',
-    'ferric-chloride-test',
-    'ferric-sulfate-test',
-    'dille-koppanyi-test',
-    'duquenois-levine-test',
-    'van-urk-test',
-    'zimmermann-test',
-    'nitric-acid-test',
-    'sulfuric-acid-test',
-    'hydrochloric-acid-test',
-    'sodium-hydroxide-test',
-    'potassium-permanganate-test',
-    'iodine-test',
-    'ninhydrin-test',
-    'dragendorff-test',
-    'mayer-test',
-    'wagner-test',
-    'marquis-modified-test',
-    'chen-test',
-    'gallic-acid-test'
-  ];
+    const languages: Language[] = ['ar', 'en'];
 
-  const languages: Language[] = ['ar', 'en'];
-
-  const params = [];
-  for (const lang of languages) {
-    for (const testId of allPossibleTestIds) {
-      params.push({
-        lang,
-        testId,
-      });
+    const params = [];
+    for (const lang of languages) {
+      for (const testId of allTestIds) {
+        params.push({
+          lang,
+          testId,
+        });
+      }
     }
-  }
 
-  return params;
+    console.log(`✅ Generated ${params.length} static params`);
+    return params;
+
+  } catch (error) {
+    console.error('❌ Error generating static params:', error);
+
+    // Fallback to basic test IDs
+    const fallbackTestIds = [
+      'test-simple',
+      'marquis-test',
+      'mecke-test',
+      'fast-blue-b-test',
+      'mandelin-test',
+      'ehrlich-test'
+    ];
+
+    const languages: Language[] = ['ar', 'en'];
+    const params = [];
+
+    for (const lang of languages) {
+      for (const testId of fallbackTestIds) {
+        params.push({ lang, testId });
+      }
+    }
+
+    return params;
+  }
 }
 
 interface TestPageProps {
@@ -79,9 +76,8 @@ export async function generateMetadata({
   const { lang, testId } = await params;
 
   try {
-    // Try to get test data from Firebase for accurate metadata
-    const tests = await getChemicalTests();
-    const test = tests.find(t => t.id === testId);
+    // Try to get test data from local storage for accurate metadata
+    const test = getTestById(testId);
 
     if (test) {
       const testName = lang === 'ar' ? test.method_name_ar : test.method_name;

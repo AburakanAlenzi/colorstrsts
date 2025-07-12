@@ -11,7 +11,7 @@
     "icon": "BeakerIcon",
     "color_primary": "#8B5CF6",
     "created_at": "2025-01-01T00:00:00Z",
-    "prepare": "1. Place a small amount of the suspected material on a spot plate.\n2. Add one drop of reagent IA (prepared by mixing 8-10 drops of 37% formaldehyde with 10 ml glacial acetic acid).\n3. Add 2–3 drops of reagent 1B (concentrated sulfuric acid).\n4. Observe the color change.",
+    "prepare": "1.Place a small amount of the suspected material on a spot plate.  2.Add three drops of water. Smear  the sample  against  the spot plate  with a glass rod or spatula. 3.Transfer a drop of the liquid to another depression of the spot plate. 4.Add one drop of reagent IA (Add 8-10 drops (approx. 0.25 ml) of 37% formaldehyde solution to  10 ml of glacial acetic acid) 5. Add three drops of reagent 1B (Concentrated sulfuric acid). ",
     "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي.\n2. أضف قطرة واحدة من الكاشف IA (محضر بخلط 8-10 قطرات من الفورمالديهايد 37% مع 10 مل من حمض الخليك الجليدي).\n3. أضف 2-3 قطرات من الكاشف 1B (حمض الكبريتيك المركز).\n4. راقب تغيير اللون.",
     "test_type": "F/L",
     "test_number": "Test 1",
@@ -29,11 +29,11 @@
     "icon": "BeakerIcon",
     "color_primary": "#0080FF",
     "created_at": "2025-01-01T00:00:00Z",
-    "prepare": "1. Place a small amount of the suspected material on a spot plate.\n2. Add one drop of Mecke reagent (1g selenious acid in 100 ml concentrated sulfuric acid).\n3. Observe the resulting color.",
+    "prepare": "1.Place a small amount of the suspected material on a spot plate. 2.Add one drop of reagent 3 (Dissolve I g of selenious acid in 100 ml of concentrated sulfuric acid).",
     "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي.\n2. أضف قطرة واحدة من كاشف ميك (1 جرام حمض السيلينيوز في 100 مل حمض الكبريتيك المركز).\n3. راقب اللون الناتج.",
     "test_type": "L",
     "test_number": "Test 3",
-    "reference": "Rehse, K.. Arch.Pharm.(Weinheim), 302 (1969) 487."
+    "reference": "Rehse, K.. Arch.Pharm.(W einh eim ), 302 (1969) 487."
   },
   {
     "id": "ferric-sulfate-test",
@@ -47,11 +47,11 @@
     "icon": "BeakerIcon",
     "color_primary": "#0066FF",
     "created_at": "2025-01-01T00:00:00Z",
-    "prepare": "1. Place a small amount of the suspected material on a spot plate.\n2. Add three drops of water and smear the sample.\n3. Transfer a drop of the solution to another spot.\n4. Add one drop of reagent (5g ferric sulfate dissolved in 100 ml water).\n5. Observe the resulting color.",
-    "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي.\n2. أضف ثلاث قطرات من الماء وامزج العينة.\n3. انقل قطرة من المحلول إلى نقطة أخرى.\n4. أضف قطرة واحدة من الكاشف (5 جرام كبريتات الحديد مذابة في 100 مل ماء).\n5. راقب اللون الناتج.",
-    "test_type": "F/L",
-    "test_number": "Test 2",
-    "reference": "Hartke, K., Mutschler, E. (1987), p. 2603. Roth, H.J., Eger, K. (1985), p. 517."
+      "prepare": "1.Place a small amount of the suspected material on a spot plate. 2.Add three drops of water. Smear the sample  against  the spot  plate with a glass rod or spatula. 3.Transfer a drop of the liquid to another depression of the spot plate. 4.Add one drop of reagent 2 (Dissolve 5 g of ferric sulfate in 100 ml of water). ",
+    "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي.\n2. أضف قطرة واحدة من كاشف ميك (1 جرام حمض السيلينيوز في 100 مل حمض الكبريتيك المركز).\n3. راقب اللون الناتج.",
+    "test_type": "L",
+    "test_number": "Test 3",
+    "reference": "Hartke, K., Mutschler, E. (Editors). DAB 9 - Kommentar. Wissenschaftliche Verlagsgesellschaft, Stuttgart (1987), p. 2603. Roth, H.J., Eger, K., Torschuetz, R.. Pharmazeutische Chemie 11 - Arzneistoffanalyse, 2nd Edition. Georg Thieme Verlag, Stuttgart, New York (1985), p. 517."
   },
   {
     "id": "nitric-acid-test",

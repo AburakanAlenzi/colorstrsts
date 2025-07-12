@@ -6,7 +6,7 @@ import { Language } from '@/types';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { recordTestVisit } from '@/lib/firebase-user';
 
-import { getChemicalTests, ChemicalTest } from '@/lib/firebase-realtime';
+import { getTestById, ChemicalTest } from '@/lib/local-data-service';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ColorSelector } from '@/components/ui/color-selector';
@@ -138,9 +138,8 @@ export function TestPage({ lang, testId }: TestPageProps) {
           return;
         }
 
-        // Load test data from Firebase
-        const tests = await getChemicalTests();
-        const testData = tests.find(t => t.id === testId);
+        // Load test data from local storage
+        const testData = getTestById(testId);
 
         if (!testData) {
           toast.error(lang === 'ar' ? 'خطأ في تحميل البيانات' : 'Error loading data');
@@ -148,7 +147,7 @@ export function TestPage({ lang, testId }: TestPageProps) {
           return;
         }
 
-        console.log('🔥 Loaded test data from Firebase Realtime Database');
+        console.log('🔥 Loaded test data from local storage');
 
         // Create default color results and instructions (since they're not in Firebase yet)
         const colorResultsData = createDefaultColorResults(testId);

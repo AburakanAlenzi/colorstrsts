@@ -1,7 +1,7 @@
 'use client';
 
 import { Language } from '@/types';
-import { ChemicalTest } from '@/lib/data-service';
+import { ChemicalTest } from '@/lib/local-data-service';
 import { getTranslationsSync } from '@/lib/translations';
 import {
   BeakerIcon,

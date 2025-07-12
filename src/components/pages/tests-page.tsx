@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { getChemicalTests, ChemicalTest } from '@/lib/firebase-realtime';
+import { getChemicalTestsLocal, ChemicalTest, initializeLocalStorage } from '@/lib/local-data-service';
 import { Button } from '@/components/ui/button';
 import { TestCard } from '@/components/ui/test-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -114,22 +114,24 @@ function TestsPageContent({ lang }: TestsPageProps) {
           return;
         }
 
-        const chemicalTests = await getChemicalTests();
-        console.log('🔥 Loaded chemical tests from Firebase Realtime Database', chemicalTests.length);
+        // Initialize localStorage and get tests from local JSON file
+        initializeLocalStorage();
+        const localTests = getChemicalTestsLocal();
+        console.log('🔥 Loaded chemical tests from local storage', localTests.length);
 
-        if (chemicalTests && chemicalTests.length > 0) {
-          setTests(chemicalTests);
-          setFilteredTests(chemicalTests);
+        if (localTests && localTests.length > 0) {
+          setTests(localTests);
+          setFilteredTests(localTests);
         } else {
-          console.warn('No tests found in Firebase, using fallback data');
-          // Use fallback data if Firebase is empty
+          console.warn('No tests found in local storage, using fallback data');
+          // Use fallback data if local storage is empty
           const fallbackTests = await getFallbackTests();
           setTests(fallbackTests);
           setFilteredTests(fallbackTests);
         }
       } catch (error) {
-        console.error('Error loading tests from Firebase:', error);
-        setError('Failed to load tests from Firebase, using fallback data');
+        console.error('Error loading tests from local storage:', error);
+        setError('Failed to load tests from local storage, using fallback data');
         // Fallback to default tests
         const fallbackTests = await getFallbackTests();
         setTests(fallbackTests);
