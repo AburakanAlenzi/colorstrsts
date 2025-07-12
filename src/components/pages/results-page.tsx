@@ -42,12 +42,26 @@ export function ResultsPage({ lang }: ResultsPageProps) {
       try {
         const savedResults = localStorage.getItem('test_results');
         if (savedResults) {
-          const parsedResults = JSON.parse(savedResults).map((result: any) => ({
-            ...result,
-            timestamp: new Date(result.timestamp)
-          }));
+          const parsedResults = JSON.parse(savedResults)
+            .map((result: any) => ({
+              ...result,
+              timestamp: new Date(result.timestamp),
+              // Ensure required fields exist with fallbacks
+              testId: result.testId || 'unknown-test',
+              colorId: result.colorId || '#000000',
+              confidence: result.confidence || 50,
+              substances: result.substances || []
+            }))
+            // Filter out invalid results
+            .filter((result: TestResult) =>
+              result.id &&
+              result.testId &&
+              result.timestamp instanceof Date &&
+              !isNaN(result.timestamp.getTime())
+            );
+
           // Sort by timestamp (newest first)
-          parsedResults.sort((a: TestResult, b: TestResult) => 
+          parsedResults.sort((a: TestResult, b: TestResult) =>
             b.timestamp.getTime() - a.timestamp.getTime()
           );
           setResults(parsedResults);
@@ -175,7 +189,10 @@ export function ResultsPage({ lang }: ResultsPageProps) {
                   <div className="flex items-center space-x-3 rtl:space-x-reverse">
                     <BeakerIcon className="h-5 w-5 text-primary-600" />
                     <span className="font-medium text-gray-900 dark:text-gray-100">
-                      {result.testId.charAt(0).toUpperCase() + result.testId.slice(1)} Test
+                      {result.testId ?
+                        (result.testId.charAt(0).toUpperCase() + result.testId.slice(1) + ' Test') :
+                        (lang === 'ar' ? 'اختبار غير محدد' : 'Unknown Test')
+                      }
                     </span>
                   </div>
                   <Button
@@ -207,25 +224,34 @@ export function ResultsPage({ lang }: ResultsPageProps) {
                     {lang === 'ar' ? 'المواد المحتملة:' : 'Possible Substances:'}
                   </h4>
                   <div className="space-y-1">
-                    {result.substances.map((substance, index) => (
-                      <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
-                        • {substance}
+                    {result.substances && result.substances.length > 0 ? (
+                      result.substances.map((substance, index) => (
+                        <div key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                          • {substance}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                        {lang === 'ar' ? 'لا توجد مواد محددة' : 'No substances identified'}
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 
                 {/* Confidence */}
                 <div className="mb-4">
-                  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getConfidenceColor(result.confidence)}`}>
-                    {result.confidence}% - {getConfidenceText(result.confidence)}
+                  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getConfidenceColor(result.confidence || 50)}`}>
+                    {result.confidence || 50}% - {getConfidenceText(result.confidence || 50)}
                   </div>
                 </div>
 
                 {/* Timestamp */}
                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                   <CalendarIcon className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-                  {result.timestamp.toLocaleString(lang === 'ar' ? 'ar-SA' : 'en-US')}
+                  {result.timestamp ?
+                    result.timestamp.toLocaleString(lang === 'ar' ? 'ar-SA' : 'en-US') :
+                    (lang === 'ar' ? 'تاريخ غير محدد' : 'Unknown date')
+                  }
                 </div>
               </div>
             ))}
