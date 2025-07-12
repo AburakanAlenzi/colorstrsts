@@ -13,14 +13,24 @@ interface AccessStatusIndicatorProps {
   isRTL?: boolean;
 }
 
-export default function AccessStatusIndicator({ 
-  testIndex, 
-  className = '', 
+export default function AccessStatusIndicator({
+  testIndex,
+  className = '',
   showText = true,
-  isRTL = false 
+  isRTL = false
 }: AccessStatusIndicatorProps) {
-  const { settings, loading } = useSubscriptionSettings();
+  const subscriptionData = useSubscriptionSettings();
   const { user, userProfile } = useAuth();
+
+  // Safe access to subscription data with fallbacks
+  const settings = subscriptionData?.settings || {
+    freeTestsEnabled: true,
+    freeTestsCount: 5,
+    premiumRequired: false,
+    globalFreeAccess: true,
+    specificPremiumTests: []
+  };
+  const loading = subscriptionData?.loading || false;
 
   if (loading) {
     return (

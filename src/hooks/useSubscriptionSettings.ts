@@ -7,6 +7,11 @@ import {
   listenToSubscriptionSettings,
   SubscriptionSettings
 } from '@/lib/firebase-realtime';
+import {
+  getSubscriptionSettingsLocal,
+  saveSubscriptionSettingsLocal,
+  initializeLocalStorage
+} from '@/lib/local-data-service';
 
 const defaultSettings: SubscriptionSettings = {
   freeTestsEnabled: true,
@@ -24,7 +29,7 @@ export function useSubscriptionSettings() {
   const [settings, setSettings] = useState<SubscriptionSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
 
-  // Load settings from Firebase Realtime Database
+  // Load settings from localStorage first, then Firebase as fallback
   const loadSettings = async () => {
     // Check if we're in browser environment
     if (typeof window === 'undefined') {
@@ -34,13 +39,34 @@ export function useSubscriptionSettings() {
 
     try {
       setLoading(true);
+
+      // Try localStorage first
+      try {
+        initializeLocalStorage();
+        const localSettings = getSubscriptionSettingsLocal();
+        setSettings(localSettings);
+
+        // Set global settings for immediate access
+        (window as any).subscriptionSettings = localSettings;
+
+        console.log('✅ Loaded subscription settings from localStorage');
+        return;
+
+      } catch (localError) {
+        console.warn('Failed to load from localStorage, trying Firebase:', localError);
+      }
+
+      // Fallback to Firebase
       const firebaseSettings = await getSubscriptionSettings();
       setSettings(firebaseSettings);
 
       // Also set global settings for immediate access
       (window as any).subscriptionSettings = firebaseSettings;
+
+      console.log('✅ Loaded subscription settings from Firebase');
+
     } catch (error) {
-      console.error('Error loading subscription settings from Firebase:', error);
+      console.error('Error loading subscription settings:', error);
       setSettings(defaultSettings);
 
       // Set default settings in global object as fallback
@@ -107,8 +133,21 @@ export function useSubscriptionSettings() {
     try {
       setSettings(newSettings);
 
-      // Save to Firebase Realtime Database
-      await saveSubscriptionSettings(newSettings);
+      // Save to localStorage first
+      try {
+        saveSubscriptionSettingsLocal(newSettings);
+        console.log('✅ Saved subscription settings to localStorage');
+      } catch (localError) {
+        console.warn('Failed to save to localStorage:', localError);
+      }
+
+      // Also save to Firebase as backup
+      try {
+        await saveSubscriptionSettings(newSettings);
+        console.log('✅ Saved subscription settings to Firebase');
+      } catch (firebaseError) {
+        console.warn('Failed to save to Firebase:', firebaseError);
+      }
 
       if (typeof window !== 'undefined') {
         // Set global settings for immediate access
