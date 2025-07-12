@@ -68,7 +68,7 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
     { id: 'colors', name: lang === 'ar' ? 'إدارة النتائج اللونية' : 'Color Results', icon: SwatchIcon },
     { id: 'subscriptions', name: lang === 'ar' ? 'إدارة الاشتراكات' : 'Subscriptions', icon: CreditCardIcon },
     { id: 'subscription-settings', name: lang === 'ar' ? 'إعدادات الوصول' : 'Access Settings', icon: LockOpenIcon },
-    { id: 'firebase-debugger', name: lang === 'ar' ? 'مصحح Firebase' : 'Firebase Debugger', icon: CogIcon },
+    { id: 'firebase-debugger', name: lang === 'ar' ? 'مصحح Firebase' : 'Firebase Debugger', icon: Cog6ToothIcon },
     { id: 'payments', name: lang === 'ar' ? 'إعدادات الدفع' : 'Payment Settings', icon: Cog6ToothIcon },
     { id: 'reports', name: lang === 'ar' ? 'التقارير' : 'Reports', icon: DocumentTextIcon },
     { id: 'database', name: lang === 'ar' ? 'قاعدة البيانات' : 'Database', icon: CircleStackIcon },
