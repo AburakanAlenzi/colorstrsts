@@ -142,30 +142,35 @@ export async function recordTestUsage(
 }
 
 // Get admin subscription settings
-function getSubscriptionSettings() {
+async function getSubscriptionSettingsAsync() {
   try {
-    // Check global settings first
+    // Check global settings first for immediate access
     if (typeof window !== 'undefined' && (window as any).subscriptionSettings) {
       return (window as any).subscriptionSettings;
     }
 
-    // Fallback to localStorage
-    const savedSettings = localStorage.getItem('subscription_settings');
-    if (savedSettings) {
-      return JSON.parse(savedSettings);
-    }
-  } catch (error) {
-    console.error('Error loading subscription settings:', error);
-  }
+    // Import Firebase function dynamically to avoid SSR issues
+    const { getSubscriptionSettings: getFirebaseSettings } = await import('@/lib/firebase-realtime');
+    const firebaseSettings = await getFirebaseSettings();
 
-  // Default settings
-  return {
-    freeTestsEnabled: true,
-    freeTestsCount: 5,
-    premiumRequired: true,
-    globalFreeAccess: false,
-    specificPremiumTests: []
-  };
+    // Cache in global settings for immediate access
+    if (typeof window !== 'undefined') {
+      (window as any).subscriptionSettings = firebaseSettings;
+    }
+
+    return firebaseSettings;
+  } catch (error) {
+    console.error('Error loading subscription settings from Firebase:', error);
+
+    // Fallback to default settings
+    return {
+      freeTestsEnabled: true,
+      freeTestsCount: 5,
+      premiumRequired: true,
+      globalFreeAccess: false,
+      specificPremiumTests: []
+    };
+  }
 }
 
 // التحقق من إمكانية الوصول للاختبار
@@ -174,8 +179,8 @@ export async function canAccessTest(uid: string, testIndex: number): Promise<{
   reason?: string;
   requiresSubscription?: boolean;
 }> {
-  // Get admin settings
-  const settings = getSubscriptionSettings();
+  // Get admin settings from Firebase
+  const settings = await getSubscriptionSettingsAsync();
 
   // If global free access is enabled, allow all tests
   if (settings.globalFreeAccess) {

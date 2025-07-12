@@ -18,6 +18,7 @@ import {
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { useSubscriptionSettings } from '@/hooks/useSubscriptionSettings';
 
 interface SubscriptionSettingsProps {
   lang: Language;
@@ -32,56 +33,37 @@ interface TestAccessSettings {
 }
 
 export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps) {
-  const [settings, setSettings] = useState<TestAccessSettings>({
-    freeTestsEnabled: true,
-    freeTestsCount: 5,
-    premiumRequired: true,
-    globalFreeAccess: false,
-    specificPremiumTests: []
-  });
-  const [loading, setLoading] = useState(false);
+  const {
+    settings,
+    loading,
+    updateSettings,
+    loadSettings
+  } = useSubscriptionSettings();
+
+  const [localSettings, setLocalSettings] = useState(settings);
   const [saving, setSaving] = useState(false);
   const [premiumTestInput, setPremiumTestInput] = useState('');
 
   const isRTL = lang === 'ar';
 
-  // Load current settings
+  // Update local settings when Firebase settings change
   useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = () => {
-    try {
-      const savedSettings = localStorage.getItem('subscription_settings');
-      if (savedSettings) {
-        setSettings(JSON.parse(savedSettings));
-      }
-    } catch (error) {
-      console.error('Error loading subscription settings:', error);
-    }
-  };
+    setLocalSettings(settings);
+  }, [settings]);
 
   const saveSettings = async () => {
     setSaving(true);
     try {
-      // Save to localStorage (in real app, save to Firebase)
-      localStorage.setItem('subscription_settings', JSON.stringify(settings));
-
-      // Also save to a global settings object for immediate access
-      (window as any).subscriptionSettings = settings;
-
-      // Dispatch custom event to notify other components
-      window.dispatchEvent(new CustomEvent('subscriptionSettingsUpdated', {
-        detail: settings
-      }));
+      // Save to Firebase Realtime Database
+      await updateSettings(localSettings);
 
       toast.success(
-        isRTL ? 'تم حفظ إعدادات الاشتراكات بنجاح' : 'Subscription settings saved successfully'
+        isRTL ? 'تم حفظ إعدادات الاشتراكات بنجاح في Firebase' : 'Subscription settings saved successfully to Firebase'
       );
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('Error saving settings to Firebase:', error);
       toast.error(
-        isRTL ? 'خطأ في حفظ الإعدادات' : 'Error saving settings'
+        isRTL ? 'خطأ في حفظ الإعدادات في Firebase' : 'Error saving settings to Firebase'
       );
     } finally {
       setSaving(false);
@@ -90,8 +72,8 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
 
   const handleAddPremiumTest = () => {
     const testNumber = parseInt(premiumTestInput);
-    if (testNumber && !settings.specificPremiumTests.includes(testNumber)) {
-      setSettings(prev => ({
+    if (testNumber && !localSettings.specificPremiumTests.includes(testNumber)) {
+      setLocalSettings(prev => ({
         ...prev,
         specificPremiumTests: [...prev.specificPremiumTests, testNumber].sort((a, b) => a - b)
       }));
@@ -100,14 +82,14 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
   };
 
   const handleRemovePremiumTest = (testNumber: number) => {
-    setSettings(prev => ({
+    setLocalSettings(prev => ({
       ...prev,
       specificPremiumTests: prev.specificPremiumTests.filter(t => t !== testNumber)
     }));
   };
 
   const resetToDefaults = () => {
-    setSettings({
+    setLocalSettings({
       freeTestsEnabled: true,
       freeTestsCount: 5,
       premiumRequired: true,
@@ -162,12 +144,12 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
               </p>
             </div>
             <Switch
-              checked={settings.globalFreeAccess}
-              onCheckedChange={(checked) => setSettings(prev => ({ ...prev, globalFreeAccess: checked }))}
+              checked={localSettings.globalFreeAccess}
+              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, globalFreeAccess: checked }))}
             />
           </div>
 
-          {!settings.globalFreeAccess && (
+          {!localSettings.globalFreeAccess && (
             <>
               {/* Free Tests Settings */}
               <div className="space-y-4">
@@ -181,12 +163,12 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                     </p>
                   </div>
                   <Switch
-                    checked={settings.freeTestsEnabled}
-                    onCheckedChange={(checked) => setSettings(prev => ({ ...prev, freeTestsEnabled: checked }))}
+                    checked={localSettings.freeTestsEnabled}
+                    onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, freeTestsEnabled: checked }))}
                   />
                 </div>
 
-                {settings.freeTestsEnabled && (
+                {localSettings.freeTestsEnabled && (
                   <div className="flex items-center gap-4">
                     <Label className="text-sm font-medium">
                       {isRTL ? 'عدد الاختبارات المجانية:' : 'Number of free tests:'}
@@ -195,8 +177,8 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                       type="number"
                       min="0"
                       max="50"
-                      value={settings.freeTestsCount}
-                      onChange={(e) => setSettings(prev => ({ ...prev, freeTestsCount: parseInt(e.target.value) || 0 }))}
+                      value={localSettings.freeTestsCount}
+                      onChange={(e) => setLocalSettings(prev => ({ ...prev, freeTestsCount: parseInt(e.target.value) || 0 }))}
                       className="w-20"
                     />
                   </div>
@@ -214,8 +196,8 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                   </p>
                 </div>
                 <Switch
-                  checked={settings.premiumRequired}
-                  onCheckedChange={(checked) => setSettings(prev => ({ ...prev, premiumRequired: checked }))}
+                  checked={localSettings.premiumRequired}
+                  onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, premiumRequired: checked }))}
                 />
               </div>
             </>
@@ -224,7 +206,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
       </Card>
 
       {/* Specific Premium Tests */}
-      {!settings.globalFreeAccess && settings.premiumRequired && (
+      {!localSettings.globalFreeAccess && localSettings.premiumRequired && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -251,13 +233,13 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
             </div>
 
             {/* Premium Tests List */}
-            {settings.specificPremiumTests.length > 0 && (
+            {localSettings.specificPremiumTests.length > 0 && (
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   {isRTL ? 'الاختبارات المميزة الحالية:' : 'Current premium tests:'}
                 </Label>
                 <div className="flex flex-wrap gap-2">
-                  {settings.specificPremiumTests.map(testNumber => (
+                  {localSettings.specificPremiumTests.map(testNumber => (
                     <div
                       key={testNumber}
                       className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
@@ -288,7 +270,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
               {isRTL ? 'الحالة الحالية:' : 'Current Status:'}
             </p>
             <ul className="text-sm space-y-1">
-              {settings.globalFreeAccess ? (
+              {localSettings.globalFreeAccess ? (
                 <li className="flex items-center gap-2 text-green-600">
                   <CheckCircleIcon className="h-4 w-4" />
                   {isRTL ? 'جميع الاختبارات مجانية للجميع' : 'All tests are free for everyone'}
@@ -297,17 +279,17 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                 <>
                   <li className="flex items-center gap-2">
                     <CheckCircleIcon className="h-4 w-4 text-green-600" />
-                    {isRTL 
-                      ? `${settings.freeTestsCount} اختبارات مجانية متاحة`
-                      : `${settings.freeTestsCount} free tests available`
+                    {isRTL
+                      ? `${localSettings.freeTestsCount} اختبارات مجانية متاحة`
+                      : `${localSettings.freeTestsCount} free tests available`
                     }
                   </li>
-                  {settings.specificPremiumTests.length > 0 && (
+                  {localSettings.specificPremiumTests.length > 0 && (
                     <li className="flex items-center gap-2">
                       <StarIcon className="h-4 w-4 text-yellow-600" />
-                      {isRTL 
-                        ? `${settings.specificPremiumTests.length} اختبارات تتطلب اشتراك مميز`
-                        : `${settings.specificPremiumTests.length} tests require premium subscription`
+                      {isRTL
+                        ? `${localSettings.specificPremiumTests.length} اختبارات تتطلب اشتراك مميز`
+                        : `${localSettings.specificPremiumTests.length} tests require premium subscription`
                       }
                     </li>
                   )}

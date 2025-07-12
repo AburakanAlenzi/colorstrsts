@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface SubscriptionSettings {
-  freeTestsEnabled: boolean;
-  freeTestsCount: number;
-  premiumRequired: boolean;
-  globalFreeAccess: boolean;
-  specificPremiumTests: number[];
-}
+import {
+  getSubscriptionSettings,
+  saveSubscriptionSettings,
+  listenToSubscriptionSettings,
+  SubscriptionSettings
+} from '@/lib/firebase-realtime';
 
 const defaultSettings: SubscriptionSettings = {
   freeTestsEnabled: true,
@@ -26,53 +24,45 @@ export function useSubscriptionSettings() {
   const [settings, setSettings] = useState<SubscriptionSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
 
-  // Load settings from localStorage and global window object
-  const loadSettings = () => {
+  // Load settings from Firebase Realtime Database
+  const loadSettings = async () => {
     try {
-      // Check global settings first (set by admin)
-      if (typeof window !== 'undefined' && (window as any).subscriptionSettings) {
-        const globalSettings = (window as any).subscriptionSettings;
-        setSettings(globalSettings);
-        setLoading(false);
-        return;
-      }
+      setLoading(true);
+      const firebaseSettings = await getSubscriptionSettings();
+      setSettings(firebaseSettings);
 
-      // Fallback to localStorage
+      // Also set global settings for immediate access
       if (typeof window !== 'undefined') {
-        const savedSettings = localStorage.getItem('subscription_settings');
-        if (savedSettings) {
-          const parsedSettings = JSON.parse(savedSettings);
-          setSettings(parsedSettings);
-          // Also set global settings for immediate access
-          (window as any).subscriptionSettings = parsedSettings;
-        }
+        (window as any).subscriptionSettings = firebaseSettings;
       }
     } catch (error) {
-      console.error('Error loading subscription settings:', error);
+      console.error('Error loading subscription settings from Firebase:', error);
       setSettings(defaultSettings);
     } finally {
       setLoading(false);
     }
   };
 
-  // Listen for settings changes
+  // Listen for settings changes from Firebase
   useEffect(() => {
     loadSettings();
 
-    // Listen for storage changes (when admin updates settings)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'subscription_settings' && e.newValue) {
-        try {
-          const newSettings = JSON.parse(e.newValue);
-          setSettings(newSettings);
-          (window as any).subscriptionSettings = newSettings;
-        } catch (error) {
-          console.error('Error parsing updated settings:', error);
-        }
-      }
-    };
+    // Set up real-time listener for Firebase changes
+    const unsubscribe = listenToSubscriptionSettings((newSettings) => {
+      setSettings(newSettings);
 
-    // Listen for custom events (when settings are updated in the same tab)
+      // Update global settings for immediate access
+      if (typeof window !== 'undefined') {
+        (window as any).subscriptionSettings = newSettings;
+
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('subscriptionSettingsUpdated', {
+          detail: newSettings
+        }));
+      }
+    });
+
+    // Listen for custom events (for immediate updates in same tab)
     const handleSettingsUpdate = (e: CustomEvent) => {
       if (e.detail) {
         setSettings(e.detail);
@@ -81,37 +71,37 @@ export function useSubscriptionSettings() {
     };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
       window.addEventListener('subscriptionSettingsUpdated', handleSettingsUpdate as EventListener);
     }
 
     return () => {
+      unsubscribe();
       if (typeof window !== 'undefined') {
-        window.removeEventListener('storage', handleStorageChange);
         window.removeEventListener('subscriptionSettingsUpdated', handleSettingsUpdate as EventListener);
       }
     };
   }, []);
 
   // Function to update settings (for admin use)
-  const updateSettings = (newSettings: SubscriptionSettings) => {
+  const updateSettings = async (newSettings: SubscriptionSettings) => {
     try {
       setSettings(newSettings);
-      
+
+      // Save to Firebase Realtime Database
+      await saveSubscriptionSettings(newSettings);
+
       if (typeof window !== 'undefined') {
-        // Save to localStorage
-        localStorage.setItem('subscription_settings', JSON.stringify(newSettings));
-        
-        // Set global settings
+        // Set global settings for immediate access
         (window as any).subscriptionSettings = newSettings;
-        
-        // Dispatch custom event to notify other components
+
+        // Dispatch custom event to notify other components immediately
         window.dispatchEvent(new CustomEvent('subscriptionSettingsUpdated', {
           detail: newSettings
         }));
       }
     } catch (error) {
       console.error('Error updating subscription settings:', error);
+      throw error;
     }
   };
 
