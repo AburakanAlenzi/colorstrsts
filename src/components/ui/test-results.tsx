@@ -136,7 +136,8 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
           confidence,
           timestamp: new Date(),
           colorName,
-          colorHex: selectedColor
+          colorHex: selectedColor,
+          substances: substances || [] // ✅ إضافة substances مع fallback
         };
 
         setResult(testResult);
@@ -344,7 +345,7 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
             </h3>
           </div>
 
-          {result.substances.length > 0 ? (
+          {result.substances && result.substances.length > 0 ? (
             <div className="space-y-3">
               {result.substances.map((substance, index) => (
                 <div
