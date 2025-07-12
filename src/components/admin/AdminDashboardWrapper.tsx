@@ -1,16 +1,14 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Language } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
-// Lazy load the actual component to avoid SSR issues
-const AdminDashboard = React.lazy(() => 
-  import('./admin-dashboard').then(module => ({ default: module.AdminDashboard }))
-);
+// Import AdminDashboard directly to avoid prop passing issues
+import { AdminDashboard } from './admin-dashboard';
 
 interface AdminDashboardWrapperProps {
   lang: Language;
@@ -152,9 +150,7 @@ export default function AdminDashboardWrapper({ lang }: AdminDashboardWrapperPro
 
   return (
     <AdminDashboardErrorBoundary isRTL={isRTL}>
-      <Suspense fallback={<AdminDashboardLoading isRTL={isRTL} />}>
-        <AdminDashboard lang={lang} />
-      </Suspense>
+      <AdminDashboard lang={lang} />
     </AdminDashboardErrorBoundary>
   );
 }

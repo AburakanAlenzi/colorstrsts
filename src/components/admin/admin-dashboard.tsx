@@ -13,6 +13,7 @@ import TestsManagementNew from './TestsManagementNew';
 import { ColorResultsManagement } from './color-results-management';
 import { SubscriptionManagement } from './SubscriptionManagement';
 import SubscriptionSettingsWrapper from './SubscriptionSettingsWrapper';
+import FirebaseDebugger from './FirebaseDebugger';
 import { STCPaySettings } from './STCPaySettings';
 import { UsageChart } from './UsageChart';
 import { exportTests } from '@/lib/firebase-tests';
@@ -67,6 +68,7 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
     { id: 'colors', name: lang === 'ar' ? 'إدارة النتائج اللونية' : 'Color Results', icon: SwatchIcon },
     { id: 'subscriptions', name: lang === 'ar' ? 'إدارة الاشتراكات' : 'Subscriptions', icon: CreditCardIcon },
     { id: 'subscription-settings', name: lang === 'ar' ? 'إعدادات الوصول' : 'Access Settings', icon: LockOpenIcon },
+    { id: 'firebase-debugger', name: lang === 'ar' ? 'مصحح Firebase' : 'Firebase Debugger', icon: CogIcon },
     { id: 'payments', name: lang === 'ar' ? 'إعدادات الدفع' : 'Payment Settings', icon: Cog6ToothIcon },
     { id: 'reports', name: lang === 'ar' ? 'التقارير' : 'Reports', icon: DocumentTextIcon },
     { id: 'database', name: lang === 'ar' ? 'قاعدة البيانات' : 'Database', icon: CircleStackIcon },
@@ -613,6 +615,8 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
         return <SubscriptionManagement lang={lang} />;
       case 'subscription-settings':
         return <SubscriptionSettingsWrapper lang={lang} />;
+      case 'firebase-debugger':
+        return <FirebaseDebugger lang={lang} />;
       case 'payments':
         return <STCPaySettings lang={lang} />;
       case 'reports':

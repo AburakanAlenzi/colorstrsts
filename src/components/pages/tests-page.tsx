@@ -25,10 +25,77 @@ interface TestsPageProps {
   lang: Language;
 }
 
+// Fallback tests data
+const getFallbackTests = async (): Promise<ChemicalTest[]> => {
+  return [
+    {
+      id: 'marquis-test',
+      method_name: 'Marquis Test',
+      method_name_ar: 'اختبار ماركيز',
+      color_result: 'Purple/Black',
+      color_result_ar: 'بنفسجي/أسود',
+      possible_substance: 'MDMA/Amphetamines',
+      possible_substance_ar: 'إم دي إم إيه/أمفيتامينات',
+      prepare: 'Add 2-3 drops of reagent to sample',
+      prepare_ar: 'أضف 2-3 قطرات من الكاشف إلى العينة',
+      description: 'Primary screening test for MDMA and amphetamines',
+      description_ar: 'اختبار فحص أولي للإم دي إم إيه والأمفيتامينات',
+      test_type: 'Presumptive',
+      test_number: '1',
+      reference: 'DEA Guidelines',
+      category: 'basic',
+      safety_level: 'medium',
+      reagents: ['Marquis Reagent'],
+      expected_time: '2-3 minutes'
+    },
+    {
+      id: 'mecke-test',
+      method_name: 'Mecke Test',
+      method_name_ar: 'اختبار ميك',
+      color_result: 'Blue/Green',
+      color_result_ar: 'أزرق/أخضر',
+      possible_substance: 'Opiates',
+      possible_substance_ar: 'مواد أفيونية',
+      prepare: 'Add 2-3 drops of reagent to sample',
+      prepare_ar: 'أضف 2-3 قطرات من الكاشف إلى العينة',
+      description: 'Screening test for opiates and related compounds',
+      description_ar: 'اختبار فحص للمواد الأفيونية والمركبات ذات الصلة',
+      test_type: 'Presumptive',
+      test_number: '2',
+      reference: 'UNODC Manual',
+      category: 'basic',
+      safety_level: 'medium',
+      reagents: ['Mecke Reagent'],
+      expected_time: '2-3 minutes'
+    },
+    {
+      id: 'fast-blue-b-test',
+      method_name: 'Fast Blue B Salt Test',
+      method_name_ar: 'اختبار الأزرق السريع ب',
+      color_result: 'Orange/Red',
+      color_result_ar: 'برتقالي/أحمر',
+      possible_substance: 'THC/Cannabis',
+      possible_substance_ar: 'تي إتش سي/حشيش',
+      prepare: 'Mix sample with Fast Blue B salt solution',
+      prepare_ar: 'اخلط العينة مع محلول ملح الأزرق السريع ب',
+      description: 'Specific test for THC and cannabis compounds',
+      description_ar: 'اختبار محدد لمركبات التي إتش سي والحشيش',
+      test_type: 'Confirmatory',
+      test_number: '13',
+      reference: 'Scientific Literature',
+      category: 'advanced',
+      safety_level: 'high',
+      reagents: ['Fast Blue B Salt', 'Sodium Hydroxide'],
+      expected_time: '5-10 minutes'
+    }
+  ];
+};
+
 function TestsPageContent({ lang }: TestsPageProps) {
   const [tests, setTests] = useState<ChemicalTest[]>([]);
   const [filteredTests, setFilteredTests] = useState<ChemicalTest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedSafetyLevel, setSelectedSafetyLevel] = useState<string>('all');
@@ -48,14 +115,25 @@ function TestsPageContent({ lang }: TestsPageProps) {
         }
 
         const chemicalTests = await getChemicalTests();
-        console.log('🔥 Loaded chemical tests from Firebase Realtime Database');
-        setTests(chemicalTests);
-        setFilteredTests(chemicalTests);
+        console.log('🔥 Loaded chemical tests from Firebase Realtime Database', chemicalTests.length);
+
+        if (chemicalTests && chemicalTests.length > 0) {
+          setTests(chemicalTests);
+          setFilteredTests(chemicalTests);
+        } else {
+          console.warn('No tests found in Firebase, using fallback data');
+          // Use fallback data if Firebase is empty
+          const fallbackTests = await getFallbackTests();
+          setTests(fallbackTests);
+          setFilteredTests(fallbackTests);
+        }
       } catch (error) {
         console.error('Error loading tests from Firebase:', error);
-        // Fallback to empty array
-        setTests([]);
-        setFilteredTests([]);
+        setError('Failed to load tests from Firebase, using fallback data');
+        // Fallback to default tests
+        const fallbackTests = await getFallbackTests();
+        setTests(fallbackTests);
+        setFilteredTests(fallbackTests);
       } finally {
         setLoading(false);
       }
@@ -163,6 +241,23 @@ function TestsPageContent({ lang }: TestsPageProps) {
               </div>
             </div>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="max-w-2xl mx-auto mb-8">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                  <p className="text-sm text-yellow-800">
+                    {lang === 'ar'
+                      ? 'تم تحميل البيانات الاحتياطية. قد تكون بعض الاختبارات غير متاحة.'
+                      : 'Fallback data loaded. Some tests may not be available.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Search and Filters */}
