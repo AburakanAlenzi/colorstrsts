@@ -146,37 +146,42 @@ class AdminDashboardErrorBoundary extends React.Component<
 }
 
 export default function AdminDashboardWrapper({ lang }: AdminDashboardWrapperProps) {
-  const isRTL = lang === 'ar';
+  // Provide fallback for lang if undefined
+  const safeLang = lang || 'en';
+  const isRTL = safeLang === 'ar';
 
-  // Add safety check for lang prop
+  // Add safety check for lang prop with better error handling
   if (!lang) {
-    console.error('AdminDashboardWrapper: lang prop is undefined');
+    console.error('AdminDashboardWrapper: lang prop is undefined, using fallback');
+
+    // Try to get lang from URL or localStorage as fallback
+    let fallbackLang: Language = 'en';
+
+    if (typeof window !== 'undefined') {
+      // Try to get from URL
+      const pathLang = window.location.pathname.split('/')[1];
+      if (pathLang === 'ar' || pathLang === 'en') {
+        fallbackLang = pathLang as Language;
+      } else {
+        // Try to get from localStorage
+        const storedLang = localStorage.getItem('preferred_language');
+        if (storedLang === 'ar' || storedLang === 'en') {
+          fallbackLang = storedLang as Language;
+        }
+      }
+    }
+
+    // Use fallback lang instead of showing error
     return (
-      <Alert>
-        <ExclamationTriangleIcon className="h-4 w-4" />
-        <AlertDescription>
-          <div className="space-y-2">
-            <p className="font-medium">
-              خطأ في تحميل لوحة التحكم / Error loading admin dashboard
-            </p>
-            <p className="text-sm text-gray-600">
-              يرجى إعادة تحميل الصفحة / Please refresh the page
-            </p>
-            <details className="text-xs">
-              <summary>تفاصيل الخطأ / Error details</summary>
-              <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
-                lang is not defined
-              </pre>
-            </details>
-          </div>
-        </AlertDescription>
-      </Alert>
+      <AdminDashboardErrorBoundary isRTL={fallbackLang === 'ar'}>
+        <AdminDashboard lang={fallbackLang} />
+      </AdminDashboardErrorBoundary>
     );
   }
 
   return (
     <AdminDashboardErrorBoundary isRTL={isRTL}>
-      <AdminDashboard lang={lang} />
+      <AdminDashboard lang={safeLang} />
     </AdminDashboardErrorBoundary>
   );
 }

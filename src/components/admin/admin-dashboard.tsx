@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { getChemicalTests } from '@/lib/firebase-realtime';
+import { getChemicalTestsLocal, initializeLocalStorage } from '@/lib/local-data-service';
 import { Button } from '@/components/ui/button';
 import { ReportsSystem } from './reports-system';
 import { DatabaseManagement } from './database-management';
@@ -86,12 +86,14 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
           return;
         }
 
-        // Load basic stats from Firebase
+        // Load basic stats from local storage
         let tests: any[] = [];
         try {
-          tests = await getChemicalTests();
+          initializeLocalStorage();
+          tests = getChemicalTestsLocal();
+          console.log(`📊 Loaded ${tests.length} tests for admin dashboard`);
         } catch (error) {
-          console.error('Error loading tests from Firebase:', error);
+          console.error('Error loading tests from local storage:', error);
           tests = [];
         }
 
