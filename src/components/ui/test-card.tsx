@@ -3,13 +3,14 @@
 import { Language } from '@/types';
 import { ChemicalTest } from '@/lib/data-service';
 import { getTranslationsSync } from '@/lib/translations';
-import { 
+import {
   BeakerIcon,
   ExclamationTriangleIcon,
   ClockIcon,
   ArrowRightIcon,
   ShieldCheckIcon,
-  ShieldExclamationIcon
+  ShieldExclamationIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
 interface TestCardProps {
@@ -28,6 +29,11 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
       case 'medium': return ShieldCheckIcon;
       case 'high': return ShieldExclamationIcon;
       case 'extreme': return ExclamationTriangleIcon;
+      case 'undefined':
+      case 'unknown':
+      case null:
+      case undefined:
+        return QuestionMarkCircleIcon;
       default: return ShieldCheckIcon;
     }
   };
@@ -38,6 +44,11 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
       case 'medium': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800';
       case 'high': return 'text-orange-600 bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800';
       case 'extreme': return 'text-red-600 bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800';
+      case 'undefined':
+      case 'unknown':
+      case null:
+      case undefined:
+        return 'text-gray-500 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
       default: return 'text-gray-600 bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800';
     }
   };
@@ -47,16 +58,26 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
       case 'basic': return 'text-blue-600 bg-blue-50 dark:bg-blue-950';
       case 'advanced': return 'text-purple-600 bg-purple-50 dark:bg-purple-950';
       case 'specialized': return 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950';
+      case 'undefined':
+      case 'unknown':
+      case null:
+      case undefined:
+        return 'text-gray-500 bg-gray-100 dark:bg-gray-800';
       default: return 'text-gray-600 bg-gray-50 dark:bg-gray-950';
     }
   };
 
-  const SafetyIcon = getSafetyLevelIcon(test.safety_level);
+  const SafetyIcon = getSafetyLevelIcon(safetyLevelKey);
 
   const testName = lang === 'ar' ? test.method_name_ar : test.method_name;
   const testDescription = lang === 'ar' ? test.description_ar : test.description;
-  const categoryLabel = t(`tests.categories.${test.category}`);
-  const safetyLabel = t(`tests.safety_levels.${test.safety_level}`);
+
+  // Handle undefined/null values with fallbacks
+  const categoryKey = test.category || 'undefined';
+  const safetyLevelKey = test.safety_level || 'undefined';
+
+  const categoryLabel = t(`tests.categories.${categoryKey}`);
+  const safetyLabel = t(`tests.safety_levels.${safetyLevelKey}`);
 
   return (
     <div
@@ -87,14 +108,14 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
               />
             </div>
             <div>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(test.category)}`}>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(categoryKey)}`}>
                 {categoryLabel}
               </span>
             </div>
           </div>
 
           {/* Safety Level Indicator */}
-          <div className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium border ${getSafetyLevelColor(test.safety_level)}`}>
+          <div className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium border ${getSafetyLevelColor(safetyLevelKey)}`}>
             <SafetyIcon className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" />
             {safetyLabel}
           </div>

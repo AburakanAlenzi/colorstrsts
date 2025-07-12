@@ -77,7 +77,9 @@
     "categories": {
       "basic": "الاختبارات الأساسية",
       "advanced": "الاختبارات المتقدمة",
-      "specialized": "الاختبارات المتخصصة"
+      "specialized": "الاختبارات المتخصصة",
+      "undefined": "غير محدد",
+      "unknown": "غير معروف"
     },
     "test_names": {
       "marquis": "اختبار ماركيز",
@@ -113,7 +115,9 @@
       "low": "منخفض",
       "medium": "متوسط",
       "high": "عالي",
-      "extreme": "خطر شديد"
+      "extreme": "خطر شديد",
+      "undefined": "غير محدد",
+      "unknown": "غير معروف"
     },
     "select_test": "اختيار الاختبار",
     "preparation_time": "وقت التحضير",

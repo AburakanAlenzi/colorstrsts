@@ -77,7 +77,9 @@
     "categories": {
       "basic": "Basic Tests",
       "advanced": "Advanced Tests",
-      "specialized": "Specialized Tests"
+      "specialized": "Specialized Tests",
+      "undefined": "Undefined",
+      "unknown": "Unknown"
     },
     "test_names": {
       "marquis": "Marquis Test",
@@ -113,7 +115,9 @@
       "low": "Low",
       "medium": "Medium",
       "high": "High",
-      "extreme": "Extreme"
+      "extreme": "Extreme",
+      "undefined": "Undefined",
+      "unknown": "Unknown"
     },
     "select_test": "Select Test",
     "preparation_time": "Preparation Time",
