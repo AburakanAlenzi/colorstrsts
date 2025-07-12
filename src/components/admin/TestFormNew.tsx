@@ -76,6 +76,40 @@ export default function TestFormNew({
 
   const isEditing = !!test;
 
+  // Safe translations access with fallbacks
+  const safeTranslations = {
+    form: {
+      editTitle: translations?.form?.editTitle || 'Edit Test',
+      addTitle: translations?.form?.addTitle || 'Add New Test',
+      title: translations?.form?.title || 'Test Form',
+      methodName: translations?.form?.methodName || 'Method Name',
+      methodNameAr: translations?.form?.methodNameAr || 'Method Name (Arabic)',
+      testType: translations?.form?.testType || 'Test Type',
+      testNumber: translations?.form?.testNumber || 'Test Number',
+      colorResult: translations?.form?.colorResult || 'Color Result',
+      colorResultAr: translations?.form?.colorResultAr || 'Color Result (Arabic)',
+      possibleSubstance: translations?.form?.possibleSubstance || 'Possible Substance',
+      possibleSubstanceAr: translations?.form?.possibleSubstanceAr || 'Possible Substance (Arabic)',
+      prepare: translations?.form?.prepare || 'Preparation Steps',
+      prepareAr: translations?.form?.prepareAr || 'Preparation Steps (Arabic)',
+      reference: translations?.form?.reference || 'Reference',
+      cancel: translations?.form?.cancel || 'Cancel',
+      save: translations?.form?.save || 'Save',
+      validation: {
+        methodNameRequired: translations?.form?.validation?.methodNameRequired || 'Method name is required',
+        methodNameArRequired: translations?.form?.validation?.methodNameArRequired || 'Arabic method name is required',
+        testTypeRequired: translations?.form?.validation?.testTypeRequired || 'Test type is required',
+        testNumberRequired: translations?.form?.validation?.testNumberRequired || 'Test number is required',
+        colorResultRequired: translations?.form?.validation?.colorResultRequired || 'Color result is required',
+        colorResultArRequired: translations?.form?.validation?.colorResultArRequired || 'Arabic color result is required',
+        substanceRequired: translations?.form?.validation?.substanceRequired || 'Possible substance is required',
+        substanceArRequired: translations?.form?.validation?.substanceArRequired || 'Arabic possible substance is required',
+        prepareRequired: translations?.form?.validation?.prepareRequired || 'Preparation steps are required',
+        prepareArRequired: translations?.form?.validation?.prepareArRequired || 'Arabic preparation steps are required'
+      }
+    }
+  };
+
   useEffect(() => {
     if (test) {
       // Populate form with test data for editing
@@ -121,10 +155,10 @@ export default function TestFormNew({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? translations.form.editTitle : translations.form.addTitle}
+            {isEditing ? safeTranslations.form.editTitle : safeTranslations.form.addTitle}
           </DialogTitle>
           <DialogDescription>
-            {translations.form.title}
+            {safeTranslations.form.title}
           </DialogDescription>
         </DialogHeader>
 

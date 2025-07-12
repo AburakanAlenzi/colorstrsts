@@ -118,7 +118,7 @@ export default function TestsTable({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2">{translations.table.loading}</span>
+        <span className="ml-2">{translations?.table?.loading || translations?.loading || 'Loading...'}</span>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function TestsTable({
   if (error) {
     return (
       <div className="text-center py-12">
-        <div className="text-red-600 mb-2">{translations.table.error}</div>
+        <div className="text-red-600 mb-2">{translations?.table?.error || translations?.error || 'Error'}</div>
         <div className="text-gray-500">{error}</div>
       </div>
     );
@@ -190,20 +190,20 @@ export default function TestsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">{translations.table.id}</TableHead>
-              <TableHead>{translations.table.methodName}</TableHead>
-              <TableHead className="w-[120px]">{translations.table.testType}</TableHead>
-              <TableHead>{translations.table.substance}</TableHead>
-              <TableHead>{translations.table.colorResult}</TableHead>
-              <TableHead className="w-[120px]">{translations.table.createdAt}</TableHead>
-              <TableHead className="w-[100px] text-center">{translations.table.actions}</TableHead>
+              <TableHead className="w-[100px]">{translations?.table?.id || 'ID'}</TableHead>
+              <TableHead>{translations?.table?.methodName || 'Method Name'}</TableHead>
+              <TableHead className="w-[120px]">{translations?.table?.testType || 'Test Type'}</TableHead>
+              <TableHead>{translations?.table?.substance || 'Substance'}</TableHead>
+              <TableHead>{translations?.table?.colorResult || 'Color Result'}</TableHead>
+              <TableHead className="w-[120px]">{translations?.table?.createdAt || 'Created At'}</TableHead>
+              <TableHead className="w-[100px] text-center">{translations?.table?.actions || 'Actions'}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {tests.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                  {translations.table.noTests}
+                  {translations?.table?.noTests || 'No tests found'}
                 </TableCell>
               </TableRow>
             ) : (
@@ -250,11 +250,11 @@ export default function TestsTable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleViewTest(test)}>
                           <Eye className="mr-2 h-4 w-4" />
-                          {translations.table.view}
+                          {translations?.table?.view || 'View'}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onEdit(test)}>
                           <Edit className="mr-2 h-4 w-4" />
-                          {translations.table.edit}
+                          {translations?.table?.edit || 'Edit'}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={(e) => {
@@ -272,7 +272,7 @@ export default function TestsTable({
                           className="text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {translations.table.delete}
+                          {translations?.table?.delete || 'Delete'}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
