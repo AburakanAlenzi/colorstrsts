@@ -35,10 +35,11 @@ localhost:8080
 
 #### للإنتاج / For Production:
 ```
-your-app.netlify.app
-your-app.vercel.app
-your-custom-domain.com
-www.your-custom-domain.com
+colorstest.com
+www.colorstest.com
+colorstest.netlify.app
+colorstests-573ef.web.app
+colorstests-573ef.firebaseapp.com
 ```
 
 ### الخطوة 3: احفظ التغييرات

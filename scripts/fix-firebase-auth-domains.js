@@ -52,9 +52,11 @@ function getCommonDomains() {
     '127.0.0.1:8080',
     // Add your production domains here
     // أضف نطاقات الإنتاج هنا
-    'your-app.netlify.app',
-    'your-app.vercel.app',
-    'your-custom-domain.com'
+    'colorstest.com',
+    'www.colorstest.com',
+    'colorstest.netlify.app',
+    'colorstests-573ef.web.app',
+    'colorstests-573ef.firebaseapp.com'
   ];
 }
 
