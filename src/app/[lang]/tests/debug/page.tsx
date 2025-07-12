@@ -5,6 +5,7 @@ import { Language } from '@/types';
 import { getChemicalTests } from '@/lib/firebase-realtime';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { TestRoutingDebug } from '@/components/debug/TestRoutingDebug';
 
 interface DebugPageProps {
   params: Promise<{ lang: Language }>;
@@ -54,7 +55,12 @@ export default function DebugPage({ params }: DebugPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card>
+      <div className="space-y-8">
+        {/* Routing Debug Tool */}
+        <TestRoutingDebug lang={lang} />
+
+        {/* Firebase Debug Tool */}
+        <Card>
         <CardHeader>
           <CardTitle>🔍 Firebase Tests Debug</CardTitle>
           <CardDescription>
@@ -152,7 +158,8 @@ export default function DebugPage({ params }: DebugPageProps) {
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

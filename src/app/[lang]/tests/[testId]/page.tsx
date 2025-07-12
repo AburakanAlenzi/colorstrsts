@@ -11,6 +11,9 @@ import { getTranslations } from '@/lib/translations';
 export async function generateStaticParams() {
   // Include all possible test IDs that might be used
   const allPossibleTestIds = [
+    // Test pages
+    'test-simple',
+
     // Basic tests from fallback data
     'marquis-test',
     'mecke-test',

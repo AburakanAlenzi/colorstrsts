@@ -334,8 +334,16 @@ function TestsPageContent({ lang }: TestsPageProps) {
                     testId={test.id}
                     testName={lang === 'ar' ? test.method_name_ar : test.method_name}
                     onAccessGranted={() => {
-                      console.log('Test access granted, navigating to:', `/${lang}/tests/${test.id}`);
-                      router.push(`/${lang}/tests/${test.id}`);
+                      const testUrl = `/${lang}/tests/${test.id}`;
+                      console.log('Test access granted, navigating to:', testUrl);
+
+                      // Try router.push first, fallback to window.location if needed
+                      try {
+                        router.push(testUrl);
+                      } catch (error) {
+                        console.warn('Router.push failed, using window.location:', error);
+                        window.location.href = testUrl;
+                      }
                     }}
                   >
                     <div className="relative">
