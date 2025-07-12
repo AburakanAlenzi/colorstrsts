@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { DataService } from '@/lib/data-service';
+import { getChemicalTests } from '@/lib/firebase-realtime';
 import { Button } from '@/components/ui/button';
 import { ReportsSystem } from './reports-system';
 import { DatabaseManagement } from './database-management';
@@ -12,7 +12,7 @@ import { TestsManagement } from './tests-management';
 import TestsManagementNew from './TestsManagementNew';
 import { ColorResultsManagement } from './color-results-management';
 import { SubscriptionManagement } from './SubscriptionManagement';
-import SubscriptionSettings from './SubscriptionSettings';
+import SubscriptionSettingsWrapper from './SubscriptionSettingsWrapper';
 import { STCPaySettings } from './STCPaySettings';
 import { UsageChart } from './UsageChart';
 import { exportTests } from '@/lib/firebase-tests';
@@ -77,37 +77,67 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        
-        // Load basic stats
-        const tests = DataService.getChemicalTests();
-        const colors = DataService.getColorResults();
-        
-        // Get stored sessions from localStorage
-        const sessions = JSON.parse(localStorage.getItem('test_results') || '[]');
+
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          setLoading(false);
+          return;
+        }
+
+        // Load basic stats from Firebase
+        let tests: any[] = [];
+        try {
+          tests = await getChemicalTests();
+        } catch (error) {
+          console.error('Error loading tests from Firebase:', error);
+          tests = [];
+        }
+
+        // Get stored sessions from localStorage (safe)
+        let sessions: any[] = [];
+        try {
+          const sessionsData = localStorage.getItem('test_results');
+          sessions = sessionsData ? JSON.parse(sessionsData) : [];
+        } catch (error) {
+          console.error('Error loading sessions from localStorage:', error);
+          sessions = [];
+        }
+
         const recentSessions = sessions.slice(-10).reverse();
-        
-        // Calculate popular tests
+
+        // Calculate popular tests (safe)
         const testCounts = sessions.reduce((acc: any, session: any) => {
-          acc[session.testId] = (acc[session.testId] || 0) + 1;
+          if (session && session.testId) {
+            acc[session.testId] = (acc[session.testId] || 0) + 1;
+          }
           return acc;
         }, {});
-        
+
         const popularTests = Object.entries(testCounts)
           .map(([testId, count]) => ({ testId, count }))
           .sort((a: any, b: any) => b.count - a.count)
           .slice(0, 5);
 
         setStats({
-          totalTests: tests.length,
-          totalColors: colors.length,
-          totalSessions: sessions.length,
-          recentActivity: recentSessions,
-          popularTests,
+          totalTests: tests?.length || 0,
+          totalColors: 0, // Will be updated when we have color results in Firebase
+          totalSessions: sessions?.length || 0,
+          recentActivity: recentSessions || [],
+          popularTests: popularTests || [],
           systemHealth: 'good'
         });
-        
+
       } catch (error) {
         console.error('Error loading dashboard data:', error);
+        // Set safe default values
+        setStats({
+          totalTests: 0,
+          totalColors: 0,
+          totalSessions: 0,
+          recentActivity: [],
+          popularTests: [],
+          systemHealth: 'error'
+        });
       } finally {
         setLoading(false);
       }
@@ -582,7 +612,7 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
       case 'subscriptions':
         return <SubscriptionManagement lang={lang} />;
       case 'subscription-settings':
-        return <SubscriptionSettings lang={lang} />;
+        return <SubscriptionSettingsWrapper lang={lang} />;
       case 'payments':
         return <STCPaySettings lang={lang} />;
       case 'reports':

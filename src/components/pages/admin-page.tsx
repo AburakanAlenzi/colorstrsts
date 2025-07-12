@@ -8,7 +8,7 @@ import { DataService } from '@/lib/data-service';
 import { useAuth } from '@/components/providers';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { AdminDashboard } from '@/components/admin/admin-dashboard';
+import AdminDashboardWrapper from '@/components/admin/AdminDashboardWrapper';
 import { AdminLogin } from '@/components/admin/admin-login';
 import { PasswordRecovery } from '@/components/admin/password-recovery';
 import {
@@ -268,7 +268,7 @@ export function AdminPage({ lang }: AdminPageProps) {
         </div>
 
         {/* Admin Dashboard */}
-        <AdminDashboard lang={lang} />
+        <AdminDashboardWrapper lang={lang} />
       </div>
     </div>
   );
