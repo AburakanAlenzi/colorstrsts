@@ -62,7 +62,8 @@ const STORAGE_KEYS = {
   LAST_UPDATED: 'chemical_tests_last_updated',
   USER_PREFERENCES: 'user_preferences',
   TEST_RESULTS: 'test_results',
-  SUBSCRIPTION_SETTINGS: 'subscription_settings_local'
+  SUBSCRIPTION_SETTINGS: 'subscription_settings_local',
+  COLOR_RESULTS: 'color_results_local'
 } as const;
 
 /**
@@ -137,7 +138,7 @@ function extractReagents(prepareText: string): string[] {
   });
   
   // Remove duplicates and return
-  return [...new Set(reagents)].slice(0, 3); // Limit to 3 reagents
+  return Array.from(new Set(reagents)).slice(0, 3); // Limit to 3 reagents
 }
 
 /**
@@ -199,18 +200,53 @@ export function getTestById(testId: string): ChemicalTest | null {
   try {
     const tests = getChemicalTestsLocal();
     const test = tests.find(t => t.id === testId);
-    
+
     if (test) {
       console.log(`🔍 Found test: ${test.method_name} (${testId})`);
       return test;
     }
-    
+
     console.warn(`⚠️ Test not found: ${testId}`);
     return null;
-    
+
   } catch (error) {
     console.error('❌ Error getting test by ID:', error);
     return null;
+  }
+}
+
+/**
+ * Get all color results from localStorage
+ * الحصول على جميع نتائج الألوان من localStorage
+ */
+export function getColorResultsLocal(): any[] {
+  try {
+    // Ensure localStorage is initialized
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    // Try to get from localStorage first
+    const storedData = localStorage.getItem(STORAGE_KEYS.COLOR_RESULTS);
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      console.log(`✅ Loaded ${parsed.length} color results from localStorage`);
+      return parsed;
+    }
+
+    // Fallback to admin color results
+    const adminData = localStorage.getItem('color_results_admin');
+    if (adminData) {
+      const parsed = JSON.parse(adminData);
+      console.log(`✅ Loaded ${parsed.length} color results from admin localStorage`);
+      return parsed;
+    }
+
+    console.log('⚠️ No color results found in localStorage');
+    return [];
+  } catch (error) {
+    console.error('❌ Error getting color results from localStorage:', error);
+    return [];
   }
 }
 

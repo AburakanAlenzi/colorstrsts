@@ -1,9 +1,11 @@
 import { Language } from '@/types';
-
-// Import JSON data
-import chemicalTestsData from '@/data/chemical-tests.json';
-import colorResultsData from '@/data/color-results.json';
-import testInstructionsData from '@/data/test-instructions.json';
+import {
+  getChemicalTestsLocal,
+  getColorResultsLocal,
+  initializeLocalStorage,
+  ChemicalTest as LocalChemicalTest,
+  ColorResult as LocalColorResult
+} from '@/lib/local-data-service';
 
 // Types for local data
 export interface ChemicalTest {
@@ -76,9 +78,35 @@ const STORAGE_KEYS = {
 
 // Data Service Class
 export class DataService {
+  // Initialize localStorage if needed
+  private static ensureInitialized(): void {
+    if (typeof window !== 'undefined') {
+      try {
+        initializeLocalStorage();
+      } catch (error) {
+        console.warn('Failed to initialize localStorage:', error);
+      }
+    }
+  }
+
   // Get all chemical tests
   static getChemicalTests(): ChemicalTest[] {
-    return chemicalTestsData as ChemicalTest[];
+    this.ensureInitialized();
+    try {
+      const localTests = getChemicalTestsLocal();
+      return localTests.map(test => ({
+        ...test,
+        category: test.category || 'basic',
+        safety_level: test.safety_level || 'medium',
+        preparation_time: test.preparation_time || 10,
+        icon: test.icon || 'BeakerIcon',
+        color_primary: test.color_primary || '#3B82F6',
+        created_at: test.created_at || new Date().toISOString()
+      })) as ChemicalTest[];
+    } catch (error) {
+      console.error('Error loading chemical tests:', error);
+      return [];
+    }
   }
 
   // Get chemical test by ID
@@ -95,7 +123,48 @@ export class DataService {
 
   // Get all color results
   static getColorResults(): ColorResult[] {
-    return colorResultsData as ColorResult[];
+    this.ensureInitialized();
+    try {
+      const localColorResults = getColorResultsLocal();
+      return localColorResults.map(result => ({
+        id: result.color_hex || Math.random().toString(36).substr(2, 9),
+        test_id: result.test_id || '',
+        hex_code: result.color_hex || '#000000',
+        color_name: {
+          ar: result.color_result_ar || result.color_result || '',
+          en: result.color_result || ''
+        },
+        substances: {
+          ar: typeof result.possible_substance_ar === 'string'
+            ? result.possible_substance_ar.split(',').map(s => s.trim())
+            : Array.isArray(result.possible_substance_ar)
+            ? result.possible_substance_ar
+            : [],
+          en: typeof result.possible_substance === 'string'
+            ? result.possible_substance.split(',').map(s => s.trim())
+            : Array.isArray(result.possible_substance)
+            ? result.possible_substance
+            : []
+        },
+        confidence: this.getConfidenceNumber(result.confidence_level || 'medium'),
+        confidence_level: result.confidence_level || 'medium'
+      })) as ColorResult[];
+    } catch (error) {
+      console.error('Error loading color results:', error);
+      return [];
+    }
+  }
+
+  // Helper method to convert confidence level to number
+  private static getConfidenceNumber(level: string): number {
+    switch (level.toLowerCase()) {
+      case 'very_high': return 95;
+      case 'high': return 85;
+      case 'medium': return 75;
+      case 'low': return 60;
+      case 'very_low': return 40;
+      default: return 50;
+    }
   }
 
   // Get color results by test ID

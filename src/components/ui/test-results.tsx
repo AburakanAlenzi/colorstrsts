@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
 import { getTestById, initializeLocalStorage } from '@/lib/local-data-service';
+import { DataService } from '@/lib/data-service';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircleIcon,
