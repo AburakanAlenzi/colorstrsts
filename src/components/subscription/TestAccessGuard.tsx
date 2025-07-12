@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { canAccessTest, recordTestUsage } from '@/lib/subscription-service';
+import { useSubscriptionSettings } from '@/hooks/useSubscriptionSettings';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { SignupModal } from '@/components/auth/SignupModal';
 import { SubscriptionModal } from './SubscriptionModal';
@@ -16,14 +17,15 @@ interface TestAccessGuardProps {
   onAccessGranted?: () => void;
 }
 
-export function TestAccessGuard({ 
-  testIndex, 
-  testId, 
-  testName, 
-  children, 
-  onAccessGranted 
+export function TestAccessGuard({
+  testIndex,
+  testId,
+  testName,
+  children,
+  onAccessGranted
 }: TestAccessGuardProps) {
   const { user, userProfile } = useAuth();
+  const { settings, loading: settingsLoading } = useSubscriptionSettings();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
@@ -37,6 +39,18 @@ export function TestAccessGuard({
   // التحقق من إمكانية الوصول
   useEffect(() => {
     const checkAccess = async () => {
+      // Wait for settings to load
+      if (settingsLoading) {
+        return;
+      }
+
+      // If global free access is enabled, allow all tests immediately
+      if (settings.globalFreeAccess) {
+        setAccessStatus({ canAccess: true, reason: 'Global free access enabled' });
+        setLoading(false);
+        return;
+      }
+
       if (!user) {
         setAccessStatus({ canAccess: false, reason: 'Login required' });
         setLoading(false);
@@ -55,7 +69,7 @@ export function TestAccessGuard({
     };
 
     checkAccess();
-  }, [user, testIndex, userProfile]);
+  }, [user, testIndex, userProfile, settings, settingsLoading]);
 
   // تسجيل استخدام الاختبار عند الوصول
   const handleAccessTest = async () => {

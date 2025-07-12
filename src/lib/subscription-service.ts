@@ -182,10 +182,33 @@ export async function canAccessTest(uid: string, testIndex: number): Promise<{
     return { canAccess: true };
   }
 
-  const userProfile = await getUserProfile(uid);
+  let userProfile = await getUserProfile(uid);
 
+  // If user profile doesn't exist, create it first
   if (!userProfile) {
-    return { canAccess: false, reason: 'User profile not found' };
+    try {
+      // Create a basic user profile for new users
+      const userRef = doc(db, 'users', uid);
+      const newUserProfile: UserProfile = {
+        uid: uid,
+        email: '', // Will be updated when available
+        displayName: '',
+        subscription: null,
+        testUsage: [],
+        createdAt: new Date(),
+        lastLoginAt: new Date()
+      };
+
+      await setDoc(userRef, newUserProfile);
+      userProfile = newUserProfile;
+    } catch (error) {
+      console.error('Error creating user profile:', error);
+      // Even if profile creation fails, still check global settings
+      if (settings.globalFreeAccess) {
+        return { canAccess: true };
+      }
+      return { canAccess: false, reason: 'User profile not found and could not be created' };
+    }
   }
 
   // Check if this specific test requires premium

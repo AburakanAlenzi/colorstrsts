@@ -66,10 +66,15 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
     try {
       // Save to localStorage (in real app, save to Firebase)
       localStorage.setItem('subscription_settings', JSON.stringify(settings));
-      
+
       // Also save to a global settings object for immediate access
       (window as any).subscriptionSettings = settings;
-      
+
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('subscriptionSettingsUpdated', {
+        detail: settings
+      }));
+
       toast.success(
         isRTL ? 'تم حفظ إعدادات الاشتراكات بنجاح' : 'Subscription settings saved successfully'
       );
