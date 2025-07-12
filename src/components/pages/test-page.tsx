@@ -6,7 +6,7 @@ import { Language } from '@/types';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { recordTestVisit } from '@/lib/firebase-user';
 
-import { DataService, ChemicalTest, ColorResult as DataServiceColorResult, TestInstruction, TestSession } from '@/lib/data-service';
+import { getChemicalTests, ChemicalTest } from '@/lib/firebase-realtime';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ColorSelector } from '@/components/ui/color-selector';
@@ -45,23 +45,60 @@ interface ColorResult {
   confidence_level: string;
 }
 
-// Convert DataService ColorResult to ColorSelector ColorResult
-const convertColorResult = (dsColor: DataServiceColorResult): ColorResult => {
-  return {
-    id: dsColor.id,
-    test_id: dsColor.test_id,
-    hex_code: dsColor.color_hex,
-    color_name: {
-      ar: dsColor.color_result_ar,
-      en: dsColor.color_result
+interface TestInstruction {
+  id: string;
+  test_id: string;
+  step_number: number;
+  instruction_ar: string;
+  instruction_en: string;
+  safety_note_ar?: string;
+  safety_note_en?: string;
+}
+
+interface TestSession {
+  id: string;
+  test_id: string;
+  started_at: string;
+  completed_at?: string;
+  result_id?: string;
+  confidence_score?: number;
+  notes?: string;
+}
+
+// Create default color results for testing (since color results are not yet in Firebase)
+const createDefaultColorResults = (testId: string): ColorResult[] => {
+  return [
+    {
+      id: `${testId}-color-1`,
+      test_id: testId,
+      hex_code: '#8B0000',
+      color_name: {
+        ar: 'أحمر داكن',
+        en: 'Dark Red'
+      },
+      substances: {
+        ar: ['مادة مشتبه بها'],
+        en: ['Suspected substance']
+      },
+      confidence: 75,
+      confidence_level: 'medium'
     },
-    substances: {
-      ar: [dsColor.possible_substance_ar],
-      en: [dsColor.possible_substance]
-    },
-    confidence: getConfidenceScore(dsColor.confidence_level),
-    confidence_level: dsColor.confidence_level
-  };
+    {
+      id: `${testId}-color-2`,
+      test_id: testId,
+      hex_code: '#4B0082',
+      color_name: {
+        ar: 'بنفسجي',
+        en: 'Purple'
+      },
+      substances: {
+        ar: ['مادة أخرى'],
+        en: ['Other substance']
+      },
+      confidence: 80,
+      confidence_level: 'high'
+    }
+  ];
 };
 
 // Convert confidence level to numeric score
@@ -95,23 +132,57 @@ export function TestPage({ lang, testId }: TestPageProps) {
   useEffect(() => {
     const loadTestData = async () => {
       try {
-        // Load test data
-        const testData = DataService.getChemicalTestById(testId);
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          setLoading(false);
+          return;
+        }
+
+        // Load test data from Firebase
+        const tests = await getChemicalTests();
+        const testData = tests.find(t => t.id === testId);
+
         if (!testData) {
           toast.error(lang === 'ar' ? 'خطأ في تحميل البيانات' : 'Error loading data');
           router.push(`/${lang}/tests`);
           return;
         }
 
-        const colorResultsData = DataService.getColorResultsByTestId(testId);
-        const instructionsData = DataService.getTestInstructionsByTestId(testId);
+        console.log('🔥 Loaded test data from Firebase Realtime Database');
+
+        // Create default color results and instructions (since they're not in Firebase yet)
+        const colorResultsData = createDefaultColorResults(testId);
+        const instructionsData: TestInstruction[] = [
+          {
+            id: `${testId}-inst-1`,
+            test_id: testId,
+            step_number: 1,
+            instruction_ar: 'ضع عينة صغيرة من المادة في أنبوب الاختبار',
+            instruction_en: 'Place a small sample of the substance in the test tube',
+            safety_note_ar: 'استخدم القفازات والنظارات الواقية',
+            safety_note_en: 'Use gloves and safety goggles'
+          },
+          {
+            id: `${testId}-inst-2`,
+            test_id: testId,
+            step_number: 2,
+            instruction_ar: 'أضف 2-3 قطرات من الكاشف',
+            instruction_en: 'Add 2-3 drops of reagent',
+            safety_note_ar: 'تجنب ملامسة الكاشف للجلد',
+            safety_note_en: 'Avoid reagent contact with skin'
+          }
+        ];
 
         setTest(testData);
-        setColorResults(colorResultsData.map(convertColorResult));
+        setColorResults(colorResultsData);
         setInstructions(instructionsData);
 
         // Create test session
-        const newSession = DataService.createTestSession(testId);
+        const newSession: TestSession = {
+          id: `session-${Date.now()}`,
+          test_id: testId,
+          started_at: new Date().toISOString()
+        };
         setSession(newSession);
 
         // Record test visit for authenticated users
@@ -173,22 +244,22 @@ export function TestPage({ lang, testId }: TestPageProps) {
       case 'color-selection':
         if (selectedColorResult && session) {
           try {
-            // Complete the test session
-            const result = DataService.completeTestSession(
-              session.id,
-              selectedColorResult.id,
-              confidenceScore,
-              notes
-            );
+            // Complete the test session (save to localStorage for now)
+            const completedSession = {
+              ...session,
+              completed_at: new Date().toISOString(),
+              result_id: selectedColorResult.id,
+              confidence_score: confidenceScore,
+              notes: notes
+            };
 
-            if (result) {
-              setCurrentStep('results');
-              toast.success(lang === 'ar' ? 'تم إكمال الاختبار بنجاح' : 'Test completed successfully');
-            } else {
-              // If DataService fails, still proceed to results
-              setCurrentStep('results');
-              toast.success(lang === 'ar' ? 'تم إكمال الاختبار' : 'Test completed');
-            }
+            // Save to localStorage
+            const savedResults = JSON.parse(localStorage.getItem('test_results') || '[]');
+            savedResults.push(completedSession);
+            localStorage.setItem('test_results', JSON.stringify(savedResults));
+
+            setCurrentStep('results');
+            toast.success(lang === 'ar' ? 'تم إكمال الاختبار بنجاح' : 'Test completed successfully');
           } catch (error) {
             console.error('Error completing test session:', error);
             // Still proceed to results even if there's an error

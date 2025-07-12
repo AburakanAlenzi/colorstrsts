@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { DataService } from '@/lib/data-service';
+import { getChemicalTests } from '@/lib/firebase-realtime';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircleIcon,
@@ -48,16 +48,25 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
       try {
         setLoading(true);
 
-        // Get test and color data
-        const test = DataService.getChemicalTestById(testId);
-        const colorResults = DataService.getColorResults();
-        const colorResult = colorResults.find(cr =>
-          cr.test_id === testId && cr.color_hex === selectedColor
-        );
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          setLoading(false);
+          return;
+        }
+
+        // Get test data from Firebase
+        const tests = await getChemicalTests();
+        const test = tests.find(t => t.id === testId);
+
+        // For now, we'll create a generic color result since we don't have color results in Firebase yet
+        // TODO: Add color results to Firebase Realtime Database
+        const colorResult = null; // Will be updated when color results are added to Firebase
 
         if (!test) {
           throw new Error('Test data not found');
         }
+
+        console.log('🔥 Loaded test data from Firebase Realtime Database');
 
         // If no specific color result found, create a generic one
         if (!colorResult) {

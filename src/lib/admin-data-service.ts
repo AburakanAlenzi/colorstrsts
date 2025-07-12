@@ -71,15 +71,31 @@ class AdminDataService {
    */
   private async loadChemicalTests(): Promise<void> {
     try {
-      // Try to load from localStorage first
-      const savedTests = localStorage.getItem('chemical_tests_admin');
-      if (savedTests) {
-        this.chemicalTests = JSON.parse(savedTests);
-        console.log('📦 Loaded chemical tests from localStorage');
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        this.chemicalTests = this.getFallbackChemicalTests();
         return;
       }
 
-      // Try to load from multiple paths
+      // Try to load from Firebase Realtime Database first
+      try {
+        const { getChemicalTests } = await import('./firebase-realtime');
+        this.chemicalTests = await getChemicalTests();
+        console.log('🔥 Loaded chemical tests from Firebase Realtime Database');
+        return;
+      } catch (firebaseError) {
+        console.warn('⚠️ Could not load from Firebase, trying localStorage fallback');
+      }
+
+      // Fallback to localStorage if Firebase fails
+      const savedTests = localStorage.getItem('chemical_tests_admin');
+      if (savedTests) {
+        this.chemicalTests = JSON.parse(savedTests);
+        console.log('📦 Loaded chemical tests from localStorage (fallback)');
+        return;
+      }
+
+      // Try to load from multiple paths as last resort
       const paths = [
         '/data/chemical-tests.json',
         '/src/data/chemical-tests.json'
@@ -117,15 +133,25 @@ class AdminDataService {
    */
   private async loadColorResults(): Promise<void> {
     try {
-      // Try to load from localStorage first
-      const savedResults = localStorage.getItem('color_results_admin');
-      if (savedResults) {
-        this.colorResults = JSON.parse(savedResults);
-        console.log('🎨 Loaded color results from localStorage');
+      // Check if we're in browser environment
+      if (typeof window === 'undefined') {
+        this.colorResults = this.getFallbackColorResults();
         return;
       }
 
-      // Try to load from multiple paths
+      // For now, use fallback data since color results are not yet in Firebase
+      // TODO: Add color results to Firebase Realtime Database
+      console.log('🎨 Using fallback color results (Firebase integration pending)');
+
+      // Try to load from localStorage as fallback
+      const savedResults = localStorage.getItem('color_results_admin');
+      if (savedResults) {
+        this.colorResults = JSON.parse(savedResults);
+        console.log('🎨 Loaded color results from localStorage (fallback)');
+        return;
+      }
+
+      // Try to load from multiple paths as last resort
       const paths = [
         '/data/color-results.json',
         '/src/data/color-results.json'

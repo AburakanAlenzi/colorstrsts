@@ -83,10 +83,10 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
 
   const handleAddPremiumTest = () => {
     const testNumber = parseInt(premiumTestInput);
-    if (testNumber && !localSettings.specificPremiumTests.includes(testNumber)) {
+    if (testNumber && !(localSettings.specificPremiumTests || []).includes(testNumber)) {
       setLocalSettings(prev => ({
         ...prev,
-        specificPremiumTests: [...prev.specificPremiumTests, testNumber].sort((a, b) => a - b)
+        specificPremiumTests: [...(prev.specificPremiumTests || []), testNumber].sort((a, b) => a - b)
       }));
       setPremiumTestInput('');
     }
@@ -95,7 +95,7 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
   const handleRemovePremiumTest = (testNumber: number) => {
     setLocalSettings(prev => ({
       ...prev,
-      specificPremiumTests: prev.specificPremiumTests.filter(t => t !== testNumber)
+      specificPremiumTests: (prev.specificPremiumTests || []).filter(t => t !== testNumber)
     }));
   };
 
@@ -244,13 +244,13 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
             </div>
 
             {/* Premium Tests List */}
-            {localSettings.specificPremiumTests.length > 0 && (
+            {(localSettings.specificPremiumTests?.length || 0) > 0 && (
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
                   {isRTL ? 'الاختبارات المميزة الحالية:' : 'Current premium tests:'}
                 </Label>
                 <div className="flex flex-wrap gap-2">
-                  {localSettings.specificPremiumTests.map(testNumber => (
+                  {(localSettings.specificPremiumTests || []).map(testNumber => (
                     <div
                       key={testNumber}
                       className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm"
@@ -295,12 +295,12 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
                       : `${localSettings.freeTestsCount} free tests available`
                     }
                   </li>
-                  {localSettings.specificPremiumTests.length > 0 && (
+                  {(localSettings.specificPremiumTests?.length || 0) > 0 && (
                     <li className="flex items-center gap-2">
                       <StarIcon className="h-4 w-4 text-yellow-600" />
                       {isRTL
-                        ? `${localSettings.specificPremiumTests.length} اختبارات تتطلب اشتراك مميز`
-                        : `${localSettings.specificPremiumTests.length} tests require premium subscription`
+                        ? `${localSettings.specificPremiumTests?.length || 0} اختبارات تتطلب اشتراك مميز`
+                        : `${localSettings.specificPremiumTests?.length || 0} tests require premium subscription`
                       }
                     </li>
                   )}

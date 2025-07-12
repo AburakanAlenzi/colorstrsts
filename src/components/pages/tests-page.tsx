@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { DataService, ChemicalTest } from '@/lib/data-service';
+import { getChemicalTests, ChemicalTest } from '@/lib/firebase-realtime';
 import { Button } from '@/components/ui/button';
 import { TestCard } from '@/components/ui/test-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -38,14 +38,24 @@ function TestsPageContent({ lang }: TestsPageProps) {
   const isRTL = lang === 'ar';
 
   useEffect(() => {
-    // Load tests from data service
+    // Load tests from Firebase Realtime Database
     const loadTests = async () => {
       try {
-        const chemicalTests = DataService.getChemicalTests();
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          setLoading(false);
+          return;
+        }
+
+        const chemicalTests = await getChemicalTests();
+        console.log('🔥 Loaded chemical tests from Firebase Realtime Database');
         setTests(chemicalTests);
         setFilteredTests(chemicalTests);
       } catch (error) {
-        console.error('Error loading tests:', error);
+        console.error('Error loading tests from Firebase:', error);
+        // Fallback to empty array
+        setTests([]);
+        setFilteredTests([]);
       } finally {
         setLoading(false);
       }
