@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Download, Upload, FileSpreadsheet, Database, AlertCircle, CheckCircle } from 'lucide-react';
+import { safeLocalStorage } from '@/hooks/useLocalStorage';
 
 interface DataImportExportProps {
   isRTL: boolean;
@@ -55,7 +56,8 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
       }
 
       // Save to localStorage (simulating database update)
-      const existingData = JSON.parse(localStorage.getItem('chemical_tests') || '[]');
+      const existingDataStr = safeLocalStorage.getItem('chemical_tests');
+      const existingData = existingDataStr ? JSON.parse(existingDataStr) : [];
       const updatedData = [...existingData];
 
       data.forEach(newTest => {
@@ -67,7 +69,7 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
         }
       });
 
-      localStorage.setItem('chemical_tests', JSON.stringify(updatedData));
+      safeLocalStorage.setItem('chemical_tests', JSON.stringify(updatedData));
 
       setMessage({
         type: 'success',
@@ -94,7 +96,8 @@ export default function DataImportExport({ isRTL }: DataImportExportProps) {
 
     try {
       // Get data from localStorage
-      const storedData = JSON.parse(localStorage.getItem('chemical_tests') || '[]');
+      const storedDataStr = safeLocalStorage.getItem('chemical_tests');
+      const storedData = storedDataStr ? JSON.parse(storedDataStr) : [];
 
       // If no data, use default template data
       const defaultData = [

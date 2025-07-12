@@ -12,6 +12,7 @@ import {
   XMarkIcon,
   BeakerIcon
 } from '@heroicons/react/24/outline';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface ChemicalTest {
   id: string;
@@ -32,55 +33,46 @@ interface TestsManagementProps {
 }
 
 export default function TestsManagement({ isRTL }: TestsManagementProps) {
-  const [tests, setTests] = useState<ChemicalTest[]>([]);
+  // Default tests data
+  const defaultTests: ChemicalTest[] = [
+    {
+      id: '1',
+      method_name: 'Marquis Test',
+      method_name_ar: 'اختبار ماركيز',
+      color_result: 'Purple/Black',
+      color_result_ar: 'بنفسجي/أسود',
+      possible_substance: 'MDMA/Amphetamines',
+      possible_substance_ar: 'إم دي إم إيه/أمفيتامينات',
+      prepare: 'Add 2-3 drops of reagent',
+      test_type: 'Presumptive',
+      test_number: '1',
+      reference: 'DEA Guidelines'
+    },
+    {
+      id: '2',
+      method_name: 'Mecke Test',
+      method_name_ar: 'اختبار ميك',
+      color_result: 'Blue/Green',
+      color_result_ar: 'أزرق/أخضر',
+      possible_substance: 'Opiates',
+      possible_substance_ar: 'مواد أفيونية',
+      prepare: 'Add 2-3 drops of reagent',
+      test_type: 'Presumptive',
+      test_number: '2',
+      reference: 'UNODC Manual'
+    }
+  ];
+
+  // Use safe localStorage hook
+  const [tests, setTests] = useLocalStorage<ChemicalTest[]>('chemical_tests', defaultTests);
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<ChemicalTest | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTest, setNewTest] = useState<Partial<ChemicalTest>>({});
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Load tests from localStorage on component mount
-  useEffect(() => {
-    const storedTests = localStorage.getItem('chemical_tests');
-    if (storedTests) {
-      setTests(JSON.parse(storedTests));
-    } else {
-      // Default tests if none exist
-      const defaultTests: ChemicalTest[] = [
-        {
-          id: '1',
-          method_name: 'Marquis Test',
-          method_name_ar: 'اختبار ماركيز',
-          color_result: 'Purple/Black',
-          color_result_ar: 'بنفسجي/أسود',
-          possible_substance: 'MDMA/Amphetamines',
-          possible_substance_ar: 'إم دي إم إيه/أمفيتامينات',
-          prepare: 'Add 2-3 drops of reagent',
-          test_type: 'Presumptive',
-          test_number: '1',
-          reference: 'DEA Guidelines'
-        },
-        {
-          id: '2',
-          method_name: 'Mecke Test',
-          method_name_ar: 'اختبار ميك',
-          color_result: 'Blue/Green',
-          color_result_ar: 'أزرق/أخضر',
-          possible_substance: 'Opiates',
-          possible_substance_ar: 'مواد أفيونية',
-          prepare: 'Add 2-3 drops of reagent',
-          test_type: 'Presumptive',
-          test_number: '2',
-          reference: 'UNODC Manual'
-        }
-      ];
-      setTests(defaultTests);
-      localStorage.setItem('chemical_tests', JSON.stringify(defaultTests));
-    }
-  }, []);
-
   const saveTests = (updatedTests: ChemicalTest[]) => {
-    localStorage.setItem('chemical_tests', JSON.stringify(updatedTests));
     setTests(updatedTests);
   };
 
