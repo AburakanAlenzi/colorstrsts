@@ -50,6 +50,23 @@ interface DashboardStats {
 }
 
 export function AdminDashboard({ lang }: AdminDashboardProps) {
+  // Add safety check for lang parameter
+  if (!lang) {
+    console.error('AdminDashboard: lang parameter is undefined');
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-lg font-medium text-red-600">
+            Error: Language parameter is missing
+          </div>
+          <p className="text-gray-500 mt-2">
+            Please refresh the page or contact support
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const [stats, setStats] = useState<DashboardStats>({
     totalTests: 0,
     totalColors: 0,
@@ -60,7 +77,15 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const t = getTranslationsSync(lang);
+
+  // Safe translations access with fallback
+  let t: any = {};
+  try {
+    t = getTranslationsSync(lang) || {};
+  } catch (error) {
+    console.error('Error loading translations:', error);
+    t = {};
+  }
 
   const tabs = [
     { id: 'dashboard', name: lang === 'ar' ? 'لوحة التحكم' : 'Dashboard', icon: ChartBarIcon },
@@ -608,31 +633,57 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
   }
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'tests':
-        return <TestsManagementNew
-          translations={getTranslationsSync(lang)?.testsManagement || {}}
-          isRTL={lang === 'ar'}
-          lang={lang}
-        />;
-      case 'colors':
-        return <ColorResultsManagement lang={lang} />;
-      case 'subscriptions':
-        return <SubscriptionManagement lang={lang} />;
-      case 'subscription-settings':
-        return <SubscriptionSettingsWrapper lang={lang} />;
-      case 'firebase-debugger':
-        return <FirebaseDebugger lang={lang} />;
-      case 'payments':
-        return <STCPaySettings lang={lang} />;
-      case 'reports':
-        return <ReportsSystem lang={lang} />;
-      case 'database':
-        return <DatabaseManagement lang={lang} />;
-      case 'excel':
-        return <ExcelManagement lang={lang} />;
-      default:
-        return renderDashboard();
+    try {
+      switch (activeTab) {
+        case 'tests':
+          // Safe translations access with comprehensive fallback
+          const translations = getTranslationsSync(lang);
+          const testsManagementTranslations = translations?.testsManagement || translations?.admin?.testsManagement || {};
+
+          return <TestsManagementNew
+            translations={testsManagementTranslations}
+            isRTL={lang === 'ar'}
+            lang={lang}
+          />;
+        case 'colors':
+          return <ColorResultsManagement lang={lang} />;
+        case 'subscriptions':
+          return <SubscriptionManagement lang={lang} />;
+        case 'subscription-settings':
+          return <SubscriptionSettingsWrapper lang={lang} />;
+        case 'firebase-debugger':
+          return <FirebaseDebugger lang={lang} />;
+        case 'payments':
+          return <STCPaySettings lang={lang} />;
+        case 'reports':
+          return <ReportsSystem lang={lang} />;
+        case 'database':
+          return <DatabaseManagement lang={lang} />;
+        case 'excel':
+          return <ExcelManagement lang={lang} />;
+        default:
+          return renderDashboard();
+      }
+    } catch (error) {
+      console.error('AdminDashboard Error:', error);
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-lg font-medium text-red-600 mb-2">
+              {lang === 'ar' ? 'خطأ في تحميل المحتوى' : 'Error loading content'}
+            </div>
+            <p className="text-gray-500 mb-4">
+              {lang === 'ar' ? 'حدث خطأ أثناء تحميل هذا القسم' : 'An error occurred while loading this section'}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            >
+              {lang === 'ar' ? 'إعادة تحميل' : 'Reload'}
+            </button>
+          </div>
+        </div>
+      );
     }
   };
 
