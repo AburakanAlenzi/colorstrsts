@@ -67,8 +67,6 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
     }
   };
 
-  const SafetyIcon = getSafetyLevelIcon(safetyLevelKey);
-
   const testName = lang === 'ar' ? test.method_name_ar : test.method_name;
   const testDescription = lang === 'ar' ? test.description_ar : test.description;
 
@@ -78,6 +76,8 @@ export function TestCard({ test, lang, onClick, disabled = false }: TestCardProp
 
   const categoryLabel = t(`tests.categories.${categoryKey}`);
   const safetyLabel = t(`tests.safety_levels.${safetyLevelKey}`);
+
+  const SafetyIcon = getSafetyLevelIcon(safetyLevelKey);
 
   return (
     <div
