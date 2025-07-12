@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Language } from '@/types';
 import { getTranslationsSync } from '@/lib/translations';
-import { getChemicalTests } from '@/lib/firebase-realtime';
+import { getTestById, initializeLocalStorage } from '@/lib/local-data-service';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircleIcon,
@@ -54,24 +54,38 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
           return;
         }
 
-        // Get test data from Firebase
-        const tests = await getChemicalTests();
-        const test = tests.find(t => t.id === testId);
-
-        // For now, we'll create a generic color result since we don't have color results in Firebase yet
-        // TODO: Add color results to Firebase Realtime Database
-        const colorResult = null; // Will be updated when color results are added to Firebase
+        // Initialize localStorage and get test data
+        initializeLocalStorage();
+        const test = getTestById(testId);
 
         if (!test) {
           throw new Error('Test data not found');
         }
 
-        console.log('🔥 Loaded test data from Firebase Realtime Database');
+        // Try to get color results from localStorage or use test's color_results
+        let colorResult = null;
 
-        // If no specific color result found, create a generic one
-        if (!colorResult) {
-          console.warn('Color result not found, creating generic result');
+        // Check if we have color_results in the test data
+        if (test.color_results && test.color_results.length > 0) {
+          // Find matching color result by hex code
+          colorResult = test.color_results.find(cr =>
+            cr.color_hex.toLowerCase() === selectedColor.toLowerCase()
+          );
         }
+
+        // If no exact match, try to find from localStorage color_results_admin
+        if (!colorResult) {
+          try {
+            const adminColorResults = JSON.parse(localStorage.getItem('color_results_admin') || '[]');
+            colorResult = adminColorResults.find((cr: any) =>
+              cr.test_id === testId && cr.hex_code.toLowerCase() === selectedColor.toLowerCase()
+            );
+          } catch (error) {
+            console.warn('Could not load admin color results:', error);
+          }
+        }
+
+        console.log('🔥 Loaded test data from local storage');
 
         // Convert confidence level to numeric score
         const getConfidenceScore = (level: string): number => {
@@ -86,22 +100,41 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
         };
 
         // Parse substances (handle comma-separated values)
-        const parseSubstances = (substanceText: string): string[] => {
+        const parseSubstances = (substanceText: string | string[]): string[] => {
           if (!substanceText) return [];
+          if (Array.isArray(substanceText)) return substanceText;
           return substanceText.split(',').map(s => s.trim()).filter(s => s.length > 0);
         };
+
+        // Get substances based on color result or test data
+        let substances: string[] = [];
+        let confidence = 50;
+        let colorName = '';
+
+        if (colorResult) {
+          // Use color result data
+          if (colorResult.possible_substance_ar && colorResult.possible_substance) {
+            substances = parseSubstances(lang === 'ar' ? colorResult.possible_substance_ar : colorResult.possible_substance);
+          }
+          confidence = getConfidenceScore(colorResult.confidence_level || 'medium');
+          colorName = lang === 'ar' ? colorResult.color_result_ar : colorResult.color_result;
+        } else {
+          // Fallback to test's general data
+          if (test.possible_substance_ar && test.possible_substance) {
+            substances = parseSubstances(lang === 'ar' ? test.possible_substance_ar : test.possible_substance);
+          }
+          confidence = 50; // Default confidence
+          colorName = lang === 'ar' ? 'لون مخصص' : 'Custom Color';
+        }
 
         // Create result object
         const testResult: TestResult = {
           id: `${testId}-${selectedColor}-${Date.now()}`,
           testId,
           colorId: selectedColor,
-          confidence: colorResult ? getConfidenceScore(colorResult.confidence_level) : 50,
-          substances: colorResult
-            ? parseSubstances(lang === 'ar' ? colorResult.possible_substance_ar : colorResult.possible_substance)
-            : [lang === 'ar' ? 'غير محدد' : 'Unknown'],
+          confidence,
           timestamp: new Date(),
-          colorName: colorResult ? (lang === 'ar' ? colorResult.color_result_ar : colorResult.color_result) : '',
+          colorName,
           colorHex: selectedColor
         };
 
@@ -115,6 +148,8 @@ export function TestResults({ testId, selectedColor, lang, onBack, onNewTest }: 
 
       } catch (error) {
         console.error('Error loading test result:', error);
+        // Set result to null to trigger error display
+        setResult(null);
       } finally {
         setLoading(false);
       }
