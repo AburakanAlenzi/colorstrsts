@@ -38,14 +38,29 @@ export async function generateStaticParams() {
   } catch (error) {
     console.error('❌ Error generating static params:', error);
 
-    // Fallback to basic test IDs
+    // Comprehensive fallback test IDs covering all known tests
     const fallbackTestIds = [
       'test-simple',
       'marquis-test',
       'mecke-test',
+      'ferric-sulfate-test',
+      'nitric-acid-test',
       'fast-blue-b-test',
+      'duquenois-levine-test',
+      'cobalt-thiocyanate-test',
+      'modified-cobalt-thiocyanate-test',
+      'wagner-test',
+      'simon-test',
+      'ehrlich-test',
+      'liebermann-test',
+      'potassium-dichromate-test',
+      'chen-kao-test',
+      'nitric-sulfuric-test',
+      // Additional common tests that might be added
       'mandelin-test',
-      'ehrlich-test'
+      'froehde-test',
+      'hofmann-test',
+      'scott-test'
     ];
 
     const languages: Language[] = ['ar', 'en'];
