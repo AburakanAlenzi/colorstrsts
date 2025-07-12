@@ -15,6 +15,12 @@
     "prepare_ar": "1. ضع كمية صغيرة من المادة المشتبه بها على طبق نقطي.\n2. أضف قطرة واحدة من الكاشف IA (محضر بخلط 8-10 قطرات من الفورمالديهايد 37% مع 10 مل من حمض الخليك الجليدي).\n3. أضف 2-3 قطرات من الكاشف 1B (حمض الكبريتيك المركز).\n4. راقب تغيير اللون.",
     "test_type": "F/L",
     "test_number": "Test 1",
+	  "color_result": "Purple to violet",
+    "color_result_ar": "بنفسجي إلى بنفسجي داكن",
+    "color_hex": "#8B5CF6",
+    "possible_substance": "Opium, Morphine, Heroin",
+    "possible_substance_ar": "الأفيون، المورفين، الهيروين",
+    "confidence_level": "high",
     "reference": "Auterhoff, H., Braun, D.. Arch.Pharm.(Weinheim), 306 (1973) 866."
   },
   {

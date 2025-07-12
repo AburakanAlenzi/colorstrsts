@@ -223,13 +223,14 @@ export function useSubscriptionSettings() {
     };
   };
 
+  // Always return an object, never undefined
   return {
-    settings,
-    loading,
-    updateSettings,
-    loadSettings,
-    isTestAccessible,
-    getTestAccessStatus
+    settings: settings || defaultSettings,
+    loading: loading || false,
+    updateSettings: updateSettings || (() => Promise.resolve()),
+    loadSettings: loadSettings || (() => Promise.resolve()),
+    isTestAccessible: isTestAccessible || (() => true),
+    getTestAccessStatus: getTestAccessStatus || (() => ({ canAccess: true, reason: 'Default access' }))
   };
 }
 

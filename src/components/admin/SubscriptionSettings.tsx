@@ -33,12 +33,16 @@ interface TestAccessSettings {
 }
 
 export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps) {
+  // Safe destructuring with fallbacks
+  const subscriptionData = useSubscriptionSettings();
+
+  // Provide safe defaults if hook returns undefined
   const {
     settings,
-    loading,
+    loading = false,
     updateSettings,
     loadSettings
-  } = useSubscriptionSettings();
+  } = subscriptionData || {};
 
   // Default settings to prevent undefined errors
   const defaultSettings: TestAccessSettings = {
@@ -54,6 +58,28 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
   const [premiumTestInput, setPremiumTestInput] = useState('');
 
   const isRTL = lang === 'ar';
+
+  // Early return if subscription data is not available
+  if (!subscriptionData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-lg font-medium text-red-600 mb-2">
+            {lang === 'ar' ? 'خطأ في تحميل إعدادات الاشتراك' : 'Error loading subscription settings'}
+          </div>
+          <p className="text-gray-500 mb-4">
+            {lang === 'ar' ? 'يرجى إعادة تحميل الصفحة' : 'Please reload the page'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            {lang === 'ar' ? 'إعادة تحميل' : 'Reload'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Update local settings when Firebase settings change
   useEffect(() => {
