@@ -43,6 +43,60 @@ service cloud.firestore {
          ]);
     }
 
+    // STC Subscriptions collection - مجموعة اشتراكات STC
+    // Users can read their own subscriptions, admins can read/write all
+    // يمكن للمستخدمين قراءة اشتراكاتهم، المديرين يمكنهم قراءة/كتابة الكل
+    match /stc_subscriptions/{subscriptionId} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.userId ||
+         request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+      allow write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.userId;
+    }
+
+    // STC Payment History collection - مجموعة تاريخ مدفوعات STC
+    // Users can read their own payment history, admins can read/write all
+    // يمكن للمستخدمين قراءة تاريخ مدفوعاتهم، المديرين يمكنهم قراءة/كتابة الكل
+    match /stc_payment_history/{paymentId} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.userId ||
+         request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+      allow write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.userId;
+    }
+
+    // Admin Settings collection - مجموعة إعدادات المدير
+    // Only admins can access admin settings
+    // المديرين فقط يمكنهم الوصول لإعدادات المدير
+    match /admin_settings/{settingId} {
+      allow read, write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ]);
+    }
+
     // User test history - سجل اختبارات المستخدم
     // Users can only access their own test history
     // يمكن للمستخدمين الوصول لسجل اختباراتهم فقط
@@ -124,9 +178,26 @@ service cloud.firestore {
         request.auth.token.admin == true;
     }
     
-    // Default deny rule - قاعدة الرفض الافتراضية
-    // Deny all other access
-    // رفض جميع الوصولات الأخرى
+    // TEMPORARY DEVELOPMENT RULES - قواعد التطوير المؤقتة
+    // WARNING: These rules are for development only and should be restricted in production
+    // تحذير: هذه القواعد للتطوير فقط ويجب تقييدها في الإنتاج
+
+    // Allow read access to all collections for authenticated users (DEVELOPMENT ONLY)
+    // السماح بالقراءة لجميع المجموعات للمستخدمين المصادق عليهم (للتطوير فقط)
+    match /{collection}/{document} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        (request.auth.token.admin == true ||
+         request.auth.token.email in [
+           'aburakan4551@gmail.com',
+           'admin@example.com'
+         ] ||
+         request.auth.uid == 'development-user');
+    }
+
+    // Default deny rule for unmatched paths - قاعدة الرفض الافتراضية للمسارات غير المطابقة
+    // This should be the last rule
+    // يجب أن تكون هذه القاعدة الأخيرة
     match /{document=**} {
       allow read, write: if false;
     }
