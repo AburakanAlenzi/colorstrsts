@@ -5,14 +5,20 @@ import { TestPage } from '@/components/pages/test-page';
 import { getChemicalTests } from '@/lib/firebase-realtime';
 import { getTranslations } from '@/lib/translations';
 
+// Note: Using static generation with fallback for compatibility with static export
+
 // Generate static params for all test combinations
 export async function generateStaticParams() {
-  // Use static test IDs for build time since Firebase is not available in SSR
-  const staticTestIds = [
+  // Include all possible test IDs that might be used
+  const allPossibleTestIds = [
+    // Basic tests from fallback data
     'marquis-test',
     'mecke-test',
+    'fast-blue-b-test',
     'mandelin-test',
     'ehrlich-test',
+
+    // Additional common tests
     'hofmann-test',
     'simon-test',
     'froehde-test',
@@ -21,7 +27,6 @@ export async function generateStaticParams() {
     'cobalt-thiocyanate-test',
     'ferric-chloride-test',
     'ferric-sulfate-test',
-    'fast-blue-b-test',
     'dille-koppanyi-test',
     'duquenois-levine-test',
     'van-urk-test',
@@ -45,7 +50,7 @@ export async function generateStaticParams() {
 
   const params = [];
   for (const lang of languages) {
-    for (const testId of staticTestIds) {
+    for (const testId of allPossibleTestIds) {
       params.push({
         lang,
         testId,
@@ -70,20 +75,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang, testId } = await params;
 
-  // Use static metadata since Firebase is not available in SSR
-  const testNames: Record<string, { ar: string; en: string }> = {
-    'marquis-test': { ar: 'اختبار ماركيز', en: 'Marquis Test' },
-    'mecke-test': { ar: 'اختبار ميك', en: 'Mecke Test' },
-    'mandelin-test': { ar: 'اختبار مانديلين', en: 'Mandelin Test' },
-    'ehrlich-test': { ar: 'اختبار إيرليش', en: 'Ehrlich Test' },
-    'fast-blue-b-test': { ar: 'اختبار الأزرق السريع ب', en: 'Fast Blue B Test' }
-  };
+  try {
+    // Try to get test data from Firebase for accurate metadata
+    const tests = await getChemicalTests();
+    const test = tests.find(t => t.id === testId);
 
-  const testInfo = testNames[testId];
-  const testName = testInfo ? (lang === 'ar' ? testInfo.ar : testInfo.en) : 'Chemical Test';
+    if (test) {
+      const testName = lang === 'ar' ? test.method_name_ar : test.method_name;
+      const testDescription = lang === 'ar' ? test.description_ar : test.description;
 
+      return {
+        title: testName,
+        description: testDescription,
+      };
+    }
+  } catch (error) {
+    console.error('Error loading test metadata:', error);
+  }
+
+  // Fallback metadata
   return {
-    title: testName,
+    title: lang === 'ar' ? 'اختبار كيميائي' : 'Chemical Test',
     description: lang === 'ar' ? 'اختبار كيميائي للكشف عن المواد' : 'Chemical test for substance detection',
   };
 }
