@@ -2,17 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { 
-  getTests, 
-  createTest, 
-  updateTest, 
+import {
+  getChemicalTestsLocal,
+  initializeLocalStorage,
+  ChemicalTest
+} from '@/lib/local-data-service';
+// Keep Firebase imports as fallback
+import {
+  getTests,
+  createTest,
+  updateTest,
   deleteTest,
   getTestsStatistics,
   exportTests,
   importTests,
   getTestTypes,
   getSubstances,
-  ChemicalTest,
   TestsFilter,
   TestsPagination
 } from '@/lib/firebase-tests';
@@ -42,12 +47,51 @@ import {
 import toast from 'react-hot-toast';
 
 interface TestsManagementNewProps {
-  translations: any;
+  translations?: any;
   isRTL: boolean;
+  lang?: 'ar' | 'en';
 }
 
-export default function TestsManagementNew({ translations = {}, isRTL }: TestsManagementNewProps) {
+export default function TestsManagementNew({ translations = {}, isRTL, lang = 'en' }: TestsManagementNewProps) {
+  // Add safety check for browser environment
+  if (typeof window === 'undefined') {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            {lang === 'ar' ? 'جاري التحميل...' : 'Loading...'}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { user } = useAuth();
+
+  // Provide fallback translations if not provided
+  const safeTranslations = translations || {
+    title: lang === 'ar' ? 'إدارة الاختبارات' : 'Tests Management',
+    addTest: lang === 'ar' ? 'إضافة اختبار' : 'Add Test',
+    editTest: lang === 'ar' ? 'تحرير اختبار' : 'Edit Test',
+    deleteTest: lang === 'ar' ? 'حذف اختبار' : 'Delete Test',
+    loading: lang === 'ar' ? 'جاري التحميل...' : 'Loading...',
+    error: lang === 'ar' ? 'حدث خطأ' : 'An error occurred',
+    success: lang === 'ar' ? 'تم بنجاح' : 'Success',
+    cancel: lang === 'ar' ? 'إلغاء' : 'Cancel',
+    save: lang === 'ar' ? 'حفظ' : 'Save',
+    delete: lang === 'ar' ? 'حذف' : 'Delete',
+    confirm: lang === 'ar' ? 'تأكيد' : 'Confirm',
+    messages: {
+      loadError: lang === 'ar' ? 'فشل في تحميل الاختبارات' : 'Failed to load tests',
+      createSuccess: lang === 'ar' ? 'تم إنشاء الاختبار بنجاح' : 'Test created successfully',
+      createError: lang === 'ar' ? 'فشل في إنشاء الاختبار' : 'Failed to create test',
+      updateSuccess: lang === 'ar' ? 'تم تحديث الاختبار بنجاح' : 'Test updated successfully',
+      updateError: lang === 'ar' ? 'فشل في تحديث الاختبار' : 'Failed to update test',
+      deleteSuccess: lang === 'ar' ? 'تم حذف الاختبار بنجاح' : 'Test deleted successfully',
+      deleteError: lang === 'ar' ? 'فشل في حذف الاختبار' : 'Failed to delete test',
+      importSuccess: lang === 'ar' ? 'تم الاستيراد بنجاح' : 'Import completed successfully'
+    }
+  };
   
   // State management
   const [tests, setTests] = useState<ChemicalTest[]>([]);
@@ -100,6 +144,45 @@ export default function TestsManagementNew({ translations = {}, isRTL }: TestsMa
       setLoading(true);
       setError(null);
 
+      // Try to load from localStorage first
+      try {
+        initializeLocalStorage();
+        let localTests = getChemicalTestsLocal();
+
+        // Apply filters if any
+        if (searchTerm) {
+          localTests = localTests.filter(test =>
+            test.method_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            test.method_name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            test.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            test.description_ar?.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+
+        if (testTypeFilter) {
+          localTests = localTests.filter(test => test.test_type === testTypeFilter);
+        }
+
+        if (substanceFilter) {
+          localTests = localTests.filter(test =>
+            test.possible_substance?.toLowerCase().includes(substanceFilter.toLowerCase()) ||
+            test.possible_substance_ar?.toLowerCase().includes(substanceFilter.toLowerCase())
+          );
+        }
+
+        // Apply pagination
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedTests = localTests.slice(startIndex, startIndex + itemsPerPage);
+
+        console.log(`📊 Loaded ${paginatedTests.length} tests from localStorage (page ${currentPage})`);
+        setTests(paginatedTests);
+        return;
+
+      } catch (localError) {
+        console.warn('Failed to load from localStorage, trying Firebase:', localError);
+      }
+
+      // Fallback to Firebase if localStorage fails
       const filters: TestsFilter = {
         search: searchTerm,
         test_type: testTypeFilter,
@@ -111,14 +194,15 @@ export default function TestsManagementNew({ translations = {}, isRTL }: TestsMa
         limit: itemsPerPage
       };
 
-      console.log('Loading tests with filters:', filters, 'pagination:', pagination);
+      console.log('Loading tests from Firebase with filters:', filters, 'pagination:', pagination);
       const result = await getTests(pagination, filters);
-      console.log('Loaded tests result:', result);
+      console.log('Loaded tests result from Firebase:', result);
       setTests(result.tests || []);
+
     } catch (err) {
       console.error('Error loading tests:', err);
       setError(err instanceof Error ? err.message : 'Failed to load tests');
-      toast.error(translations?.messages?.loadError || 'Failed to load tests');
+      toast.error(safeTranslations?.messages?.loadError || safeTranslations.error);
       // Fallback to empty array to prevent UI crashes
       setTests([]);
     } finally {

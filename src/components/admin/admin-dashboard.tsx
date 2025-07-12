@@ -610,7 +610,11 @@ export function AdminDashboard({ lang }: AdminDashboardProps) {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'tests':
-        return <TestsManagementNew translations={getTranslationsSync(lang).testsManagement} isRTL={lang === 'ar'} />;
+        return <TestsManagementNew
+          translations={getTranslationsSync(lang)?.testsManagement || {}}
+          isRTL={lang === 'ar'}
+          lang={lang}
+        />;
       case 'colors':
         return <ColorResultsManagement lang={lang} />;
       case 'subscriptions':
