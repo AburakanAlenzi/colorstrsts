@@ -26,18 +26,27 @@ export function useSubscriptionSettings() {
 
   // Load settings from Firebase Realtime Database
   const loadSettings = async () => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const firebaseSettings = await getSubscriptionSettings();
       setSettings(firebaseSettings);
 
       // Also set global settings for immediate access
-      if (typeof window !== 'undefined') {
-        (window as any).subscriptionSettings = firebaseSettings;
-      }
+      (window as any).subscriptionSettings = firebaseSettings;
     } catch (error) {
       console.error('Error loading subscription settings from Firebase:', error);
       setSettings(defaultSettings);
+
+      // Set default settings in global object as fallback
+      if (typeof window !== 'undefined') {
+        (window as any).subscriptionSettings = defaultSettings;
+      }
     } finally {
       setLoading(false);
     }
@@ -45,22 +54,31 @@ export function useSubscriptionSettings() {
 
   // Listen for settings changes from Firebase
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     loadSettings();
 
     // Set up real-time listener for Firebase changes
-    const unsubscribe = listenToSubscriptionSettings((newSettings) => {
-      setSettings(newSettings);
+    let unsubscribe: (() => void) | null = null;
 
-      // Update global settings for immediate access
-      if (typeof window !== 'undefined') {
+    try {
+      unsubscribe = listenToSubscriptionSettings((newSettings) => {
+        setSettings(newSettings);
+
+        // Update global settings for immediate access
         (window as any).subscriptionSettings = newSettings;
 
         // Dispatch custom event to notify other components
         window.dispatchEvent(new CustomEvent('subscriptionSettingsUpdated', {
           detail: newSettings
         }));
-      }
-    });
+      });
+    } catch (error) {
+      console.error('Error setting up Firebase listener:', error);
+    }
 
     // Listen for custom events (for immediate updates in same tab)
     const handleSettingsUpdate = (e: CustomEvent) => {
@@ -75,7 +93,9 @@ export function useSubscriptionSettings() {
     }
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) {
+        unsubscribe();
+      }
       if (typeof window !== 'undefined') {
         window.removeEventListener('subscriptionSettingsUpdated', handleSettingsUpdate as EventListener);
       }

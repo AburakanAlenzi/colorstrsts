@@ -40,7 +40,16 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
     loadSettings
   } = useSubscriptionSettings();
 
-  const [localSettings, setLocalSettings] = useState(settings);
+  // Default settings to prevent undefined errors
+  const defaultSettings: TestAccessSettings = {
+    freeTestsEnabled: true,
+    freeTestsCount: 5,
+    premiumRequired: true,
+    globalFreeAccess: false,
+    specificPremiumTests: []
+  };
+
+  const [localSettings, setLocalSettings] = useState<TestAccessSettings>(defaultSettings);
   const [saving, setSaving] = useState(false);
   const [premiumTestInput, setPremiumTestInput] = useState('');
 
@@ -48,7 +57,9 @@ export default function SubscriptionSettings({ lang }: SubscriptionSettingsProps
 
   // Update local settings when Firebase settings change
   useEffect(() => {
-    setLocalSettings(settings);
+    if (settings) {
+      setLocalSettings(settings);
+    }
   }, [settings]);
 
   const saveSettings = async () => {

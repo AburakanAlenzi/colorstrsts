@@ -12,8 +12,15 @@ import {
 } from 'firebase/database';
 import app from './firebase';
 
-// Initialize Realtime Database
-const database = getDatabase(app);
+// Initialize Realtime Database lazily
+let database: any = null;
+
+function getDB() {
+  if (!database && typeof window !== 'undefined') {
+    database = getDatabase(app);
+  }
+  return database;
+}
 
 // Database paths
 export const DB_PATHS = {
@@ -61,7 +68,12 @@ export interface SubscriptionSettings {
 // Get all chemical tests
 export async function getChemicalTests(): Promise<ChemicalTest[]> {
   try {
-    const testsRef = ref(database, DB_PATHS.CHEMICAL_TESTS);
+    const db = getDB();
+    if (!db) {
+      throw new Error('Database not available in SSR environment');
+    }
+
+    const testsRef = ref(db, DB_PATHS.CHEMICAL_TESTS);
     const snapshot = await get(testsRef);
     
     if (snapshot.exists()) {
@@ -96,7 +108,12 @@ export async function getChemicalTest(testId: string): Promise<ChemicalTest | nu
 // Save all chemical tests
 export async function saveChemicalTests(tests: ChemicalTest[]): Promise<void> {
   try {
-    const testsRef = ref(database, DB_PATHS.CHEMICAL_TESTS);
+    const db = getDB();
+    if (!db) {
+      throw new Error('Database not available in SSR environment');
+    }
+
+    const testsRef = ref(db, DB_PATHS.CHEMICAL_TESTS);
     await set(testsRef, tests);
     console.log('Chemical tests saved to Firebase successfully');
   } catch (error) {
@@ -158,7 +175,19 @@ export async function deleteChemicalTest(testId: string): Promise<void> {
 // Get subscription settings
 export async function getSubscriptionSettings(): Promise<SubscriptionSettings> {
   try {
-    const settingsRef = ref(database, DB_PATHS.SUBSCRIPTION_SETTINGS);
+    const db = getDB();
+    if (!db) {
+      // Return default settings if database not available (SSR)
+      return {
+        freeTestsEnabled: true,
+        freeTestsCount: 5,
+        premiumRequired: true,
+        globalFreeAccess: false,
+        specificPremiumTests: []
+      };
+    }
+
+    const settingsRef = ref(db, DB_PATHS.SUBSCRIPTION_SETTINGS);
     const snapshot = await get(settingsRef);
     
     if (snapshot.exists()) {
@@ -194,12 +223,17 @@ export async function getSubscriptionSettings(): Promise<SubscriptionSettings> {
 // Save subscription settings
 export async function saveSubscriptionSettings(settings: SubscriptionSettings): Promise<void> {
   try {
+    const db = getDB();
+    if (!db) {
+      throw new Error('Database not available in SSR environment');
+    }
+
     const settingsWithTimestamp = {
       ...settings,
       lastUpdated: new Date().toISOString()
     };
-    
-    const settingsRef = ref(database, DB_PATHS.SUBSCRIPTION_SETTINGS);
+
+    const settingsRef = ref(db, DB_PATHS.SUBSCRIPTION_SETTINGS);
     await set(settingsRef, settingsWithTimestamp);
     
     console.log('Subscription settings saved to Firebase successfully');
@@ -213,14 +247,20 @@ export async function saveSubscriptionSettings(settings: SubscriptionSettings): 
 export function listenToSubscriptionSettings(
   callback: (settings: SubscriptionSettings) => void
 ): () => void {
-  const settingsRef = ref(database, DB_PATHS.SUBSCRIPTION_SETTINGS);
-  
+  const db = getDB();
+  if (!db) {
+    // Return empty unsubscribe function if database not available
+    return () => {};
+  }
+
+  const settingsRef = ref(db, DB_PATHS.SUBSCRIPTION_SETTINGS);
+
   const unsubscribe = onValue(settingsRef, (snapshot) => {
     if (snapshot.exists()) {
       callback(snapshot.val() as SubscriptionSettings);
     }
   });
-  
+
   return () => off(settingsRef, 'value', unsubscribe);
 }
 
@@ -228,8 +268,14 @@ export function listenToSubscriptionSettings(
 export function listenToChemicalTests(
   callback: (tests: ChemicalTest[]) => void
 ): () => void {
-  const testsRef = ref(database, DB_PATHS.CHEMICAL_TESTS);
-  
+  const db = getDB();
+  if (!db) {
+    // Return empty unsubscribe function if database not available
+    return () => {};
+  }
+
+  const testsRef = ref(db, DB_PATHS.CHEMICAL_TESTS);
+
   const unsubscribe = onValue(testsRef, (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
@@ -239,7 +285,7 @@ export function listenToChemicalTests(
       callback([]);
     }
   });
-  
+
   return () => off(testsRef, 'value', unsubscribe);
 }
 
