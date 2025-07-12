@@ -34,6 +34,7 @@
     "firebase:init": "firebase init",
     "firebase:fix-domains": "node scripts/fix-firebase-auth-domains.js",
     "firebase:console": "echo Opening Firebase Console... && start https://console.firebase.google.com/project/colorstests-573ef/authentication/settings",
+    "update:fast-blue-b": "node scripts/update-fast-blue-b-test.js",
     "setup-production": "node scripts/setup-production.js",
     "security-check": "npm audit && echo 'Security check completed'",
     "deploy": "node deploy.js",
